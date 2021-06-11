@@ -38,7 +38,7 @@ const xrc20SymbolSignature = "0x95d89b41"
 const xrc20DecimalsSignature = "0x313ce567"
 const xrc20BalanceOf = "0x70a08231"
 
-var cachedContracts = make(map[string]*bchain.xrc20Contract)
+var cachedContracts = make(map[string]*Xrc20Contract)
 var cachedContractsMux sync.Mutex
 
 func addressFromPaddedHex(s string) (string, error) {
@@ -56,8 +56,8 @@ func addressFromPaddedHex(s string) (string, error) {
 	return a.String(), nil
 }
 
-func xrc20GetTransfersFromLog(logs []*rpcLog) ([]bchain.xrc20Transfer, error) {
-	var r []bchain.xrc20Transfer
+func xrc20GetTransfersFromLog(logs []*rpcLog) ([]Xrc20Transfer, error) {
+	var r []Xrc20Transfer
 	for _, l := range logs {
 		if len(l.Topics) == 3 && l.Topics[0] == xrc20TransferEventSignature {
 			var t big.Int
@@ -73,7 +73,7 @@ func xrc20GetTransfersFromLog(logs []*rpcLog) ([]bchain.xrc20Transfer, error) {
 			if err != nil {
 				return nil, err
 			}
-			r = append(r, bchain.xrc20Transfer{
+			r = append(r, Xrc20Transfer{
 				Contract: EIP55AddressFromAddress(l.Address),
 				From:     EIP55AddressFromAddress(from),
 				To:       EIP55AddressFromAddress(to),
@@ -84,8 +84,8 @@ func xrc20GetTransfersFromLog(logs []*rpcLog) ([]bchain.xrc20Transfer, error) {
 	return r, nil
 }
 
-func xrc20GetTransfersFromTx(tx *rpcTransaction) ([]bchain.xrc20Transfer, error) {
-	var r []bchain.xrc20Transfer
+func xrc20GetTransfersFromTx(tx *rpcTransaction) ([]Xrc20Transfer, error) {
+	var r []Xrc20Transfer
 	if len(tx.Payload) == 128+len(xrc20TransferMethodSignature) && strings.HasPrefix(tx.Payload, xrc20TransferMethodSignature) {
 		to, err := addressFromPaddedHex(tx.Payload[len(xrc20TransferMethodSignature) : 64+len(xrc20TransferMethodSignature)])
 		if err != nil {
@@ -96,7 +96,7 @@ func xrc20GetTransfersFromTx(tx *rpcTransaction) ([]bchain.xrc20Transfer, error)
 		if !ok {
 			return nil, errors.New("Data is not a number")
 		}
-		r = append(r, bchain.xrc20Transfer{
+		r = append(r, Xrc20Transfer{
 			Contract: EIP55AddressFromAddress(tx.To),
 			From:     EIP55AddressFromAddress(tx.From),
 			To:       EIP55AddressFromAddress(to),
@@ -177,7 +177,7 @@ func parsexrc20StringProperty(contractDesc bchain.AddressDescriptor, data string
 }
 
 // EthereumTypeGetxrc20ContractInfo returns information about xrc20 contract
-func (b *EthereumRPC) EthereumTypeGetxrc20ContractInfo(contractDesc bchain.AddressDescriptor) (*bchain.xrc20Contract, error) {
+func (b *EthereumRPC) EthereumTypeGetxrc20ContractInfo(contractDesc bchain.AddressDescriptor) (*Xrc20Contract, error) {
 	cds := string(contractDesc)
 	cachedContractsMux.Lock()
 	contract, found := cachedContracts[cds]
@@ -207,7 +207,7 @@ func (b *EthereumRPC) EthereumTypeGetxrc20ContractInfo(contractDesc bchain.Addre
 				glog.Warning(errors.Annotatef(err, "xrc20DecimalsSignature %v", address))
 				// return nil, errors.Annotatef(err, "xrc20DecimalsSignature %v", address)
 			}
-			contract = &bchain.xrc20Contract{
+			contract = &Xrc20Contract{
 				Contract: address,
 				Name:     name,
 				Symbol:   symbol,
