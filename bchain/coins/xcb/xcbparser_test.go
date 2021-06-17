@@ -54,7 +54,7 @@ func TestEthParser_GetAddrDescFromAddress(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			p := NewEthereumParser(1)
+			p := NewCoreblockchainParser(1)
 			got, err := p.GetAddrDescFromAddress(tt.args.address)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("EthParser.GetAddrDescFromAddress() error = %v, wantErr %v", err, tt.wantErr)
@@ -92,8 +92,8 @@ func init() {
 		CoinSpecificData: completeTransaction{
 			Tx: &rpcTransaction{
 				AccountNonce:     "0xb26c",
-				GasPrice:         "0x430e23400",
-				GasLimit:         "0x5208",
+				EnergyPrice:      "0x430e23400",
+				EnergyLimit:      "0x5208",
 				To:               "0x555Ee11FBDDc0E49A9bAB358A8941AD95fFDB48f",
 				Value:            "0x1bc0159d530e6000",
 				Payload:          "0x",
@@ -103,9 +103,9 @@ func init() {
 				TransactionIndex: "0xa",
 			},
 			Receipt: &rpcReceipt{
-				GasUsed: "0x5208",
-				Status:  "0x1",
-				Logs:    []*rpcLog{},
+				EnergyUsed: "0x5208",
+				Status:     "0x1",
+				Logs:       []*rpcLog{},
 			},
 		},
 	}
@@ -130,8 +130,8 @@ func init() {
 		CoinSpecificData: completeTransaction{
 			Tx: &rpcTransaction{
 				AccountNonce:     "0xd0",
-				GasPrice:         "0x9502f9000",
-				GasLimit:         "0x130d5",
+				EnergyPrice:      "0x9502f9000",
+				EnergyLimit:      "0x130d5",
 				To:               "0x4af4114F73d1c1C903aC9E0361b379D1291808A2",
 				Value:            "0x0",
 				Payload:          "0xa9059cbb000000000000000000000000555ee11fbddc0e49a9bab358a8941ad95ffdb48f00000000000000000000000000000000000000000000021e19e0c9bab2400000",
@@ -140,8 +140,8 @@ func init() {
 				From:             "0x20cD153de35D469BA46127A0C8F18626b59a256A",
 				TransactionIndex: "0x0"},
 			Receipt: &rpcReceipt{
-				GasUsed: "0xcb39",
-				Status:  "0x1",
+				EnergyUsed: "0xcb39",
+				Status:     "0x1",
 				Logs: []*rpcLog{
 					{
 						Address: "0x4af4114F73d1c1C903aC9E0361b379D1291808A2",
@@ -177,8 +177,8 @@ func init() {
 		CoinSpecificData: completeTransaction{
 			Tx: &rpcTransaction{
 				AccountNonce:     "0xb26c",
-				GasPrice:         "0x430e23400",
-				GasLimit:         "0x5208",
+				EnergyPrice:      "0x430e23400",
+				EnergyLimit:      "0x5208",
 				To:               "0x555Ee11FBDDc0E49A9bAB358A8941AD95fFDB48f",
 				Value:            "0x1bc0159d530e6000",
 				Payload:          "0x",
@@ -188,9 +188,9 @@ func init() {
 				TransactionIndex: "0xa",
 			},
 			Receipt: &rpcReceipt{
-				GasUsed: "0x5208",
-				Status:  "0x0",
-				Logs:    []*rpcLog{},
+				EnergyUsed: "0x5208",
+				Status:     "0x0",
+				Logs:       []*rpcLog{},
 			},
 		},
 	}
@@ -215,8 +215,8 @@ func init() {
 		CoinSpecificData: completeTransaction{
 			Tx: &rpcTransaction{
 				AccountNonce:     "0xb26c",
-				GasPrice:         "0x430e23400",
-				GasLimit:         "0x5208",
+				EnergyPrice:      "0x430e23400",
+				EnergyLimit:      "0x5208",
 				To:               "0x555Ee11FBDDc0E49A9bAB358A8941AD95fFDB48f",
 				Value:            "0x1bc0159d530e6000",
 				Payload:          "0x",
@@ -226,9 +226,9 @@ func init() {
 				TransactionIndex: "0xa",
 			},
 			Receipt: &rpcReceipt{
-				GasUsed: "0x5208",
-				Status:  "",
-				Logs:    []*rpcLog{},
+				EnergyUsed: "0x5208",
+				Status:     "",
+				Logs:       []*rpcLog{},
 			},
 		},
 	}
@@ -243,7 +243,7 @@ func TestEthereumParser_PackTx(t *testing.T) {
 	}
 	tests := []struct {
 		name    string
-		p       *EthereumParser
+		p       *CoreblockchainParser
 		args    args
 		want    string
 		wantErr bool
@@ -285,7 +285,7 @@ func TestEthereumParser_PackTx(t *testing.T) {
 			want: dbtestdata.EthTx1NoStatusPacked,
 		},
 	}
-	p := NewEthereumParser(1)
+	p := NewCoreblockchainParser(1)
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := p.PackTx(tt.args.tx, tt.args.height, tt.args.blockTime)
@@ -307,7 +307,7 @@ func TestEthereumParser_UnpackTx(t *testing.T) {
 	}
 	tests := []struct {
 		name    string
-		p       *EthereumParser
+		p       *CoreblockchainParser
 		args    args
 		want    *bchain.Tx
 		want1   uint32
@@ -338,7 +338,7 @@ func TestEthereumParser_UnpackTx(t *testing.T) {
 			want1: 4321000,
 		},
 	}
-	p := NewEthereumParser(1)
+	p := NewCoreblockchainParser(1)
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			b, err := hex.DecodeString(tt.args.hex)
@@ -393,7 +393,7 @@ func TestEthereumParser_GetEthereumTxData(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := GetEthereumTxData(tt.tx)
+			got := GetCoreblockchainTxData(tt.tx)
 			if got.Data != tt.want {
 				t.Errorf("EthereumParser.GetEthereumTxData() = %v, want %v", got.Data, tt.want)
 			}

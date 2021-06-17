@@ -216,7 +216,7 @@ func (b *EthereumRPC) EthereumTypeGetxrc20ContractInfo(contractDesc bchain.Addre
 			if d != nil {
 				contract.Decimals = int(uint8(d.Uint64()))
 			} else {
-				contract.Decimals = EtherAmountDecimalPoint
+				contract.Decimals = XcbAmountDecimalPoint
 			}
 		} else {
 			contract = nil

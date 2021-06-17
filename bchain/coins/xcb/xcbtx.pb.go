@@ -69,8 +69,8 @@ func (m *ProtoCompleteTransaction) GetReceipt() *ProtoCompleteTransaction_Receip
 
 type ProtoCompleteTransaction_TxType struct {
 	AccountNonce     uint64 `protobuf:"varint,1,opt,name=AccountNonce" json:"AccountNonce,omitempty"`
-	GasPrice         []byte `protobuf:"bytes,2,opt,name=GasPrice,proto3" json:"GasPrice,omitempty"`
-	GasLimit         uint64 `protobuf:"varint,3,opt,name=GasLimit" json:"GasLimit,omitempty"`
+	EnergyPrice      []byte `protobuf:"bytes,2,opt,name=EnergyPrice,proto3" json:"EnergyPrice,omitempty"`
+	EnergyLimit      uint64 `protobuf:"varint,3,opt,name=EnergyLimit" json:"EnergyLimit,omitempty"`
 	Value            []byte `protobuf:"bytes,4,opt,name=Value,proto3" json:"Value,omitempty"`
 	Payload          []byte `protobuf:"bytes,5,opt,name=Payload,proto3" json:"Payload,omitempty"`
 	Hash             []byte `protobuf:"bytes,6,opt,name=Hash,proto3" json:"Hash,omitempty"`
@@ -93,16 +93,16 @@ func (m *ProtoCompleteTransaction_TxType) GetAccountNonce() uint64 {
 	return 0
 }
 
-func (m *ProtoCompleteTransaction_TxType) GetGasPrice() []byte {
+func (m *ProtoCompleteTransaction_TxType) GetEnergyPrice() []byte {
 	if m != nil {
-		return m.GasPrice
+		return m.EnergyPrice
 	}
 	return nil
 }
 
-func (m *ProtoCompleteTransaction_TxType) GetGasLimit() uint64 {
+func (m *ProtoCompleteTransaction_TxType) GetEnergyLimit() uint64 {
 	if m != nil {
-		return m.GasLimit
+		return m.EnergyLimit
 	}
 	return 0
 }
@@ -150,9 +150,9 @@ func (m *ProtoCompleteTransaction_TxType) GetTransactionIndex() uint32 {
 }
 
 type ProtoCompleteTransaction_ReceiptType struct {
-	GasUsed []byte                                          `protobuf:"bytes,1,opt,name=GasUsed,proto3" json:"GasUsed,omitempty"`
-	Status  []byte                                          `protobuf:"bytes,2,opt,name=Status,proto3" json:"Status,omitempty"`
-	Log     []*ProtoCompleteTransaction_ReceiptType_LogType `protobuf:"bytes,3,rep,name=Log" json:"Log,omitempty"`
+	EnergyUsed []byte                                          `protobuf:"bytes,1,opt,name=EnergyUsed,proto3" json:"EnergyUsed,omitempty"`
+	Status     []byte                                          `protobuf:"bytes,2,opt,name=Status,proto3" json:"Status,omitempty"`
+	Log        []*ProtoCompleteTransaction_ReceiptType_LogType `protobuf:"bytes,3,rep,name=Log" json:"Log,omitempty"`
 }
 
 func (m *ProtoCompleteTransaction_ReceiptType) Reset()         { *m = ProtoCompleteTransaction_ReceiptType{} }
@@ -162,9 +162,9 @@ func (*ProtoCompleteTransaction_ReceiptType) Descriptor() ([]byte, []int) {
 	return fileDescriptor0, []int{0, 1}
 }
 
-func (m *ProtoCompleteTransaction_ReceiptType) GetGasUsed() []byte {
+func (m *ProtoCompleteTransaction_ReceiptType) GetEnergyUsed() []byte {
 	if m != nil {
-		return m.GasUsed
+		return m.EnergyUsed
 	}
 	return nil
 }
