@@ -21,16 +21,16 @@ import (
 	"github.com/trezor/blockbook/common"
 )
 
-// EthereumNet type specifies the type of ethereum network
-type EthereumNet uint32
+// CoreblockchainNet type specifies the type of ethereum network
+type CoreblockchainNet uint32
 
 const (
 	// MainNet is production network
-	MainNet EthereumNet = 1
+	MainNet CoreblockchainNet = 1
 	// TestNet is Ropsten test network
-	TestNet EthereumNet = 3
+	TestNet CoreblockchainNet = 3
 	// TestNetGoerli is Goerli test network
-	TestNetGoerli EthereumNet = 5
+	TestNetGoerli CoreblockchainNet = 5
 )
 
 // Configuration represents json config file
@@ -44,8 +44,8 @@ type Configuration struct {
 	QueryBackendOnMempoolResync bool   `json:"queryBackendOnMempoolResync"`
 }
 
-// EthereumRPC is an interface to JSON-RPC eth service.
-type EthereumRPC struct {
+// CoreblockchainRPC is an interface to JSON-RPC eth service.
+type CoreblockchainRPC struct {
 	*bchain.BaseChain
 	client               *ethclient.Client
 	rpc                  *rpc.Client
@@ -63,8 +63,8 @@ type EthereumRPC struct {
 	ChainConfig          *Configuration
 }
 
-// NewEthereumRPC returns new EthRPC instance.
-func NewEthereumRPC(config json.RawMessage, pushHandler func(bchain.NotificationType)) (bchain.BlockChain, error) {
+// NewCoreblockchainRPC returns new EthRPC instance.
+func NewCoreblockchainRPC(config json.RawMessage, pushHandler func(bchain.NotificationType)) (bchain.BlockChain, error) {
 	var err error
 	var c Configuration
 	err = json.Unmarshal(config, &c)
@@ -81,7 +81,7 @@ func NewEthereumRPC(config json.RawMessage, pushHandler func(bchain.Notification
 		return nil, err
 	}
 
-	s := &EthereumRPC{
+	s := &CoreblockchainRPC{
 		BaseChain:   &bchain.BaseChain{},
 		client:      ec,
 		rpc:         rc,
@@ -143,7 +143,7 @@ func openRPC(url string) (*rpc.Client, *ethclient.Client, error) {
 }
 
 // Initialize initializes ethereum rpc interface
-func (b *EthereumRPC) Initialize() error {
+func (b *CoreblockchainRPC) Initialize() error {
 	ctx, cancel := context.WithTimeout(context.Background(), b.timeout)
 	defer cancel()
 
@@ -153,7 +153,7 @@ func (b *EthereumRPC) Initialize() error {
 	}
 
 	// parameters for getInfo request
-	switch EthereumNet(id.Uint64()) {
+	switch CoreblockchainNet(id.Uint64()) {
 	case MainNet:
 		b.Testnet = false
 		b.Network = "livenet"
@@ -174,7 +174,7 @@ func (b *EthereumRPC) Initialize() error {
 }
 
 // CreateMempool creates mempool if not already created, however does not initialize it
-func (b *EthereumRPC) CreateMempool(chain bchain.BlockChain) (bchain.Mempool, error) {
+func (b *CoreblockchainRPC) CreateMempool(chain bchain.BlockChain) (bchain.Mempool, error) {
 	if b.Mempool == nil {
 		b.Mempool = bchain.NewMempoolEthereumType(chain, b.ChainConfig.MempoolTxTimeoutHours, b.ChainConfig.QueryBackendOnMempoolResync)
 		glog.Info("mempool created, MempoolTxTimeoutHours=", b.ChainConfig.MempoolTxTimeoutHours, ", QueryBackendOnMempoolResync=", b.ChainConfig.QueryBackendOnMempoolResync)
@@ -183,7 +183,7 @@ func (b *EthereumRPC) CreateMempool(chain bchain.BlockChain) (bchain.Mempool, er
 }
 
 // InitializeMempool creates subscriptions to newHeads and newPendingTransactions
-func (b *EthereumRPC) InitializeMempool(addrDescForOutpoint bchain.AddrDescForOutpointFunc, onNewTxAddr bchain.OnNewTxAddrFunc, onNewTx bchain.OnNewTxFunc) error {
+func (b *CoreblockchainRPC) InitializeMempool(addrDescForOutpoint bchain.AddrDescForOutpointFunc, onNewTxAddr bchain.OnNewTxAddrFunc, onNewTx bchain.OnNewTxFunc) error {
 	if b.Mempool == nil {
 		return errors.New("Mempool not created")
 	}
@@ -209,7 +209,7 @@ func (b *EthereumRPC) InitializeMempool(addrDescForOutpoint bchain.AddrDescForOu
 	return nil
 }
 
-func (b *EthereumRPC) subscribeEvents() error {
+func (b *CoreblockchainRPC) subscribeEvents() error {
 	// subscriptions
 	if err := b.subscribe(func() (*rpc.ClientSubscription, error) {
 		// invalidate the previous subscription - it is either the first one or there was an error
@@ -247,7 +247,7 @@ func (b *EthereumRPC) subscribeEvents() error {
 }
 
 // subscribe subscribes notification and tries to resubscribe in case of error
-func (b *EthereumRPC) subscribe(f func() (*rpc.ClientSubscription, error)) error {
+func (b *CoreblockchainRPC) subscribe(f func() (*rpc.ClientSubscription, error)) error {
 	s, err := f()
 	if err != nil {
 		return err
@@ -286,7 +286,7 @@ func (b *EthereumRPC) subscribe(f func() (*rpc.ClientSubscription, error)) error
 	return nil
 }
 
-func (b *EthereumRPC) closeRPC() {
+func (b *CoreblockchainRPC) closeRPC() {
 	if b.newBlockSubscription != nil {
 		b.newBlockSubscription.Unsubscribe()
 	}
@@ -298,7 +298,7 @@ func (b *EthereumRPC) closeRPC() {
 	}
 }
 
-func (b *EthereumRPC) reconnectRPC() error {
+func (b *CoreblockchainRPC) reconnectRPC() error {
 	glog.Info("Reconnecting RPC")
 	b.closeRPC()
 	rc, ec, err := openRPC(b.ChainConfig.RPCURL)
@@ -311,7 +311,7 @@ func (b *EthereumRPC) reconnectRPC() error {
 }
 
 // Shutdown cleans up rpc interface to ethereum
-func (b *EthereumRPC) Shutdown(ctx context.Context) error {
+func (b *CoreblockchainRPC) Shutdown(ctx context.Context) error {
 	b.closeRPC()
 	close(b.chanNewBlock)
 	glog.Info("rpc: shutdown")
@@ -319,17 +319,17 @@ func (b *EthereumRPC) Shutdown(ctx context.Context) error {
 }
 
 // GetCoinName returns coin name
-func (b *EthereumRPC) GetCoinName() string {
+func (b *CoreblockchainRPC) GetCoinName() string {
 	return b.ChainConfig.CoinName
 }
 
 // GetSubversion returns empty string, ethereum does not have subversion
-func (b *EthereumRPC) GetSubversion() string {
+func (b *CoreblockchainRPC) GetSubversion() string {
 	return ""
 }
 
 // GetChainInfo returns information about the connected backend
-func (b *EthereumRPC) GetChainInfo() (*bchain.ChainInfo, error) {
+func (b *CoreblockchainRPC) GetChainInfo() (*bchain.ChainInfo, error) {
 	h, err := b.getBestHeader()
 	if err != nil {
 		return nil, err
@@ -359,7 +359,7 @@ func (b *EthereumRPC) GetChainInfo() (*bchain.ChainInfo, error) {
 	return rv, nil
 }
 
-func (b *EthereumRPC) getBestHeader() (*ethtypes.Header, error) {
+func (b *CoreblockchainRPC) getBestHeader() (*ethtypes.Header, error) {
 	b.bestHeaderLock.Lock()
 	defer b.bestHeaderLock.Unlock()
 	// if the best header was not updated for 15 minutes, there could be a subscription problem, reconnect RPC
@@ -386,7 +386,7 @@ func (b *EthereumRPC) getBestHeader() (*ethtypes.Header, error) {
 }
 
 // GetBestBlockHash returns hash of the tip of the best-block-chain
-func (b *EthereumRPC) GetBestBlockHash() (string, error) {
+func (b *CoreblockchainRPC) GetBestBlockHash() (string, error) {
 	h, err := b.getBestHeader()
 	if err != nil {
 		return "", err
@@ -395,7 +395,7 @@ func (b *EthereumRPC) GetBestBlockHash() (string, error) {
 }
 
 // GetBestBlockHeight returns height of the tip of the best-block-chain
-func (b *EthereumRPC) GetBestBlockHeight() (uint32, error) {
+func (b *CoreblockchainRPC) GetBestBlockHeight() (uint32, error) {
 	h, err := b.getBestHeader()
 	if err != nil {
 		return 0, err
@@ -404,7 +404,7 @@ func (b *EthereumRPC) GetBestBlockHeight() (uint32, error) {
 }
 
 // GetBlockHash returns hash of block in best-block-chain at given height
-func (b *EthereumRPC) GetBlockHash(height uint32) (string, error) {
+func (b *CoreblockchainRPC) GetBlockHash(height uint32) (string, error) {
 	var n big.Int
 	n.SetUint64(uint64(height))
 	ctx, cancel := context.WithTimeout(context.Background(), b.timeout)
@@ -419,7 +419,7 @@ func (b *EthereumRPC) GetBlockHash(height uint32) (string, error) {
 	return h.Hash().Hex(), nil
 }
 
-func (b *EthereumRPC) ethHeaderToBlockHeader(h *rpcHeader) (*bchain.BlockHeader, error) {
+func (b *CoreblockchainRPC) xcbHeaderToBlockHeader(h *rpcHeader) (*bchain.BlockHeader, error) {
 	height, err := xcbNumber(h.Number)
 	if err != nil {
 		return nil, err
@@ -447,7 +447,7 @@ func (b *EthereumRPC) ethHeaderToBlockHeader(h *rpcHeader) (*bchain.BlockHeader,
 }
 
 // GetBlockHeader returns header of block with given hash
-func (b *EthereumRPC) GetBlockHeader(hash string) (*bchain.BlockHeader, error) {
+func (b *CoreblockchainRPC) GetBlockHeader(hash string) (*bchain.BlockHeader, error) {
 	raw, err := b.getBlockRaw(hash, 0, false)
 	if err != nil {
 		return nil, err
@@ -456,10 +456,10 @@ func (b *EthereumRPC) GetBlockHeader(hash string) (*bchain.BlockHeader, error) {
 	if err := json.Unmarshal(raw, &h); err != nil {
 		return nil, errors.Annotatef(err, "hash %v", hash)
 	}
-	return b.ethHeaderToBlockHeader(&h)
+	return b.xcbHeaderToBlockHeader(&h)
 }
 
-func (b *EthereumRPC) computeConfirmations(n uint64) (uint32, error) {
+func (b *CoreblockchainRPC) computeConfirmations(n uint64) (uint32, error) {
 	bh, err := b.getBestHeader()
 	if err != nil {
 		return 0, err
@@ -469,7 +469,7 @@ func (b *EthereumRPC) computeConfirmations(n uint64) (uint32, error) {
 	return uint32(bn - n + 1), nil
 }
 
-func (b *EthereumRPC) getBlockRaw(hash string, height uint32, fullTxs bool) (json.RawMessage, error) {
+func (b *CoreblockchainRPC) getBlockRaw(hash string, height uint32, fullTxs bool) (json.RawMessage, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), b.timeout)
 	defer cancel()
 	var raw json.RawMessage
@@ -491,7 +491,7 @@ func (b *EthereumRPC) getBlockRaw(hash string, height uint32, fullTxs bool) (jso
 	return raw, nil
 }
 
-func (b *EthereumRPC) getxrc20EventsForBlock(blockNumber string) (map[string][]*rpcLog, error) {
+func (b *CoreblockchainRPC) getxrc20EventsForBlock(blockNumber string) (map[string][]*rpcLog, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), b.timeout)
 	defer cancel()
 	var logs []rpcLogWithTxHash
@@ -512,7 +512,7 @@ func (b *EthereumRPC) getxrc20EventsForBlock(blockNumber string) (map[string][]*
 }
 
 // GetBlock returns block with given hash or height, hash has precedence if both passed
-func (b *EthereumRPC) GetBlock(hash string, height uint32) (*bchain.Block, error) {
+func (b *CoreblockchainRPC) GetBlock(hash string, height uint32) (*bchain.Block, error) {
 	raw, err := b.getBlockRaw(hash, height, true)
 	if err != nil {
 		return nil, err
@@ -525,7 +525,7 @@ func (b *EthereumRPC) GetBlock(hash string, height uint32) (*bchain.Block, error
 	if err := json.Unmarshal(raw, &body); err != nil {
 		return nil, errors.Annotatef(err, "hash %v, height %v", hash, height)
 	}
-	bbh, err := b.ethHeaderToBlockHeader(&head)
+	bbh, err := b.xcbHeaderToBlockHeader(&head)
 	if err != nil {
 		return nil, errors.Annotatef(err, "hash %v, height %v", hash, height)
 	}
@@ -554,7 +554,7 @@ func (b *EthereumRPC) GetBlock(hash string, height uint32) (*bchain.Block, error
 }
 
 // GetBlockInfo returns extended header (more info than in bchain.BlockHeader) with a list of txids
-func (b *EthereumRPC) GetBlockInfo(hash string) (*bchain.BlockInfo, error) {
+func (b *CoreblockchainRPC) GetBlockInfo(hash string) (*bchain.BlockInfo, error) {
 	raw, err := b.getBlockRaw(hash, 0, false)
 	if err != nil {
 		return nil, err
@@ -567,7 +567,7 @@ func (b *EthereumRPC) GetBlockInfo(hash string) (*bchain.BlockInfo, error) {
 	if err = json.Unmarshal(raw, &txs); err != nil {
 		return nil, err
 	}
-	bch, err := b.ethHeaderToBlockHeader(&head)
+	bch, err := b.xcbHeaderToBlockHeader(&head)
 	if err != nil {
 		return nil, err
 	}
@@ -581,12 +581,12 @@ func (b *EthereumRPC) GetBlockInfo(hash string) (*bchain.BlockInfo, error) {
 
 // GetTransactionForMempool returns a transaction by the transaction ID.
 // It could be optimized for mempool, i.e. without block time and confirmations
-func (b *EthereumRPC) GetTransactionForMempool(txid string) (*bchain.Tx, error) {
+func (b *CoreblockchainRPC) GetTransactionForMempool(txid string) (*bchain.Tx, error) {
 	return b.GetTransaction(txid)
 }
 
 // GetTransaction returns a transaction by the transaction ID.
-func (b *EthereumRPC) GetTransaction(txid string) (*bchain.Tx, error) {
+func (b *CoreblockchainRPC) GetTransaction(txid string) (*bchain.Tx, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), b.timeout)
 	defer cancel()
 	var tx *rpcTransaction
@@ -649,7 +649,7 @@ func (b *EthereumRPC) GetTransaction(txid string) (*bchain.Tx, error) {
 }
 
 // GetTransactionSpecific returns json as returned by backend, with all coin specific data
-func (b *EthereumRPC) GetTransactionSpecific(tx *bchain.Tx) (json.RawMessage, error) {
+func (b *CoreblockchainRPC) GetTransactionSpecific(tx *bchain.Tx) (json.RawMessage, error) {
 	csd, ok := tx.CoinSpecificData.(completeTransaction)
 	if !ok {
 		ntx, err := b.GetTransaction(tx.Txid)
@@ -666,7 +666,7 @@ func (b *EthereumRPC) GetTransactionSpecific(tx *bchain.Tx) (json.RawMessage, er
 }
 
 // GetMempoolTransactions returns transactions in mempool
-func (b *EthereumRPC) GetMempoolTransactions() ([]string, error) {
+func (b *CoreblockchainRPC) GetMempoolTransactions() ([]string, error) {
 	raw, err := b.getBlockRaw("pending", 0, false)
 	if err != nil {
 		return nil, err
@@ -681,12 +681,12 @@ func (b *EthereumRPC) GetMempoolTransactions() ([]string, error) {
 }
 
 // EstimateFee returns fee estimation
-func (b *EthereumRPC) EstimateFee(blocks int) (big.Int, error) {
+func (b *CoreblockchainRPC) EstimateFee(blocks int) (big.Int, error) {
 	return b.EstimateSmartFee(blocks, true)
 }
 
 // EstimateSmartFee returns fee estimation
-func (b *EthereumRPC) EstimateSmartFee(blocks int, conservative bool) (big.Int, error) {
+func (b *CoreblockchainRPC) EstimateSmartFee(blocks int, conservative bool) (big.Int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), b.timeout)
 	defer cancel()
 	var r big.Int
@@ -707,7 +707,7 @@ func getStringFromMap(p string, params map[string]interface{}) (string, bool) {
 }
 
 // EthereumTypeEstimateGas returns estimation of gas consumption for given transaction parameters
-func (b *EthereumRPC) EthereumTypeEstimateGas(params map[string]interface{}) (uint64, error) {
+func (b *CoreblockchainRPC) EthereumTypeEstimateGas(params map[string]interface{}) (uint64, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), b.timeout)
 	defer cancel()
 	msg := ethereum.CallMsg{}
@@ -740,7 +740,7 @@ func (b *EthereumRPC) EthereumTypeEstimateGas(params map[string]interface{}) (ui
 }
 
 // SendRawTransaction sends raw transaction
-func (b *EthereumRPC) SendRawTransaction(hex string) (string, error) {
+func (b *CoreblockchainRPC) SendRawTransaction(hex string) (string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), b.timeout)
 	defer cancel()
 	var raw json.RawMessage
@@ -760,21 +760,21 @@ func (b *EthereumRPC) SendRawTransaction(hex string) (string, error) {
 	return result, nil
 }
 
-// EthereumTypeGetBalance returns current balance of an address
-func (b *EthereumRPC) EthereumTypeGetBalance(addrDesc bchain.AddressDescriptor) (*big.Int, error) {
+// CoreblockchainTypeGetBalance returns current balance of an address
+func (b *CoreblockchainRPC) CoreblockchainTypeGetBalance(addrDesc bchain.AddressDescriptor) (*big.Int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), b.timeout)
 	defer cancel()
 	return b.client.BalanceAt(ctx, ethcommon.BytesToAddress(addrDesc), nil)
 }
 
-// EthereumTypeGetNonce returns current balance of an address
-func (b *EthereumRPC) EthereumTypeGetNonce(addrDesc bchain.AddressDescriptor) (uint64, error) {
+// CoreblockchainTypeGetNonce returns current balance of an address
+func (b *CoreblockchainRPC) CoreblockchainTypeGetNonce(addrDesc bchain.AddressDescriptor) (uint64, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), b.timeout)
 	defer cancel()
 	return b.client.NonceAt(ctx, ethcommon.BytesToAddress(addrDesc), nil)
 }
 
 // GetChainParser returns ethereum BlockChainParser
-func (b *EthereumRPC) GetChainParser() bchain.BlockChainParser {
+func (b *CoreblockchainRPC) GetChainParser() bchain.BlockChainParser {
 	return b.Parser
 }
