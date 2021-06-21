@@ -174,7 +174,7 @@ func has0xPrefix(s string) bool {
 
 // GetAddrDescFromAddress returns internal address representation of given address
 func (p *CoreblockchainParser) GetAddrDescFromAddress(address string) (bchain.AddressDescriptor, error) {
-	// github.com/ethereum/go-ethereum/common.HexToAddress does not handle address errors, using own decoding
+	// github.com/core-coin/go-core/common.HexToAddress does not handle address errors, using own decoding
 	if has0xPrefix(address) {
 		address = address[2:]
 	}
@@ -439,7 +439,7 @@ func (p *CoreblockchainParser) GetChainType() bchain.ChainType {
 	return bchain.ChainEthereumType
 }
 
-// GetHeightFromTx returns ethereum specific data from bchain.Tx
+// GetHeightFromTx returns coreblockchain specific data from bchain.Tx
 func GetHeightFromTx(tx *bchain.Tx) (uint32, error) {
 	var bn string
 	csd, ok := tx.CoinSpecificData.(completeTransaction)
@@ -483,7 +483,7 @@ const (
 	TxStatusOK
 )
 
-// CoreblockchainTxData contains ethereum specific transaction data
+// CoreblockchainTxData contains coreblockchain specific transaction data
 type CoreblockchainTxData struct {
 	Status      TxStatus `json:"status"` // 1 OK, 0 Fail, -1 pending, -2 unknown
 	Nonce       uint64   `json:"nonce"`

@@ -21,7 +21,7 @@ import (
 	"github.com/trezor/blockbook/common"
 )
 
-// CoreblockchainNet type specifies the type of ethereum network
+// CoreblockchainNet type specifies the type of coreblockchain network
 type CoreblockchainNet uint32
 
 const (
@@ -142,7 +142,7 @@ func openRPC(url string) (*rpc.Client, *xcbclient.Client, error) {
 	return rc, ec, nil
 }
 
-// Initialize initializes ethereum rpc interface
+// Initialize initializes coreblockchain rpc interface
 func (b *CoreblockchainRPC) Initialize() error {
 	ctx, cancel := context.WithTimeout(context.Background(), b.timeout)
 	defer cancel()
@@ -310,7 +310,7 @@ func (b *CoreblockchainRPC) reconnectRPC() error {
 	return b.subscribeEvents()
 }
 
-// Shutdown cleans up rpc interface to ethereum
+// Shutdown cleans up rpc interface to coreblockchain
 func (b *CoreblockchainRPC) Shutdown(ctx context.Context) error {
 	b.closeRPC()
 	close(b.chanNewBlock)
@@ -323,7 +323,7 @@ func (b *CoreblockchainRPC) GetCoinName() string {
 	return b.ChainConfig.CoinName
 }
 
-// GetSubversion returns empty string, ethereum does not have subversion
+// GetSubversion returns empty string, coreblockchain does not have subversion
 func (b *CoreblockchainRPC) GetSubversion() string {
 	return ""
 }
@@ -706,8 +706,8 @@ func getStringFromMap(p string, params map[string]interface{}) (string, bool) {
 	return "", false
 }
 
-// EthereumTypeEstimateGas returns estimation of gas consumption for given transaction parameters
-func (b *CoreblockchainRPC) EthereumTypeEstimateGas(params map[string]interface{}) (uint64, error) {
+// EthereumTypeEstimateEnergy returns estimation of energy consumption for given transaction parameters
+func (b *CoreblockchainRPC) EthereumTypeEstimateEnergy(params map[string]interface{}) (uint64, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), b.timeout)
 	defer cancel()
 	msg := coreblockchain.CallMsg{}
@@ -774,7 +774,7 @@ func (b *CoreblockchainRPC) CoreblockchainTypeGetNonce(addrDesc bchain.AddressDe
 	return b.client.NonceAt(ctx, xcbcommon.BytesToAddress(addrDesc), nil)
 }
 
-// GetChainParser returns ethereum BlockChainParser
+// GetChainParser returns coreblockchain BlockChainParser
 func (b *CoreblockchainRPC) GetChainParser() bchain.BlockChainParser {
 	return b.Parser
 }

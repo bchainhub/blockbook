@@ -30,7 +30,7 @@ var xrc20abi = `[{"constant":true,"inputs":[],"name":"name","outputs":[{"name":"
 {"constant":false,"inputs":[{"name":"_spender","type":"address"},{"name":"_value","type":"uint256"},{"name":"_extraData","type":"bytes"}],"name":"approveAndCall","outputs":[{"name":"success","type":"bool"}],"payable":false,"type":"function","signature":"0xcae9ca51"},
 {"constant":true,"inputs":[],"name":"version","outputs":[{"name":"","type":"string"}],"payable":false,"type":"function","signature":"0x54fd4d50"}]`
 
-// doing the parsing/processing without using go-ethereum/accounts/abi library, it is simple to get data from Transfer event
+// doing the parsing/processing without using go-core/accounts/abi library, it is simple to get data from Transfer event
 const xrc20TransferMethodSignature = "0xa9059cbb"
 const xrc20TransferEventSignature = "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"
 const xrc20NameSignature = "0x06fdde03"
@@ -188,7 +188,7 @@ func (b *CoreblockchainRPC) EthereumTypeGetxrc20ContractInfo(contractDesc bchain
 		if err != nil {
 			// ignore the error from the xcb_call - since geth v1.9.15 they changed the behavior
 			// and returning error "execution reverted" for some non contract addresses
-			// https://github.com/ethereum/go-ethereum/issues/21249#issuecomment-648647672
+			// https://github.com/core-coin/go-core/issues/21249#issuecomment-648647672
 			glog.Warning(errors.Annotatef(err, "xrc20NameSignature %v", address))
 			return nil, nil
 			// return nil, errors.Annotatef(err, "xrc20NameSignature %v", address)
