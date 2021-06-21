@@ -9,7 +9,7 @@ import (
 	"sync"
 	"unicode/utf8"
 
-	ethcommon "github.com/ethereum/go-ethereum/common"
+	xcbcommon "github.com/core-coin/go-core/common"
 	"github.com/golang/glog"
 	"github.com/juju/errors"
 	"github.com/trezor/blockbook/bchain"
@@ -52,7 +52,7 @@ func addressFromPaddedHex(s string) (string, error) {
 	if !ok {
 		return "", errors.New("Data is not a number")
 	}
-	a := ethcommon.BigToAddress(&t)
+	a := xcbcommon.BigToAddress(&t)
 	return a.String(), nil
 }
 
