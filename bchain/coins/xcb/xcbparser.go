@@ -103,24 +103,12 @@ func (p *CoreblockchainParser) xcbTxToTx(tx *rpcTransaction, receipt *rpcReceipt
 		err    error
 	)
 	if len(tx.From) > 2 {
-		if fixEIP55 {
-			tx.From = EIP55AddressFromAddress(tx.From)
-		}
 		fa = []string{tx.From}
 	}
 	if len(tx.To) > 2 {
-		if fixEIP55 {
-			tx.To = EIP55AddressFromAddress(tx.To)
-		}
 		ta = []string{tx.To}
 	}
-	if fixEIP55 && receipt != nil && receipt.Logs != nil {
-		for _, l := range receipt.Logs {
-			if len(l.Address) > 2 {
-				l.Address = EIP55AddressFromAddress(l.Address)
-			}
-		}
-	}
+
 	ct := completeTransaction{
 		Tx:      tx,
 		Receipt: receipt,
