@@ -63,7 +63,7 @@ type CoreblockchainRPC struct {
 	ChainConfig          *Configuration
 }
 
-// NewCoreblockchainRPC returns new EthRPC instance.
+// NewCoreblockchainRPC returns new XcbRPC instance.
 func NewCoreblockchainRPC(config json.RawMessage, pushHandler func(bchain.NotificationType)) (bchain.BlockChain, error) {
 	var err error
 	var c Configuration
