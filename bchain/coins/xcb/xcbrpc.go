@@ -708,8 +708,8 @@ func getStringFromMap(p string, params map[string]interface{}) (string, bool) {
 	return "", false
 }
 
-// EthereumTypeEstimateEnergy returns estimation of energy consumption for given transaction parameters
-func (b *CoreblockchainRPC) EthereumTypeEstimateEnergy(params map[string]interface{}) (uint64, error) {
+// CoreblockchainTypeEstimateEnergy returns estimation of energy consumption for given transaction parameters
+func (b *CoreblockchainRPC) CoreblockchainTypeEstimateEnergy(params map[string]interface{}) (uint64, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), b.timeout)
 	defer cancel()
 	msg := coreblockchain.CallMsg{}

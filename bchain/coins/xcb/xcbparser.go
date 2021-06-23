@@ -466,12 +466,12 @@ type CoreblockchainTxData struct {
 	Data        string   `json:"data"`
 }
 
-// GetCoreblockchainTxData returns EthereumTxData from bchain.Tx
+// GetCoreblockchainTxData returns CoreblockchainTxData from bchain.Tx
 func GetCoreblockchainTxData(tx *bchain.Tx) *CoreblockchainTxData {
 	return GetCoreblockchainTxDataFromSpecificData(tx.CoinSpecificData)
 }
 
-// GetCoreblockchainTxDataFromSpecificData returns EthereumTxData from coinSpecificData
+// GetCoreblockchainTxDataFromSpecificData returns CoreblockchainTxData from coinSpecificData
 func GetCoreblockchainTxDataFromSpecificData(coinSpecificData interface{}) *CoreblockchainTxData {
 	etd := CoreblockchainTxData{Status: TxStatusPending}
 	csd, ok := coinSpecificData.(completeTransaction)
