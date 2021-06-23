@@ -106,7 +106,7 @@ func xrc20GetTransfersFromTx(tx *rpcTransaction) ([]Xrc20Transfer, error) {
 	return r, nil
 }
 
-func (b *CoreblockchainRPC) ethCall(data, to string) (string, error) {
+func (b *CoreblockchainRPC) xcbCall(data, to string) (string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), b.timeout)
 	defer cancel()
 	var r string
@@ -184,7 +184,7 @@ func (b *CoreblockchainRPC) EthereumTypeGetxrc20ContractInfo(contractDesc bchain
 	cachedContractsMux.Unlock()
 	if !found {
 		address := EIP55Address(contractDesc)
-		data, err := b.ethCall(xrc20NameSignature, address)
+		data, err := b.xcbCall(xrc20NameSignature, address)
 		if err != nil {
 			// ignore the error from the xcb_call - since geth v1.9.15 they changed the behavior
 			// and returning error "execution reverted" for some non contract addresses
@@ -195,14 +195,14 @@ func (b *CoreblockchainRPC) EthereumTypeGetxrc20ContractInfo(contractDesc bchain
 		}
 		name := parsexrc20StringProperty(contractDesc, data)
 		if name != "" {
-			data, err = b.ethCall(xrc20SymbolSignature, address)
+			data, err = b.xcbCall(xrc20SymbolSignature, address)
 			if err != nil {
 				glog.Warning(errors.Annotatef(err, "xrc20SymbolSignature %v", address))
 				return nil, nil
 				// return nil, errors.Annotatef(err, "xrc20SymbolSignature %v", address)
 			}
 			symbol := parsexrc20StringProperty(contractDesc, data)
-			data, err = b.ethCall(xrc20DecimalsSignature, address)
+			data, err = b.xcbCall(xrc20DecimalsSignature, address)
 			if err != nil {
 				glog.Warning(errors.Annotatef(err, "xrc20DecimalsSignature %v", address))
 				// return nil, errors.Annotatef(err, "xrc20DecimalsSignature %v", address)
@@ -233,7 +233,7 @@ func (b *CoreblockchainRPC) EthereumTypeGetxrc20ContractBalance(addrDesc, contra
 	addr := EIP55Address(addrDesc)
 	contract := EIP55Address(contractDesc)
 	req := xrc20BalanceOf + "0000000000000000000000000000000000000000000000000000000000000000"[len(addr)-2:] + addr[2:]
-	data, err := b.ethCall(req, contract)
+	data, err := b.xcbCall(req, contract)
 	if err != nil {
 		return nil, err
 	}

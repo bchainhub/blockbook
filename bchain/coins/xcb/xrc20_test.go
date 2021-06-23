@@ -4,6 +4,7 @@ package xcb
 
 import (
 	"fmt"
+	"github.com/trezor/blockbook/tests/dbtestdata"
 	"math/big"
 	"strings"
 	"testing"
@@ -158,44 +159,44 @@ func Testxrc20_parsexrc20StringProperty(t *testing.T) {
 	}
 }
 
-// func Testxrc20_xrc20GetTransfersFromTx(t *testing.T) {
-// 	p := NewEthereumParser(1)
-// 	b := dbtestdata.GetTestEthereumTypeBlock1(p)
-// 	bn, _ := new(big.Int).SetString("21e19e0c9bab2400000", 16)
-// 	tests := []struct {
-// 		name string
-// 		args *rpcTransaction
-// 		want []Xrc20Transfer
-// 	}{
-// 		{
-// 			name: "0",
-// 			args: (b.Txs[0].CoinSpecificData.(completeTransaction)).Tx,
-// 			want: []Xrc20Transfer{},
-// 		},
-// 		{
-// 			name: "1",
-// 			args: (b.Txs[1].CoinSpecificData.(completeTransaction)).Tx,
-// 			want: []Xrc20Transfer{
-// 				{
-// 					Contract: "ce07fa95b77d3d119cb11a18db2e92998a4e3b3d073c",
-// 					From:     "ce08eba66c86171540a8fcaa78eb6dd967677cbf4951",
-// 					To:       "0x555ee11fbddc0e49a9bab358a8941ad95ffdb48f",
-// 					Tokens:   *bn,
-// 				},
-// 			},
-// 		},
-// 	}
-// 	for _, tt := range tests {
-// 		t.Run(tt.name, func(t *testing.T) {
-// 			got, err := Xrc20GetTransfersFromTx(tt.args)
-// 			if err != nil {
-// 				t.Errorf("xrc20GetTransfersFromTx error = %v", err)
-// 				return
-// 			}
-// 			// the addresses could have different case
-// 			if strings.ToLower(fmt.Sprint(got)) != strings.ToLower(fmt.Sprint(tt.want)) {
-// 				t.Errorf("xrc20GetTransfersFromTx = %+v, want %+v", got, tt.want)
-// 			}
-// 		})
-// 	}
-// }
+func Testxrc20_xrc20GetTransfersFromTx(t *testing.T) {
+	p := NewCoreblockchainParser(1)
+	b := dbtestdata.GetTestEthereumTypeBlock1(p)
+	bn, _ := new(big.Int).SetString("21e19e0c9bab2400000", 16)
+	tests := []struct {
+		name string
+		args *rpcTransaction
+		want []Xrc20Transfer
+	}{
+		{
+			name: "0",
+			args: (b.Txs[0].CoinSpecificData.(completeTransaction)).Tx,
+			want: []Xrc20Transfer{},
+		},
+		{
+			name: "1",
+			args: (b.Txs[1].CoinSpecificData.(completeTransaction)).Tx,
+			want: []Xrc20Transfer{
+				{
+					Contract: "ce07fa95b77d3d119cb11a18db2e92998a4e3b3d073c",
+					From:     "ce08eba66c86171540a8fcaa78eb6dd967677cbf4951",
+					To:       "ce870290503bdb3e9971a16860fca354ed2fbea66caa",
+					Tokens:   *bn,
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := xrc20GetTransfersFromTx(tt.args)
+			if err != nil {
+				t.Errorf("xrc20GetTransfersFromTx error = %v", err)
+				return
+			}
+			// the addresses could have different case
+			if strings.ToLower(fmt.Sprint(got)) != strings.ToLower(fmt.Sprint(tt.want)) {
+				t.Errorf("xrc20GetTransfersFromTx = %+v, want %+v", got, tt.want)
+			}
+		})
+	}
+}
