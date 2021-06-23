@@ -24,15 +24,6 @@ import (
 // CoreblockchainNet type specifies the type of coreblockchain network
 type CoreblockchainNet uint32
 
-const (
-	// MainNet is production network
-	MainNet CoreblockchainNet = 1
-	// TestNet is Ropsten test network
-	TestNet CoreblockchainNet = 3
-	// TestNetGoerli is Goerli test network
-	TestNetGoerli CoreblockchainNet = 5
-)
-
 // Configuration represents json config file
 type Configuration struct {
 	CoinName                    string `json:"coin_name"`
@@ -153,18 +144,29 @@ func (b *CoreblockchainRPC) Initialize() error {
 	}
 
 	// parameters for getInfo request
-	switch CoreblockchainNet(id.Uint64()) {
-	case MainNet:
+	/*
+		https://coretalk.info/t/cip-1/3/
+		Network classification
+		ISO 3166-1 alpha-2 codes
+		CID | Network | Network id/s
+		--- | --- | ---
+		cb | mainnet | 1
+		ab | testnet | 3,4
+		ce | privatenet | >10
+	*/
+
+	switch id := CoreblockchainNet(id.Uint64()); {
+	case id == 1:
 		b.Testnet = false
 		b.Network = "livenet"
 		break
-	case TestNet:
+	case id == 3 || id == 4:
 		b.Testnet = true
 		b.Network = "testnet"
 		break
-	case TestNetGoerli:
+	case id > 10:
 		b.Testnet = true
-		b.Network = "goerli"
+		b.Network = "privatenet"
 	default:
 		return errors.Errorf("Unknown network id %v", id)
 	}
