@@ -175,6 +175,10 @@ func (p *CoreblockchainParser) GetAddrDescFromAddress(address string) (bchain.Ad
 func EIP55Address(addrDesc bchain.AddressDescriptor) string {
 	raw := hexutil.Encode(addrDesc)
 
+	if len(raw) > 2 {
+		raw = raw[2:]
+	}
+
 	return raw
 }
 

@@ -177,8 +177,8 @@ func Testxrc20_parsexrc20StringProperty(t *testing.T) {
 // 			args: (b.Txs[1].CoinSpecificData.(completeTransaction)).Tx,
 // 			want: []Xrc20Transfer{
 // 				{
-// 					Contract: "0x4af4114f73d1c1c903ac9e0361b379d1291808a2",
-// 					From:     "0x20cd153de35d469ba46127a0c8f18626b59a256a",
+// 					Contract: "ce07fa95b77d3d119cb11a18db2e92998a4e3b3d073c",
+// 					From:     "ce08eba66c86171540a8fcaa78eb6dd967677cbf4951",
 // 					To:       "0x555ee11fbddc0e49a9bab358a8941ad95ffdb48f",
 // 					Tokens:   *bn,
 // 				},

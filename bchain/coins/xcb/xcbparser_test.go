@@ -13,10 +13,10 @@ import (
 )
 
 const (
-	XcbTx1Packed         = "08e8dd870210a6a6f0db051a6908ece40212050430e234001888a40122081bc0159d530e60003220cd647151552b5132b2aef7c9be00dc6f73afc5901dde157aab131335baaa853b3a14555ee11fbddc0e49a9bab358a8941ad95ffdb48f42143e3a3d69dc66ba10737f531ed088954a9ec89d97480a22070a025208120101"
-	xcbTx1FailedPacked   = "08e8dd870210a6a6f0db051a6908ece40212050430e234001888a40122081bc0159d530e60003220cd647151552b5132b2aef7c9be00dc6f73afc5901dde157aab131335baaa853b3a14555ee11fbddc0e49a9bab358a8941ad95ffdb48f42143e3a3d69dc66ba10737f531ed088954a9ec89d97480a22040a025208"
-	XcbTx1NoStatusPacked = "08e8dd870210a6a6f0db051a6908ece40212050430e234001888a40122081bc0159d530e60003220cd647151552b5132b2aef7c9be00dc6f73afc5901dde157aab131335baaa853b3a14555ee11fbddc0e49a9bab358a8941ad95ffdb48f42143e3a3d69dc66ba10737f531ed088954a9ec89d97480a22070a025208120155"
-	XcbTx2Packed         = "08e8dd870210a6a6f0db051aa20108d001120509502f900018d5e1042a44a9059cbb000000000000000000000000555ee11fbddc0e49a9bab358a8941ad95ffdb48f00000000000000000000000000000000000000000000021e19e0c9bab24000003220a9cd088aba2131000da6f38a33c20169baee476218deea6b78720700b895b1013a144af4114f73d1c1c903ac9e0361b379d1291808a2421420cd153de35d469ba46127a0c8f18626b59a256a22a8010a02cb391201011a9e010a144af4114f73d1c1c903ac9e0361b379d1291808a2122000000000000000000000000000000000000000000000021e19e0c9bab24000001a20ddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef1a2000000000000000000000000020cd153de35d469ba46127a0c8f18626b59a256a1a20000000000000000000000000555ee11fbddc0e49a9bab358a8941ad95ffdb48f"
+	XcbTx1Packed         = "08e8dd870210a6a6f0db051a6d08ece40212050430e234001888a40122081bc0159d530e60003220cd647151552b5132b2aef7c9be00dc6f73afc5901dde157aab131335baaa853b3a16ce870290503bdb3e9971a16860fca354ed2fbea66caa4216ce7340769fe2bfda6475c1ce1dd0c5aa80b8f307affa480a22070a025208120101"
+	xcbTx1FailedPacked   = "08e8dd870210a6a6f0db051a6d08ece40212050430e234001888a40122081bc0159d530e60003220cd647151552b5132b2aef7c9be00dc6f73afc5901dde157aab131335baaa853b3a16ce870290503bdb3e9971a16860fca354ed2fbea66caa4216ce7340769fe2bfda6475c1ce1dd0c5aa80b8f307affa480a22040a025208"
+	XcbTx1NoStatusPacked = "08e8dd870210a6a6f0db051a6d08ece40212050430e234001888a40122081bc0159d530e60003220cd647151552b5132b2aef7c9be00dc6f73afc5901dde157aab131335baaa853b3a16ce870290503bdb3e9971a16860fca354ed2fbea66caa4216ce7340769fe2bfda6475c1ce1dd0c5aa80b8f307affa480a22070a025208120155"
+	XcbTx2Packed         = "08e8dd870210a6a6f0db051aa60108d001120509502f900018d5e1042a44a9059cbb000000000000000000000000555ee11fbddc0e49a9bab358a8941ad95ffdb48f00000000000000000000000000000000000000000000021e19e0c9bab24000003220a9cd088aba2131000da6f38a33c20169baee476218deea6b78720700b895b1013a16ce07fa95b77d3d119cb11a18db2e92998a4e3b3d073c4216ce08eba66c86171540a8fcaa78eb6dd967677cbf495122aa010a02cb391201011aa0010a16ce07fa95b77d3d119cb11a18db2e92998a4e3b3d073c122000000000000000000000000000000000000000000000021e19e0c9bab24000001a20ddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef1a2000000000000000000000000020cd153de35d469ba46127a0c8f18626b59a256a1a20000000000000000000000000555ee11fbddc0e49a9bab358a8941ad95ffdb48f"
 )
 
 func TestXcbParser_GetAddrDescFromAddress(t *testing.T) {
@@ -84,14 +84,14 @@ func init() {
 		Txid:      "0xcd647151552b5132b2aef7c9be00dc6f73afc5901dde157aab131335baaa853b",
 		Vin: []bchain.Vin{
 			{
-				Addresses: []string{"0x3e3a3d69dc66ba10737f531ed088954a9ec89d97"},
+				Addresses: []string{"ce7340769fe2bfda6475c1ce1dd0c5aa80b8f307affa"},
 			},
 		},
 		Vout: []bchain.Vout{
 			{
 				ValueSat: *big.NewInt(1999622000000000000),
 				ScriptPubKey: bchain.ScriptPubKey{
-					Addresses: []string{"0x555ee11fbddc0e49a9bab358a8941ad95ffdb48f"},
+					Addresses: []string{"ce870290503bdb3e9971a16860fca354ed2fbea66caa"},
 				},
 			},
 		},
@@ -100,12 +100,12 @@ func init() {
 				AccountNonce:     "0xb26c",
 				EnergyPrice:      "0x430e23400",
 				EnergyLimit:      "0x5208",
-				To:               "0x555ee11fbddc0e49a9bab358a8941ad95ffdb48f",
+				To:               "ce870290503bdb3e9971a16860fca354ed2fbea66caa",
 				Value:            "0x1bc0159d530e6000",
 				Payload:          "0x",
 				Hash:             "0xcd647151552b5132b2aef7c9be00dc6f73afc5901dde157aab131335baaa853b",
 				BlockNumber:      "0x41eee8",
-				From:             "0x3e3a3d69dc66ba10737f531ed088954a9ec89d97",
+				From:             "ce7340769fe2bfda6475c1ce1dd0c5aa80b8f307affa",
 				TransactionIndex: "0xa",
 			},
 			Receipt: &rpcReceipt{
@@ -122,14 +122,14 @@ func init() {
 		Txid:      "0xa9cd088aba2131000da6f38a33c20169baee476218deea6b78720700b895b101",
 		Vin: []bchain.Vin{
 			{
-				Addresses: []string{"0x20cd153de35d469ba46127a0c8f18626b59a256a"},
+				Addresses: []string{"ce08eba66c86171540a8fcaa78eb6dd967677cbf4951"},
 			},
 		},
 		Vout: []bchain.Vout{
 			{
 				ValueSat: *big.NewInt(0),
 				ScriptPubKey: bchain.ScriptPubKey{
-					Addresses: []string{"0x4af4114f73d1c1c903ac9e0361b379d1291808a2"},
+					Addresses: []string{"ce07fa95b77d3d119cb11a18db2e92998a4e3b3d073c"},
 				},
 			},
 		},
@@ -138,19 +138,19 @@ func init() {
 				AccountNonce:     "0xd0",
 				EnergyPrice:      "0x9502f9000",
 				EnergyLimit:      "0x130d5",
-				To:               "0x4af4114f73d1c1c903ac9e0361b379d1291808a2",
+				To:               "ce07fa95b77d3d119cb11a18db2e92998a4e3b3d073c",
 				Value:            "0x0",
 				Payload:          "0xa9059cbb000000000000000000000000555ee11fbddc0e49a9bab358a8941ad95ffdb48f00000000000000000000000000000000000000000000021e19e0c9bab2400000",
 				Hash:             "0xa9cd088aba2131000da6f38a33c20169baee476218deea6b78720700b895b101",
 				BlockNumber:      "0x41eee8",
-				From:             "0x20cd153de35d469ba46127a0c8f18626b59a256a",
+				From:             "ce08eba66c86171540a8fcaa78eb6dd967677cbf4951",
 				TransactionIndex: "0x0"},
 			Receipt: &rpcReceipt{
 				EnergyUsed: "0xcb39",
 				Status:     "0x1",
 				Logs: []*rpcLog{
 					{
-						Address: "0x4af4114f73d1c1c903ac9e0361b379d1291808a2",
+						Address: "ce07fa95b77d3d119cb11a18db2e92998a4e3b3d073c",
 						Data:    "0x00000000000000000000000000000000000000000000021e19e0c9bab2400000",
 						Topics: []string{
 							"0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
@@ -169,14 +169,14 @@ func init() {
 		Txid:      "0xcd647151552b5132b2aef7c9be00dc6f73afc5901dde157aab131335baaa853b",
 		Vin: []bchain.Vin{
 			{
-				Addresses: []string{"0x3e3a3d69dc66ba10737f531ed088954a9ec89d97"},
+				Addresses: []string{"ce7340769fe2bfda6475c1ce1dd0c5aa80b8f307affa"},
 			},
 		},
 		Vout: []bchain.Vout{
 			{
 				ValueSat: *big.NewInt(1999622000000000000),
 				ScriptPubKey: bchain.ScriptPubKey{
-					Addresses: []string{"0x555ee11fbddc0e49a9bab358a8941ad95ffdb48f"},
+					Addresses: []string{"ce870290503bdb3e9971a16860fca354ed2fbea66caa"},
 				},
 			},
 		},
@@ -185,12 +185,12 @@ func init() {
 				AccountNonce:     "0xb26c",
 				EnergyPrice:      "0x430e23400",
 				EnergyLimit:      "0x5208",
-				To:               "0x555ee11fbddc0e49a9bab358a8941ad95ffdb48f",
+				To:               "ce870290503bdb3e9971a16860fca354ed2fbea66caa",
 				Value:            "0x1bc0159d530e6000",
 				Payload:          "0x",
 				Hash:             "0xcd647151552b5132b2aef7c9be00dc6f73afc5901dde157aab131335baaa853b",
 				BlockNumber:      "0x41eee8",
-				From:             "0x3e3a3d69dc66ba10737f531ed088954a9ec89d97",
+				From:             "ce7340769fe2bfda6475c1ce1dd0c5aa80b8f307affa",
 				TransactionIndex: "0xa",
 			},
 			Receipt: &rpcReceipt{
@@ -207,14 +207,14 @@ func init() {
 		Txid:      "0xcd647151552b5132b2aef7c9be00dc6f73afc5901dde157aab131335baaa853b",
 		Vin: []bchain.Vin{
 			{
-				Addresses: []string{"0x3e3a3d69dc66ba10737f531ed088954a9ec89d97"},
+				Addresses: []string{"ce7340769fe2bfda6475c1ce1dd0c5aa80b8f307affa"},
 			},
 		},
 		Vout: []bchain.Vout{
 			{
 				ValueSat: *big.NewInt(1999622000000000000),
 				ScriptPubKey: bchain.ScriptPubKey{
-					Addresses: []string{"0x555ee11fbddc0e49a9bab358a8941ad95ffdb48f"},
+					Addresses: []string{"ce870290503bdb3e9971a16860fca354ed2fbea66caa"},
 				},
 			},
 		},
@@ -223,12 +223,12 @@ func init() {
 				AccountNonce:     "0xb26c",
 				EnergyPrice:      "0x430e23400",
 				EnergyLimit:      "0x5208",
-				To:               "0x555ee11fbddc0e49a9bab358a8941ad95ffdb48f",
+				To:               "ce870290503bdb3e9971a16860fca354ed2fbea66caa",
 				Value:            "0x1bc0159d530e6000",
 				Payload:          "0x",
 				Hash:             "0xcd647151552b5132b2aef7c9be00dc6f73afc5901dde157aab131335baaa853b",
 				BlockNumber:      "0x41eee8",
-				From:             "0x3e3a3d69dc66ba10737f531ed088954a9ec89d97",
+				From:             "ce7340769fe2bfda6475c1ce1dd0c5aa80b8f307affa",
 				TransactionIndex: "0xa",
 			},
 			Receipt: &rpcReceipt{
