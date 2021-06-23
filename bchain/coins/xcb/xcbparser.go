@@ -9,7 +9,6 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/juju/errors"
 	"github.com/trezor/blockbook/bchain"
-	"golang.org/x/crypto/sha3"
 )
 
 // CoreblockchainTypeAddressDescriptorLen - in case of EthereumType, the AddressDescriptor has fixed length
@@ -175,26 +174,8 @@ func (p *CoreblockchainParser) GetAddrDescFromAddress(address string) (bchain.Ad
 // EIP55Address returns an EIP55-compliant hex string representation of the address
 func EIP55Address(addrDesc bchain.AddressDescriptor) string {
 	raw := hexutil.Encode(addrDesc)
-	if len(raw) != 42 {
-		return raw
-	}
-	sha := sha3.NewLegacyKeccak256()
-	result := []byte(raw)
-	sha.Write(result[2:])
-	hash := sha.Sum(nil)
 
-	for i := 2; i < len(result); i++ {
-		hashByte := hash[(i-2)>>1]
-		if i%2 == 0 {
-			hashByte = hashByte >> 4
-		} else {
-			hashByte &= 0xf
-		}
-		if result[i] > '9' && hashByte > 7 {
-			result[i] -= 32
-		}
-	}
-	return string(result)
+	return raw
 }
 
 // EIP55AddressFromAddress returns an EIP55-compliant hex string representation of the address

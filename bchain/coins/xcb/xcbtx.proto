@@ -1,4 +1,6 @@
 syntax = "proto3";
+option go_package = "github.com/trezor/blockbook/bchain/coins/xcb";
+
 	package xcb;
 
 	message ProtoCompleteTransaction {

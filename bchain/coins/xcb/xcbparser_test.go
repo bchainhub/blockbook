@@ -10,7 +10,13 @@ import (
 	"testing"
 
 	"github.com/trezor/blockbook/bchain"
-	"github.com/trezor/blockbook/tests/dbtestdata"
+)
+
+const (
+	EthTx1Packed         = "08e8dd870210a6a6f0db051a6908ece40212050430e234001888a40122081bc0159d530e60003220cd647151552b5132b2aef7c9be00dc6f73afc5901dde157aab131335baaa853b3a14555ee11fbddc0e49a9bab358a8941ad95ffdb48f42143e3a3d69dc66ba10737f531ed088954a9ec89d97480a22070a025208120101"
+	EthTx1FailedPacked   = "08e8dd870210a6a6f0db051a6908ece40212050430e234001888a40122081bc0159d530e60003220cd647151552b5132b2aef7c9be00dc6f73afc5901dde157aab131335baaa853b3a14555ee11fbddc0e49a9bab358a8941ad95ffdb48f42143e3a3d69dc66ba10737f531ed088954a9ec89d97480a22040a025208"
+	EthTx1NoStatusPacked = "08e8dd870210a6a6f0db051a6908ece40212050430e234001888a40122081bc0159d530e60003220cd647151552b5132b2aef7c9be00dc6f73afc5901dde157aab131335baaa853b3a14555ee11fbddc0e49a9bab358a8941ad95ffdb48f42143e3a3d69dc66ba10737f531ed088954a9ec89d97480a22070a025208120155"
+	EthTx2Packed         = "08e8dd870210a6a6f0db051aa20108d001120509502f900018d5e1042a44a9059cbb000000000000000000000000555ee11fbddc0e49a9bab358a8941ad95ffdb48f00000000000000000000000000000000000000000000021e19e0c9bab24000003220a9cd088aba2131000da6f38a33c20169baee476218deea6b78720700b895b1013a144af4114f73d1c1c903ac9e0361b379d1291808a2421420cd153de35d469ba46127a0c8f18626b59a256a22a8010a02cb391201011a9e010a144af4114f73d1c1c903ac9e0361b379d1291808a2122000000000000000000000000000000000000000000000021e19e0c9bab24000001a20ddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef1a2000000000000000000000000020cd153de35d469ba46127a0c8f18626b59a256a1a20000000000000000000000000555ee11fbddc0e49a9bab358a8941ad95ffdb48f"
 )
 
 func TestEthParser_GetAddrDescFromAddress(t *testing.T) {
@@ -78,14 +84,14 @@ func init() {
 		Txid:      "0xcd647151552b5132b2aef7c9be00dc6f73afc5901dde157aab131335baaa853b",
 		Vin: []bchain.Vin{
 			{
-				Addresses: []string{"0x3E3a3D69dc66bA10737F531ed088954a9EC89d97"},
+				Addresses: []string{"0x3e3a3d69dc66ba10737f531ed088954a9ec89d97"},
 			},
 		},
 		Vout: []bchain.Vout{
 			{
 				ValueSat: *big.NewInt(1999622000000000000),
 				ScriptPubKey: bchain.ScriptPubKey{
-					Addresses: []string{"0x555Ee11FBDDc0E49A9bAB358A8941AD95fFDB48f"},
+					Addresses: []string{"0x555ee11fbddc0e49a9bab358a8941ad95ffdb48f"},
 				},
 			},
 		},
@@ -94,12 +100,12 @@ func init() {
 				AccountNonce:     "0xb26c",
 				EnergyPrice:      "0x430e23400",
 				EnergyLimit:      "0x5208",
-				To:               "0x555Ee11FBDDc0E49A9bAB358A8941AD95fFDB48f",
+				To:               "0x555ee11fbddc0e49a9bab358a8941ad95ffdb48f",
 				Value:            "0x1bc0159d530e6000",
 				Payload:          "0x",
 				Hash:             "0xcd647151552b5132b2aef7c9be00dc6f73afc5901dde157aab131335baaa853b",
 				BlockNumber:      "0x41eee8",
-				From:             "0x3E3a3D69dc66bA10737F531ed088954a9EC89d97",
+				From:             "0x3e3a3d69dc66ba10737f531ed088954a9ec89d97",
 				TransactionIndex: "0xa",
 			},
 			Receipt: &rpcReceipt{
@@ -116,14 +122,14 @@ func init() {
 		Txid:      "0xa9cd088aba2131000da6f38a33c20169baee476218deea6b78720700b895b101",
 		Vin: []bchain.Vin{
 			{
-				Addresses: []string{"0x20cD153de35D469BA46127A0C8F18626b59a256A"},
+				Addresses: []string{"0x20cd153de35d469ba46127a0c8f18626b59a256a"},
 			},
 		},
 		Vout: []bchain.Vout{
 			{
 				ValueSat: *big.NewInt(0),
 				ScriptPubKey: bchain.ScriptPubKey{
-					Addresses: []string{"0x4af4114F73d1c1C903aC9E0361b379D1291808A2"},
+					Addresses: []string{"0x4af4114f73d1c1c903ac9e0361b379d1291808a2"},
 				},
 			},
 		},
@@ -132,19 +138,19 @@ func init() {
 				AccountNonce:     "0xd0",
 				EnergyPrice:      "0x9502f9000",
 				EnergyLimit:      "0x130d5",
-				To:               "0x4af4114F73d1c1C903aC9E0361b379D1291808A2",
+				To:               "0x4af4114f73d1c1c903ac9e0361b379d1291808a2",
 				Value:            "0x0",
 				Payload:          "0xa9059cbb000000000000000000000000555ee11fbddc0e49a9bab358a8941ad95ffdb48f00000000000000000000000000000000000000000000021e19e0c9bab2400000",
 				Hash:             "0xa9cd088aba2131000da6f38a33c20169baee476218deea6b78720700b895b101",
 				BlockNumber:      "0x41eee8",
-				From:             "0x20cD153de35D469BA46127A0C8F18626b59a256A",
+				From:             "0x20cd153de35d469ba46127a0c8f18626b59a256a",
 				TransactionIndex: "0x0"},
 			Receipt: &rpcReceipt{
 				EnergyUsed: "0xcb39",
 				Status:     "0x1",
 				Logs: []*rpcLog{
 					{
-						Address: "0x4af4114F73d1c1C903aC9E0361b379D1291808A2",
+						Address: "0x4af4114f73d1c1c903ac9e0361b379d1291808a2",
 						Data:    "0x00000000000000000000000000000000000000000000021e19e0c9bab2400000",
 						Topics: []string{
 							"0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
@@ -163,14 +169,14 @@ func init() {
 		Txid:      "0xcd647151552b5132b2aef7c9be00dc6f73afc5901dde157aab131335baaa853b",
 		Vin: []bchain.Vin{
 			{
-				Addresses: []string{"0x3E3a3D69dc66bA10737F531ed088954a9EC89d97"},
+				Addresses: []string{"0x3e3a3d69dc66ba10737f531ed088954a9ec89d97"},
 			},
 		},
 		Vout: []bchain.Vout{
 			{
 				ValueSat: *big.NewInt(1999622000000000000),
 				ScriptPubKey: bchain.ScriptPubKey{
-					Addresses: []string{"0x555Ee11FBDDc0E49A9bAB358A8941AD95fFDB48f"},
+					Addresses: []string{"0x555ee11fbddc0e49a9bab358a8941ad95ffdb48f"},
 				},
 			},
 		},
@@ -179,12 +185,12 @@ func init() {
 				AccountNonce:     "0xb26c",
 				EnergyPrice:      "0x430e23400",
 				EnergyLimit:      "0x5208",
-				To:               "0x555Ee11FBDDc0E49A9bAB358A8941AD95fFDB48f",
+				To:               "0x555ee11fbddc0e49a9bab358a8941ad95ffdb48f",
 				Value:            "0x1bc0159d530e6000",
 				Payload:          "0x",
 				Hash:             "0xcd647151552b5132b2aef7c9be00dc6f73afc5901dde157aab131335baaa853b",
 				BlockNumber:      "0x41eee8",
-				From:             "0x3E3a3D69dc66bA10737F531ed088954a9EC89d97",
+				From:             "0x3e3a3d69dc66ba10737f531ed088954a9ec89d97",
 				TransactionIndex: "0xa",
 			},
 			Receipt: &rpcReceipt{
@@ -201,14 +207,14 @@ func init() {
 		Txid:      "0xcd647151552b5132b2aef7c9be00dc6f73afc5901dde157aab131335baaa853b",
 		Vin: []bchain.Vin{
 			{
-				Addresses: []string{"0x3E3a3D69dc66bA10737F531ed088954a9EC89d97"},
+				Addresses: []string{"0x3e3a3d69dc66ba10737f531ed088954a9ec89d97"},
 			},
 		},
 		Vout: []bchain.Vout{
 			{
 				ValueSat: *big.NewInt(1999622000000000000),
 				ScriptPubKey: bchain.ScriptPubKey{
-					Addresses: []string{"0x555Ee11FBDDc0E49A9bAB358A8941AD95fFDB48f"},
+					Addresses: []string{"0x555ee11fbddc0e49a9bab358a8941ad95ffdb48f"},
 				},
 			},
 		},
@@ -217,12 +223,12 @@ func init() {
 				AccountNonce:     "0xb26c",
 				EnergyPrice:      "0x430e23400",
 				EnergyLimit:      "0x5208",
-				To:               "0x555Ee11FBDDc0E49A9bAB358A8941AD95fFDB48f",
+				To:               "0x555ee11fbddc0e49a9bab358a8941ad95ffdb48f",
 				Value:            "0x1bc0159d530e6000",
 				Payload:          "0x",
 				Hash:             "0xcd647151552b5132b2aef7c9be00dc6f73afc5901dde157aab131335baaa853b",
 				BlockNumber:      "0x41eee8",
-				From:             "0x3E3a3D69dc66bA10737F531ed088954a9EC89d97",
+				From:             "0x3e3a3d69dc66ba10737f531ed088954a9ec89d97",
 				TransactionIndex: "0xa",
 			},
 			Receipt: &rpcReceipt{
@@ -255,7 +261,7 @@ func TestEthereumParser_PackTx(t *testing.T) {
 				height:    4321000,
 				blockTime: 1534858022,
 			},
-			want: dbtestdata.EthTx1Packed,
+			want: EthTx1Packed,
 		},
 		{
 			name: "2",
@@ -264,7 +270,7 @@ func TestEthereumParser_PackTx(t *testing.T) {
 				height:    4321000,
 				blockTime: 1534858022,
 			},
-			want: dbtestdata.EthTx2Packed,
+			want: EthTx2Packed,
 		},
 		{
 			name: "3",
@@ -273,7 +279,7 @@ func TestEthereumParser_PackTx(t *testing.T) {
 				height:    4321000,
 				blockTime: 1534858022,
 			},
-			want: dbtestdata.EthTx1FailedPacked,
+			want: EthTx1FailedPacked,
 		},
 		{
 			name: "4",
@@ -282,7 +288,7 @@ func TestEthereumParser_PackTx(t *testing.T) {
 				height:    4321000,
 				blockTime: 1534858022,
 			},
-			want: dbtestdata.EthTx1NoStatusPacked,
+			want: EthTx1NoStatusPacked,
 		},
 	}
 	p := NewCoreblockchainParser(1)
@@ -315,25 +321,25 @@ func TestEthereumParser_UnpackTx(t *testing.T) {
 	}{
 		{
 			name:  "1",
-			args:  args{hex: dbtestdata.EthTx1Packed},
+			args:  args{hex: EthTx1Packed},
 			want:  &testTx1,
 			want1: 4321000,
 		},
 		{
 			name:  "2",
-			args:  args{hex: dbtestdata.EthTx2Packed},
+			args:  args{hex: EthTx2Packed},
 			want:  &testTx2,
 			want1: 4321000,
 		},
 		{
 			name:  "3",
-			args:  args{hex: dbtestdata.EthTx1FailedPacked},
+			args:  args{hex: EthTx1FailedPacked},
 			want:  &testTx1Failed,
 			want1: 4321000,
 		},
 		{
 			name:  "4",
-			args:  args{hex: dbtestdata.EthTx1NoStatusPacked},
+			args:  args{hex: EthTx1NoStatusPacked},
 			want:  &testTx1NoStatus,
 			want1: 4321000,
 		},
