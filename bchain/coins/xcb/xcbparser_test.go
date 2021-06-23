@@ -13,13 +13,13 @@ import (
 )
 
 const (
-	EthTx1Packed         = "08e8dd870210a6a6f0db051a6908ece40212050430e234001888a40122081bc0159d530e60003220cd647151552b5132b2aef7c9be00dc6f73afc5901dde157aab131335baaa853b3a14555ee11fbddc0e49a9bab358a8941ad95ffdb48f42143e3a3d69dc66ba10737f531ed088954a9ec89d97480a22070a025208120101"
-	EthTx1FailedPacked   = "08e8dd870210a6a6f0db051a6908ece40212050430e234001888a40122081bc0159d530e60003220cd647151552b5132b2aef7c9be00dc6f73afc5901dde157aab131335baaa853b3a14555ee11fbddc0e49a9bab358a8941ad95ffdb48f42143e3a3d69dc66ba10737f531ed088954a9ec89d97480a22040a025208"
-	EthTx1NoStatusPacked = "08e8dd870210a6a6f0db051a6908ece40212050430e234001888a40122081bc0159d530e60003220cd647151552b5132b2aef7c9be00dc6f73afc5901dde157aab131335baaa853b3a14555ee11fbddc0e49a9bab358a8941ad95ffdb48f42143e3a3d69dc66ba10737f531ed088954a9ec89d97480a22070a025208120155"
-	EthTx2Packed         = "08e8dd870210a6a6f0db051aa20108d001120509502f900018d5e1042a44a9059cbb000000000000000000000000555ee11fbddc0e49a9bab358a8941ad95ffdb48f00000000000000000000000000000000000000000000021e19e0c9bab24000003220a9cd088aba2131000da6f38a33c20169baee476218deea6b78720700b895b1013a144af4114f73d1c1c903ac9e0361b379d1291808a2421420cd153de35d469ba46127a0c8f18626b59a256a22a8010a02cb391201011a9e010a144af4114f73d1c1c903ac9e0361b379d1291808a2122000000000000000000000000000000000000000000000021e19e0c9bab24000001a20ddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef1a2000000000000000000000000020cd153de35d469ba46127a0c8f18626b59a256a1a20000000000000000000000000555ee11fbddc0e49a9bab358a8941ad95ffdb48f"
+	XcbTx1Packed         = "08e8dd870210a6a6f0db051a6908ece40212050430e234001888a40122081bc0159d530e60003220cd647151552b5132b2aef7c9be00dc6f73afc5901dde157aab131335baaa853b3a14555ee11fbddc0e49a9bab358a8941ad95ffdb48f42143e3a3d69dc66ba10737f531ed088954a9ec89d97480a22070a025208120101"
+	xcbTx1FailedPacked   = "08e8dd870210a6a6f0db051a6908ece40212050430e234001888a40122081bc0159d530e60003220cd647151552b5132b2aef7c9be00dc6f73afc5901dde157aab131335baaa853b3a14555ee11fbddc0e49a9bab358a8941ad95ffdb48f42143e3a3d69dc66ba10737f531ed088954a9ec89d97480a22040a025208"
+	XcbTx1NoStatusPacked = "08e8dd870210a6a6f0db051a6908ece40212050430e234001888a40122081bc0159d530e60003220cd647151552b5132b2aef7c9be00dc6f73afc5901dde157aab131335baaa853b3a14555ee11fbddc0e49a9bab358a8941ad95ffdb48f42143e3a3d69dc66ba10737f531ed088954a9ec89d97480a22070a025208120155"
+	XcbTx2Packed         = "08e8dd870210a6a6f0db051aa20108d001120509502f900018d5e1042a44a9059cbb000000000000000000000000555ee11fbddc0e49a9bab358a8941ad95ffdb48f00000000000000000000000000000000000000000000021e19e0c9bab24000003220a9cd088aba2131000da6f38a33c20169baee476218deea6b78720700b895b1013a144af4114f73d1c1c903ac9e0361b379d1291808a2421420cd153de35d469ba46127a0c8f18626b59a256a22a8010a02cb391201011a9e010a144af4114f73d1c1c903ac9e0361b379d1291808a2122000000000000000000000000000000000000000000000021e19e0c9bab24000001a20ddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef1a2000000000000000000000000020cd153de35d469ba46127a0c8f18626b59a256a1a20000000000000000000000000555ee11fbddc0e49a9bab358a8941ad95ffdb48f"
 )
 
-func TestEthParser_GetAddrDescFromAddress(t *testing.T) {
+func TestXcbParser_GetAddrDescFromAddress(t *testing.T) {
 	type args struct {
 		address string
 	}
@@ -30,14 +30,14 @@ func TestEthParser_GetAddrDescFromAddress(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "with 0x prefix",
-			args: args{address: "0x81b7e08f65bdf5648606c89998a9cc8164397647"},
-			want: "81b7e08f65bdf5648606c89998a9cc8164397647",
+			name: "with ce prefix",
+			args: args{address: "ce276773ac97d16855a3c8faa45399136b56d4194860"},
+			want: "ce276773ac97d16855a3c8faa45399136b56d4194860",
 		},
 		{
-			name: "without 0x prefix",
-			args: args{address: "47526228d673e9f079630d6cdaff5a2ed13e0e60"},
-			want: "47526228d673e9f079630d6cdaff5a2ed13e0e60",
+			name: "with cb prefix",
+			args: args{address: "cb08095e7baea6a6c7c4c2dfeb977efac326af552d87"},
+			want: "cb08095e7baea6a6c7c4c2dfeb977efac326af552d87",
 		},
 		{
 			name:    "address of wrong length",
@@ -52,7 +52,7 @@ func TestEthParser_GetAddrDescFromAddress(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name:    "error - not eth address",
+			name:    "error - not xcb address",
 			args:    args{address: "1JKgN43B9SyLuZH19H5ECvr4KcfrbVHzZ6"},
 			want:    "",
 			wantErr: true,
@@ -63,12 +63,12 @@ func TestEthParser_GetAddrDescFromAddress(t *testing.T) {
 			p := NewCoreblockchainParser(1)
 			got, err := p.GetAddrDescFromAddress(tt.args.address)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("EthParser.GetAddrDescFromAddress() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("XcbParser.GetAddrDescFromAddress() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			h := hex.EncodeToString(got)
 			if !reflect.DeepEqual(h, tt.want) {
-				t.Errorf("EthParser.GetAddrDescFromAddress() = %v, want %v", h, tt.want)
+				t.Errorf("XcbParser.GetAddrDescFromAddress() = %v, want %v", h, tt.want)
 			}
 		})
 	}
@@ -241,7 +241,7 @@ func init() {
 
 }
 
-func TestEthereumParser_PackTx(t *testing.T) {
+func TestCoreblockchainParser_PackTx(t *testing.T) {
 	type args struct {
 		tx        *bchain.Tx
 		height    uint32
@@ -261,7 +261,7 @@ func TestEthereumParser_PackTx(t *testing.T) {
 				height:    4321000,
 				blockTime: 1534858022,
 			},
-			want: EthTx1Packed,
+			want: XcbTx1Packed,
 		},
 		{
 			name: "2",
@@ -270,7 +270,7 @@ func TestEthereumParser_PackTx(t *testing.T) {
 				height:    4321000,
 				blockTime: 1534858022,
 			},
-			want: EthTx2Packed,
+			want: XcbTx2Packed,
 		},
 		{
 			name: "3",
@@ -279,7 +279,7 @@ func TestEthereumParser_PackTx(t *testing.T) {
 				height:    4321000,
 				blockTime: 1534858022,
 			},
-			want: EthTx1FailedPacked,
+			want: xcbTx1FailedPacked,
 		},
 		{
 			name: "4",
@@ -288,7 +288,7 @@ func TestEthereumParser_PackTx(t *testing.T) {
 				height:    4321000,
 				blockTime: 1534858022,
 			},
-			want: EthTx1NoStatusPacked,
+			want: XcbTx1NoStatusPacked,
 		},
 	}
 	p := NewCoreblockchainParser(1)
@@ -296,18 +296,18 @@ func TestEthereumParser_PackTx(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := p.PackTx(tt.args.tx, tt.args.height, tt.args.blockTime)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("EthereumParser.PackTx() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("CoreblockchainParser.PackTx() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			h := hex.EncodeToString(got)
 			if !reflect.DeepEqual(h, tt.want) {
-				t.Errorf("EthereumParser.PackTx() = %v, want %v", h, tt.want)
+				t.Errorf("CoreblockchainParser.PackTx() = %v, want %v", h, tt.want)
 			}
 		})
 	}
 }
 
-func TestEthereumParser_UnpackTx(t *testing.T) {
+func TestCoreblockchainParser_UnpackTx(t *testing.T) {
 	type args struct {
 		hex string
 	}
@@ -321,25 +321,25 @@ func TestEthereumParser_UnpackTx(t *testing.T) {
 	}{
 		{
 			name:  "1",
-			args:  args{hex: EthTx1Packed},
+			args:  args{hex: XcbTx1Packed},
 			want:  &testTx1,
 			want1: 4321000,
 		},
 		{
 			name:  "2",
-			args:  args{hex: EthTx2Packed},
+			args:  args{hex: XcbTx2Packed},
 			want:  &testTx2,
 			want1: 4321000,
 		},
 		{
 			name:  "3",
-			args:  args{hex: EthTx1FailedPacked},
+			args:  args{hex: xcbTx1FailedPacked},
 			want:  &testTx1Failed,
 			want1: 4321000,
 		},
 		{
 			name:  "4",
-			args:  args{hex: EthTx1NoStatusPacked},
+			args:  args{hex: XcbTx1NoStatusPacked},
 			want:  &testTx1NoStatus,
 			want1: 4321000,
 		},
@@ -353,7 +353,7 @@ func TestEthereumParser_UnpackTx(t *testing.T) {
 			}
 			got, got1, err := p.UnpackTx(b)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("EthereumParser.UnpackTx() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("CoreblockchainParser.UnpackTx() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			// DeepEqual has problems with pointers in completeTransaction
@@ -365,22 +365,22 @@ func TestEthereumParser_UnpackTx(t *testing.T) {
 			wc.CoinSpecificData = nil
 			if fmt.Sprint(gc) != fmt.Sprint(wc) {
 				// if !reflect.DeepEqual(gc, wc) {
-				t.Errorf("EthereumParser.UnpackTx() gc got = %+v, want %+v", gc, wc)
+				t.Errorf("CoreblockchainParser.UnpackTx() gc got = %+v, want %+v", gc, wc)
 			}
 			if !reflect.DeepEqual(gs.Tx, ws.Tx) {
-				t.Errorf("EthereumParser.UnpackTx() gs.Tx got = %+v, want %+v", gs.Tx, ws.Tx)
+				t.Errorf("CoreblockchainParser.UnpackTx() gs.Tx got = %+v, want %+v", gs.Tx, ws.Tx)
 			}
 			if !reflect.DeepEqual(gs.Receipt, ws.Receipt) {
-				t.Errorf("EthereumParser.UnpackTx() gs.Receipt got = %+v, want %+v", gs.Receipt, ws.Receipt)
+				t.Errorf("CoreblockchainParser.UnpackTx() gs.Receipt got = %+v, want %+v", gs.Receipt, ws.Receipt)
 			}
 			if got1 != tt.want1 {
-				t.Errorf("EthereumParser.UnpackTx() got1 = %v, want %v", got1, tt.want1)
+				t.Errorf("CoreblockchainParser.UnpackTx() got1 = %v, want %v", got1, tt.want1)
 			}
 		})
 	}
 }
 
-func TestEthereumParser_GetEthereumTxData(t *testing.T) {
+func TestCoreblockchainParser_GetCoreblockchainTxData(t *testing.T) {
 	tests := []struct {
 		name string
 		tx   *bchain.Tx
@@ -401,7 +401,7 @@ func TestEthereumParser_GetEthereumTxData(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			got := GetCoreblockchainTxData(tt.tx)
 			if got.Data != tt.want {
-				t.Errorf("EthereumParser.GetEthereumTxData() = %v, want %v", got.Data, tt.want)
+				t.Errorf("CoreblockchainParser.GetCoreblockchainTxData() = %v, want %v", got.Data, tt.want)
 			}
 		})
 	}

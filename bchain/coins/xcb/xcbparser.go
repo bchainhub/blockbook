@@ -12,7 +12,7 @@ import (
 )
 
 // CoreblockchainTypeAddressDescriptorLen - in case of EthereumType, the AddressDescriptor has fixed length
-const CoreblockchainTypeAddressDescriptorLen = 20
+const CoreblockchainTypeAddressDescriptorLen = 22
 
 // XcbAmountDecimalPoint defines number of decimal points in Ether amounts
 const XcbAmountDecimalPoint = 18
