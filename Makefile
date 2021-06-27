@@ -77,4 +77,4 @@ clean-bin-image:
 	- docker rmi $(BIN_IMAGE)
 
 clean-deb-image:
-	- echo "no-remove" || docker rmi $(DEB_IMAGE)
+	- docker rmi $(DEB_IMAGE)
