@@ -4,6 +4,7 @@ package xcb
 
 import (
 	"fmt"
+	"github.com/trezor/blockbook/bchain"
 	"github.com/trezor/blockbook/tests/dbtestdata"
 	"math/big"
 	"strings"
@@ -14,7 +15,7 @@ func Testxrc20_xrc20GetTransfersFromLog(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    []*rpcLog
-		want    []Xrc20Transfer
+		want    []bchain.Erc20Transfer
 		wantErr bool
 	}{
 		{
@@ -30,7 +31,7 @@ func Testxrc20_xrc20GetTransfersFromLog(t *testing.T) {
 					Data: "0x0000000000000000000000000000000000000000000000000000000000000123",
 				},
 			},
-			want: []Xrc20Transfer{
+			want: []bchain.Erc20Transfer{
 				{
 					Contract: "0x76a45e8976499ab9ae223cc584019341d5a84e96",
 					From:     "0x2aacf811ac1a60081ea39f7783c0d26c500871a8",
@@ -80,7 +81,7 @@ func Testxrc20_xrc20GetTransfersFromLog(t *testing.T) {
 					Data: "0x0000000000000000000000004bda106325c335df99eab7fe363cac8a0ba2a24d000000000000000000000000c778417e063141139fce010982780140aa0cd5ab0000000000000000000000000d0f936ee4c93e25944694d6c121de94d9760f1100000000000000000000000000000000000000000000000000031855667df7a80000000000000000000000000000000000000000000000006a8313d60b1f800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
 				},
 			},
-			want: []Xrc20Transfer{
+			want: []bchain.Erc20Transfer{
 				{
 					Contract: "0x0d0f936ee4c93e25944694d6c121de94d9760f11",
 					From:     "0x6f44cceb49b4a5812d54b6f494fc2febf25511ed",
@@ -166,17 +167,17 @@ func Testxrc20_xrc20GetTransfersFromTx(t *testing.T) {
 	tests := []struct {
 		name string
 		args *rpcTransaction
-		want []Xrc20Transfer
+		want []bchain.Erc20Transfer
 	}{
 		{
 			name: "0",
 			args: (b.Txs[0].CoinSpecificData.(completeTransaction)).Tx,
-			want: []Xrc20Transfer{},
+			want: []bchain.Erc20Transfer{},
 		},
 		{
 			name: "1",
 			args: (b.Txs[1].CoinSpecificData.(completeTransaction)).Tx,
-			want: []Xrc20Transfer{
+			want: []bchain.Erc20Transfer{
 				{
 					Contract: "ce07fa95b77d3d119cb11a18db2e92998a4e3b3d073c",
 					From:     "ce08eba66c86171540a8fcaa78eb6dd967677cbf4951",

@@ -3,7 +3,7 @@ DEB_IMAGE = blockbook-build-deb
 PACKAGER = $(shell id -u):$(shell id -g)
 BASE_IMAGE = $$(awk -F= '$$1=="ID" { print $$2 ;}' /etc/os-release):$$(awk -F= '$$1=="VERSION_ID" { print $$2 ;}' /etc/os-release | tr -d '"')
 NO_CACHE = false
-TCMALLOC = 
+TCMALLOC =
 ARGS ?=
 
 TARGETS=$(subst .json,, $(shell ls configs/coins))
@@ -77,4 +77,4 @@ clean-bin-image:
 	- docker rmi $(BIN_IMAGE)
 
 clean-deb-image:
-	- docker rmi $(DEB_IMAGE)
+	- echo "no-remove" || docker rmi $(DEB_IMAGE)

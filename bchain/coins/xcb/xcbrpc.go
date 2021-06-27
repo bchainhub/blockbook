@@ -708,8 +708,8 @@ func getStringFromMap(p string, params map[string]interface{}) (string, bool) {
 	return "", false
 }
 
-// CoreblockchainTypeEstimateEnergy returns estimation of energy consumption for given transaction parameters
-func (b *CoreblockchainRPC) CoreblockchainTypeEstimateEnergy(params map[string]interface{}) (uint64, error) {
+// EthereumTypeEstimateGas returns estimation of energy consumption for given transaction parameters
+func (b *CoreblockchainRPC) EthereumTypeEstimateGas(params map[string]interface{}) (uint64, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), b.timeout)
 	defer cancel()
 	msg := coreblockchain.CallMsg{}
@@ -762,15 +762,15 @@ func (b *CoreblockchainRPC) SendRawTransaction(hex string) (string, error) {
 	return result, nil
 }
 
-// CoreblockchainTypeGetBalance returns current balance of an address
-func (b *CoreblockchainRPC) CoreblockchainTypeGetBalance(addrDesc bchain.AddressDescriptor) (*big.Int, error) {
+// EthereumTypeGetBalance returns current balance of an address
+func (b *CoreblockchainRPC) EthereumTypeGetBalance(addrDesc bchain.AddressDescriptor) (*big.Int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), b.timeout)
 	defer cancel()
 	return b.client.BalanceAt(ctx, xcbcommon.BytesToAddress(addrDesc), nil)
 }
 
-// CoreblockchainTypeGetNonce returns current balance of an address
-func (b *CoreblockchainRPC) CoreblockchainTypeGetNonce(addrDesc bchain.AddressDescriptor) (uint64, error) {
+// EthereumTypeGetNonce returns current balance of an address
+func (b *CoreblockchainRPC) EthereumTypeGetNonce(addrDesc bchain.AddressDescriptor) (uint64, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), b.timeout)
 	defer cancel()
 	return b.client.NonceAt(ctx, xcbcommon.BytesToAddress(addrDesc), nil)

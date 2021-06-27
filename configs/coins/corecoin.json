@@ -17,26 +17,6 @@
     "rpc_url_template": "ws://127.0.0.1:{{.Ports.BackendRPC}}",
     "rpc_timeout": 25
   },
-  "backend": {
-    "package_name": "backend-corecoin",
-    "package_revision": "satoshilabs-1",
-    "system_user": "corecoin",
-    "version": "1.10.3-991384a7",
-    "binary_url": "https://gethstore.blob.core.windows.net/builds/geth-linux-amd64-1.10.3-991384a7.tar.gz",
-    "verification_type": "gpg",
-    "verification_source": "https://gethstore.blob.core.windows.net/builds/geth-linux-amd64-1.10.3-991384a7.tar.gz.asc",
-    "extract_command": "tar -C backend --strip 1 -xf",
-    "exclude_files": [],
-    "exec_command_template": "/bin/sh -c '{{.Env.BackendInstallPath}}/{{.Coin.Alias}}/geth --ipcdisable --syncmode full --txlookuplimit 0 --cache 1024 --nat none --datadir {{.Env.BackendDataPath}}/{{.Coin.Alias}}/backend --port 38336 --ws --ws.addr 127.0.0.1 --ws.port {{.Ports.BackendRPC}} --ws.origins \"*\" --http --http.port 8136 -http.addr 127.0.0.1 --http.corsdomain \"*\" --http.vhosts \"*\" 2>>{{.Env.BackendDataPath}}/{{.Coin.Alias}}/backend/{{.Coin.Alias}}.log'",
-    "logrotate_files_template": "{{.Env.BackendDataPath}}/{{.Coin.Alias}}/backend/{{.Coin.Alias}}.log",
-    "postinst_script_template": "",
-    "service_type": "simple",
-    "service_additional_params_template": "",
-    "protect_memory": true,
-    "mainnet": true,
-    "server_config_file": "",
-    "client_config_file": ""
-  },
   "blockbook": {
     "package_name": "blockbook-corecoin",
     "system_user": "blockbook-corecoin",
