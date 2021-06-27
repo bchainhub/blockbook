@@ -2,8 +2,8 @@
   "coin": {
     "name": "Core Coin",
     "shortcut": "XCB",
-    "label": "CoreCoin",
-    "alias": "corecoin"
+    "label": "Core Coin",
+    "alias": "core-coin"
   },
   "ports": {
     "backend_rpc": 8036,
