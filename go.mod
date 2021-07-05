@@ -8,7 +8,7 @@ require (
 	github.com/bsm/go-vlq v0.0.0-20150828105119-ec6e8d4f5f4e
 	github.com/btcsuite/btcd v0.21.0-beta // indirect
 	github.com/core-coin/eddsa v1.0.2 // indirect
-	github.com/core-coin/go-core v1.0.20-dev // indirect
+	github.com/core-coin/go-core v1.0.21-dev // indirect
 	github.com/core-coin/go-randomx v0.2.3 // indirect
 	github.com/dchest/blake256 v1.0.0 // indirect
 	github.com/deckarep/golang-set v1.7.1

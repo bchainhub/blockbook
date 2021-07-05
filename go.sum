@@ -216,6 +216,8 @@ github.com/core-coin/eddsa v1.0.2 h1:wKfG/W5QpB3YBYUJyQaURDSi6uH7bXdw6EReUiNdGiw
 github.com/core-coin/eddsa v1.0.2/go.mod h1:n1KUK4H37IqC7gvWlmrTS2tA9t4Z2t+Xj6cBwdoJsJU=
 github.com/core-coin/go-core v1.0.20-dev h1:vJXN3q4XlpMw8ck1tcISLZdA6RcLlL6uQ6qAeiopfB4=
 github.com/core-coin/go-core v1.0.20-dev/go.mod h1:km8qhNUBPU54F4xjN04iLAZwV7IX34Zc2MKni6idIws=
+github.com/core-coin/go-core v1.0.21-dev h1:g6wBkdA4wGpctY7TUTIt3ryhqkVCfS+1cpUoaae3OTs=
+github.com/core-coin/go-core v1.0.21-dev/go.mod h1:km8qhNUBPU54F4xjN04iLAZwV7IX34Zc2MKni6idIws=
 github.com/core-coin/go-goldilocks v1.0.3 h1:0EQxaD4APSctj7fp8x0sWkGASsc0xQUzI2k6+zls4Js=
 github.com/core-coin/go-goldilocks v1.0.3/go.mod h1:uXjPZTv3XMF/wmyidKozOb8yQwWmg2ZbO0Amcuiw9mg=
 github.com/core-coin/go-randomx v0.2.3 h1:oLjl2b/wv1L/q2biSA8XiBDIjyELGhBqb3L9hLG3K7k=
