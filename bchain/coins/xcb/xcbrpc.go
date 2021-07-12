@@ -170,7 +170,10 @@ func (b *CoreblockchainRPC) Initialize() error {
 	default:
 		return errors.Errorf("Unknown network id %v", id)
 	}
-	glog.Info("rpc: block chain ", b.Network)
+
+	xcbcommon.DefaultNetworkID = xcbcommon.NetworkID(id.Uint64())
+
+	glog.Info("rpc: block chain ", b.Network, " with address prefix: ", xcbcommon.DefaultNetworkID)
 
 	return nil
 }
