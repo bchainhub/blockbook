@@ -121,6 +121,12 @@ func NewCoreblockchainRPC(config json.RawMessage, pushHandler func(bchain.Notifi
 		}
 	}()
 
+	networkID, err := s.client.NetworkID(context.Background())
+	if err != nil {
+		return nil, err
+	}
+	xcbcommon.DefaultNetworkID = xcbcommon.NetworkID(networkID.Uint64())
+
 	return s, nil
 }
 
