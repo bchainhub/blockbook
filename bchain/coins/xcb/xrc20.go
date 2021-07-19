@@ -31,12 +31,12 @@ var xrc20abi = `[{"constant":true,"inputs":[],"name":"name","outputs":[{"name":"
 {"constant":true,"inputs":[],"name":"version","outputs":[{"name":"","type":"string"}],"payable":false,"type":"function","signature":"0x54fd4d50"}]`
 
 // doing the parsing/processing without using go-core/accounts/abi library, it is simple to get data from Transfer event
-const xrc20TransferMethodSignature = "0xa9059cbb"
-const xrc20TransferEventSignature = "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"
-const xrc20NameSignature = "0x06fdde03"
-const xrc20SymbolSignature = "0x95d89b41"
-const xrc20DecimalsSignature = "0x313ce567"
-const xrc20BalanceOf = "0x70a08231"
+const xrc20TransferMethodSignature = "0x4b40e901"
+const xrc20TransferEventSignature = "0xc17a9d92b89f27cb79cc390f23a1a5d302fefab8c7911075ede952ac2b5607a1"
+const xrc20NameSignature = "0x07ba2a17"
+const xrc20SymbolSignature = "0x231782d8"
+const xrc20DecimalsSignature = "0x5d1fb5f9"
+const xrc20BalanceOf = "0x1d7976f3"
 
 var cachedContracts = make(map[string]*bchain.Erc20Contract)
 var cachedContractsMux sync.Mutex
