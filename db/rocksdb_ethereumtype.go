@@ -9,7 +9,7 @@ import (
 	"github.com/juju/errors"
 	"github.com/tecbot/gorocksdb"
 	"github.com/trezor/blockbook/bchain"
-	"github.com/trezor/blockbook/bchain/coins/eth"
+	"github.com/trezor/blockbook/bchain/coins/xcb"
 )
 
 // AddrContract is Contract address with number of transactions done by given address
@@ -66,16 +66,16 @@ func (d *RocksDB) GetAddrDescContracts(addrDesc bchain.AddressDescriptor) (*Addr
 	buf = buf[l:]
 	c := make([]AddrContract, 0, 4)
 	for len(buf) > 0 {
-		if len(buf) < eth.EthereumTypeAddressDescriptorLen {
+		if len(buf) < xcb.CoreblockchainTypeAddressDescriptorLen {
 			return nil, errors.New("Invalid data stored in cfAddressContracts for AddrDesc " + addrDesc.String())
 		}
-		txs, l := unpackVaruint(buf[eth.EthereumTypeAddressDescriptorLen:])
-		contract := append(bchain.AddressDescriptor(nil), buf[:eth.EthereumTypeAddressDescriptorLen]...)
+		txs, l := unpackVaruint(buf[xcb.CoreblockchainTypeAddressDescriptorLen:])
+		contract := append(bchain.AddressDescriptor(nil), buf[:xcb.CoreblockchainTypeAddressDescriptorLen]...)
 		c = append(c, AddrContract{
 			Contract: contract,
 			Txs:      txs,
 		})
-		buf = buf[eth.EthereumTypeAddressDescriptorLen+l:]
+		buf = buf[xcb.CoreblockchainTypeAddressDescriptorLen+l:]
 	}
 	return &AddrContracts{
 		TotalTxs:       tt,
@@ -245,11 +245,11 @@ func (d *RocksDB) processAddressesEthereumType(block *bchain.Block, addresses ad
 
 func (d *RocksDB) storeAndCleanupBlockTxsEthereumType(wb *gorocksdb.WriteBatch, block *bchain.Block, blockTxs []ethBlockTx) error {
 	pl := d.chainParser.PackedTxidLen()
-	buf := make([]byte, 0, (pl+2*eth.EthereumTypeAddressDescriptorLen)*len(blockTxs))
+	buf := make([]byte, 0, (pl+2*xcb.CoreblockchainTypeAddressDescriptorLen)*len(blockTxs))
 	varBuf := make([]byte, vlq.MaxLen64)
-	zeroAddress := make([]byte, eth.EthereumTypeAddressDescriptorLen)
+	zeroAddress := make([]byte, xcb.CoreblockchainTypeAddressDescriptorLen)
 	appendAddress := func(a bchain.AddressDescriptor) {
-		if len(a) != eth.EthereumTypeAddressDescriptorLen {
+		if len(a) != xcb.CoreblockchainTypeAddressDescriptorLen {
 			buf = append(buf, zeroAddress...)
 		} else {
 			buf = append(buf, a...)
@@ -288,18 +288,18 @@ func (d *RocksDB) getBlockTxsEthereumType(height uint32) ([]ethBlockTx, error) {
 	// buf can be empty slice, this means the block did not contain any transactions
 	bt := make([]ethBlockTx, 0, 8)
 	getAddress := func(i int) (bchain.AddressDescriptor, int, error) {
-		if len(buf)-i < eth.EthereumTypeAddressDescriptorLen {
+		if len(buf)-i < xcb.CoreblockchainTypeAddressDescriptorLen {
 			glog.Error("rocksdb: Inconsistent data in blockTxs ", hex.EncodeToString(buf))
 			return nil, 0, errors.New("Inconsistent data in blockTxs")
 		}
-		a := append(bchain.AddressDescriptor(nil), buf[i:i+eth.EthereumTypeAddressDescriptorLen]...)
+		a := append(bchain.AddressDescriptor(nil), buf[i:i+xcb.CoreblockchainTypeAddressDescriptorLen]...)
 		// return null addresses as nil
 		for _, b := range a {
 			if b != 0 {
-				return a, i + eth.EthereumTypeAddressDescriptorLen, nil
+				return a, i + xcb.CoreblockchainTypeAddressDescriptorLen, nil
 			}
 		}
-		return nil, i + eth.EthereumTypeAddressDescriptorLen, nil
+		return nil, i + xcb.CoreblockchainTypeAddressDescriptorLen, nil
 	}
 	var from, to bchain.AddressDescriptor
 	for i := 0; i < len(buf); {
