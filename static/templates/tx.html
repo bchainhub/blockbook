@@ -43,12 +43,12 @@
                 <td class="data">{{formatAmount $tx.ValueOutSat}} {{$cs}}</td>
             </tr>
             <tr>
-                <td>Gas Used / Limit</td>
-                <td class="data">{{if $tx.EthereumSpecific.GasUsed}}{{$tx.EthereumSpecific.GasUsed}}{{else}}pending{{end}} / {{$tx.EthereumSpecific.GasLimit}}</td>
+                <td>Energy Used / Limit</td>
+                <td class="data">{{if $tx.EthereumSpecific.EnergyUsed}}{{$tx.EthereumSpecific.EnergyUsed}}{{else}}pending{{end}} / {{$tx.EthereumSpecific.EnergyLimit}}</td>
             </tr>
             <tr>
-                <td>Gas Price</td>
-                <td class="data">{{formatAmount $tx.EthereumSpecific.GasPrice}} {{$cs}}</td>
+                <td>Energy Price</td>
+                <td class="data">{{formatAmount $tx.EthereumSpecific.EnergyPrice}} {{$cs}}</td>
             </tr>
             {{- else -}}
             <tr>
