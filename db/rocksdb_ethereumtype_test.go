@@ -8,16 +8,16 @@ import (
 	"testing"
 
 	"github.com/juju/errors"
-	"github.com/trezor/blockbook/bchain/coins/eth"
+	"github.com/trezor/blockbook/bchain/coins/xcb"
 	"github.com/trezor/blockbook/tests/dbtestdata"
 )
 
 type testEthereumParser struct {
-	*eth.EthereumParser
+	*xcb.CoreblockchainParser
 }
 
-func ethereumTestnetParser() *eth.EthereumParser {
-	return eth.NewEthereumParser(1)
+func ethereumTestnetParser() *xcb.CoreblockchainParser {
+	return xcb.NewCoreblockchainParser(1)
 }
 
 func verifyAfterEthereumTypeBlock1(t *testing.T, d *RocksDB, afterDisconnect bool) {
