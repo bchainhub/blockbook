@@ -1,0 +1,42 @@
+{
+  "coin": {
+    "name": "Core Coin",
+    "shortcut": "XCB",
+    "label": "Core Coin",
+    "alias": "core-coin"
+  },
+  "ports": {
+    "backend_rpc": 8036,
+    "backend_message_queue": 0,
+    "backend_p2p": 38336,
+    "backend_http": 8136,
+    "blockbook_internal": 9036,
+    "blockbook_public": 9136
+  },
+  "ipc": {
+    "rpc_url_template": "ws://127.0.0.1:{{.Ports.BackendRPC}}",
+    "rpc_timeout": 25
+  },
+  "blockbook": {
+    "package_name": "blockbook-corecoin",
+    "system_user": "blockbook-corecoin",
+    "internal_binding_template": ":{{.Ports.BlockbookInternal}}",
+    "public_binding_template": ":{{.Ports.BlockbookPublic}}",
+    "explorer_url": "",
+    "additional_params": "",
+    "block_chain": {
+      "parse": true,
+      "mempool_workers": 8,
+      "mempool_sub_workers": 2,
+      "block_addresses_to_keep": 300,
+      "additional_params": {
+        "mempoolTxTimeoutHours": 48,
+        "queryBackendOnMempoolResync": false
+      }
+    }
+  },
+  "meta": {
+    "package_maintainer": "IT",
+    "package_maintainer_email": "it@satoshilabs.com"
+  }
+}

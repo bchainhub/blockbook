@@ -1,74 +1,68 @@
-[![Go Report Card](https://goreportcard.com/badge/trezor/blockbook)](https://goreportcard.com/report/trezor/blockbook)
-
 # Blockbook
 
-**Blockbook** is back-end service for Trezor wallet. Main features of **Blockbook** are:
+## This repository is specificly for Coreblockchain
 
-- index of addresses and address balances of the connected block chain
-- fast searches in the indexes
-- simple blockchain explorer
-- websocket, API and legacy Bitcore Insight compatible socket.io interfaces
-- support of multiple coins (Bitcoin and Ethereum type), with easy extensibility for other coins
-- scripts for easy creation of debian packages for backend and blockbook
+### try not to build other coins from this repository, because some main functionalities has been changed for the purpose of CoreBlockhain
 
-## Build and installation instructions
+*to build the debian package run this command:*
 
-Officially supported platform is **Debian Linux** and **AMD64** architecture.
+`make all-corecoin`
 
-Memory and disk requirements for initial synchronization of **Bitcoin mainnet** are around 32 GB RAM and over 180 GB of disk space. After initial synchronization, fully synchronized instance uses about 10 GB RAM.
-Other coins should have lower requirements, depending on the size of their block chain. Note that fast SSD disks are highly
-recommended.
+it gives you a `deb package` located in `build` folder.
 
-User installation guide is [here](https://wiki.trezor.io/User_manual:Running_a_local_instance_of_Trezor_Wallet_backend_(Blockbook)).
+The following methods are supported:
 
-Developer build guide is [here](/docs/build.md).
 
-Contribution guide is [here](CONTRIBUTING.md).
 
-## Implemented coins
+- [Status](/docs/api.md#status) ✅
 
-Blockbook currently supports over 30 coins. The Trezor team implemented 
 
-- Bitcoin, Bitcoin Cash, Zcash, Dash, Litecoin, Bitcoin Gold, Ethereum, Ethereum Classic, Dogecoin, Namecoin, Vertcoin, DigiByte, Liquid
 
-the rest of coins were implemented by the community.
+-  [Get block hash](/docs/api.md#get-block-hash) ✅
 
-Testnets for some coins are also supported, for example:
-- Bitcoin Testnet, Bitcoin Cash Testnet, ZCash Testnet, Ethereum Testnet Ropsten
 
-List of all implemented coins is in [the registry of ports](/docs/ports.md).
 
-## Common issues when running Blockbook or implementing additional coins
+- [Get transaction](/docs/api.md#get-transaction) ✅
 
-#### Out of memory when doing initial synchronization
 
-How to reduce memory footprint of the initial sync: 
 
-- disable rocksdb cache by parameter `-dbcache=0`, the default size is 500MB
-- run blockbook with parameter `-workers=1`. This disables bulk import mode, which caches a lot of data in memory (not in rocksdb cache). It will run about twice as slowly but especially for smaller blockchains it is no problem at all.
+-   [Get transaction specific](/docs/api.md#get-transaction-specific) ✅
 
-Please add your experience to this [issue](https://github.com/trezor/blockbook/issues/43).
 
-#### Error `internalState: database is in inconsistent state and cannot be used`
 
-Blockbook was killed during the initial import, most commonly by OOM killer. By default, Blockbook performs the initial import in bulk import mode, which for performance reasons does not store all the data immediately to the database. If Blockbook is killed during this phase, the database is left in an inconsistent state. 
+-  [Get address](/docs/api.md#get-address) ✅
 
-See above how to reduce the memory footprint, delete the database files and run the import again. 
 
-Check [this](https://github.com/trezor/blockbook/issues/89) or [this](https://github.com/trezor/blockbook/issues/147) issue for more info.
 
-#### Running on Ubuntu
+- [Get xpub](/docs/api.md#get-xpub) (not supported in ed448) 🚫
 
-[This issue](https://github.com/trezor/blockbook/issues/45) discusses how to run Blockbook on Ubuntu. If you have some additional experience with Blockbook on Ubuntu, please add it to [this issue](https://github.com/trezor/blockbook/issues/45).
 
-#### My coin implementation is reporting parse errors when importing blockchain
 
-Your coin's block/transaction data may not be compatible with `BitcoinParser` `ParseBlock`/`ParseTx`, which is used by default. In that case, implement your coin in a similar way we used in case of [zcash](https://github.com/trezor/blockbook/tree/master/bchain/coins/zec) and some other coins. The principle is not to parse the block/transaction data in Blockbook but instead to get parsed transactions as json from the backend.
+- [Get utxo](/docs/api.md#get-utxo) (only for bitcoin types) 🚫
 
-## Data storage in RocksDB
 
-Blockbook stores data the key-value store RocksDB. Database format is described [here](/docs/rocksdb.md).
 
-## API
+- [Get block](/docs/api.md#get-block) ✅
 
-Blockbook API is described [here](/docs/api.md).
+
+
+-  [Send transaction](/docs/api.md#send-transaction) ✅
+
+
+
+-   [Tickers list](/docs/api.md#tickers-list) (no fiat rate provider currently available for xcb) 🚫
+
+
+
+-  [Tickers](/docs/api.md#tickers) (no fiat rate provider currently available for xcb) 🚫
+
+
+
+-  [Balance history](/docs/api.md#balance-history) ✅
+
+configurations and behaviours are kept untouched, so feel free to use the official docs for configurations and other things.
+
+you can find the official readme file [here](README_ORG.md).
+
+
+

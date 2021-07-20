@@ -16,7 +16,7 @@ import (
 	"github.com/golang/glog"
 	"github.com/juju/errors"
 	"github.com/trezor/blockbook/bchain"
-	"github.com/trezor/blockbook/bchain/coins/eth"
+	"github.com/trezor/blockbook/bchain/coins/xcb"
 	"github.com/trezor/blockbook/common"
 	"github.com/trezor/blockbook/db"
 )
@@ -132,7 +132,7 @@ func (w *Worker) GetTransactionFromBchainTx(bchainTx *bchain.Tx, height int, spe
 	var err error
 	var ta *db.TxAddresses
 	var tokens []TokenTransfer
-	var ethSpecific *EthereumSpecific
+	var xcbSpecific *CoreblockchainSpecific
 	var blockhash string
 	if bchainTx.Confirmations > 0 {
 		if w.chainType == bchain.ChainBitcoinType {
@@ -260,21 +260,21 @@ func (w *Worker) GetTransactionFromBchainTx(bchainTx *bchain.Tx, height int, spe
 			glog.Errorf("GetErc20FromTx error %v, %v", err, bchainTx)
 		}
 		tokens = w.getTokensFromErc20(ets)
-		ethTxData := eth.GetEthereumTxData(bchainTx)
+		xcbTxData := xcb.GetCoreblockchainTxData(bchainTx)
 		// mempool txs do not have fees yet
-		if ethTxData.GasUsed != nil {
-			feesSat.Mul(ethTxData.GasPrice, ethTxData.GasUsed)
+		if xcbTxData.EnergyUsed != nil {
+			feesSat.Mul(xcbTxData.EnergyPrice, xcbTxData.EnergyUsed)
 		}
 		if len(bchainTx.Vout) > 0 {
 			valOutSat = bchainTx.Vout[0].ValueSat
 		}
-		ethSpecific = &EthereumSpecific{
-			GasLimit: ethTxData.GasLimit,
-			GasPrice: (*Amount)(ethTxData.GasPrice),
-			GasUsed:  ethTxData.GasUsed,
-			Nonce:    ethTxData.Nonce,
-			Status:   ethTxData.Status,
-			Data:     ethTxData.Data,
+		xcbSpecific = &CoreblockchainSpecific{
+			EnergyLimit: xcbTxData.EnergyLimit,
+			EnergyPrice: (*Amount)(xcbTxData.EnergyPrice),
+			EnergyUsed:  xcbTxData.EnergyUsed,
+			Nonce:       xcbTxData.Nonce,
+			Status:      xcbTxData.Status,
+			Data:        xcbTxData.Data,
 		}
 	}
 	// for now do not return size, we would have to compute vsize of segwit transactions
@@ -308,7 +308,7 @@ func (w *Worker) GetTransactionFromBchainTx(bchainTx *bchain.Tx, height int, spe
 		Vout:             vouts,
 		CoinSpecificData: sj,
 		TokenTransfers:   tokens,
-		EthereumSpecific: ethSpecific,
+		EthereumSpecific: xcbSpecific,
 	}
 	return r, nil
 }
@@ -320,7 +320,7 @@ func (w *Worker) GetTransactionFromMempoolTx(mempoolTx *bchain.MempoolTx) (*Tx, 
 	var valInSat, valOutSat, feesSat big.Int
 	var pValInSat *big.Int
 	var tokens []TokenTransfer
-	var ethSpecific *EthereumSpecific
+	var xcbSpecific *CoreblockchainSpecific
 	vins := make([]Vin, len(mempoolTx.Vin))
 	rbf := false
 	for i := range mempoolTx.Vin {
@@ -382,14 +382,14 @@ func (w *Worker) GetTransactionFromMempoolTx(mempoolTx *bchain.MempoolTx) (*Tx, 
 			valOutSat = mempoolTx.Vout[0].ValueSat
 		}
 		tokens = w.getTokensFromErc20(mempoolTx.Erc20)
-		ethTxData := eth.GetEthereumTxDataFromSpecificData(mempoolTx.CoinSpecificData)
-		ethSpecific = &EthereumSpecific{
-			GasLimit: ethTxData.GasLimit,
-			GasPrice: (*Amount)(ethTxData.GasPrice),
-			GasUsed:  ethTxData.GasUsed,
-			Nonce:    ethTxData.Nonce,
-			Status:   ethTxData.Status,
-			Data:     ethTxData.Data,
+		xcbTxData := xcb.GetCoreblockchainTxDataFromSpecificData(mempoolTx.CoinSpecificData)
+		xcbSpecific = &CoreblockchainSpecific{
+			EnergyLimit: xcbTxData.EnergyLimit,
+			EnergyPrice: (*Amount)(xcbTxData.EnergyPrice),
+			EnergyUsed:  xcbTxData.EnergyUsed,
+			Nonce:       xcbTxData.Nonce,
+			Status:      xcbTxData.Status,
+			Data:        xcbTxData.Data,
 		}
 	}
 	r := &Tx{
@@ -405,7 +405,7 @@ func (w *Worker) GetTransactionFromMempoolTx(mempoolTx *bchain.MempoolTx) (*Tx, 
 		Vin:              vins,
 		Vout:             vouts,
 		TokenTransfers:   tokens,
-		EthereumSpecific: ethSpecific,
+		EthereumSpecific: xcbSpecific,
 	}
 	return r, nil
 }
@@ -514,9 +514,9 @@ func (t *Tx) getAddrEthereumTypeMempoolInputValue(addrDesc bchain.AddressDescrip
 	if len(t.Vin) > 0 && len(t.Vout) > 0 && bytes.Equal(t.Vin[0].AddrDesc, addrDesc) {
 		val.Add(&val, (*big.Int)(t.Vout[0].ValueSat))
 		// add maximum possible fee (the used value is not yet known)
-		if t.EthereumSpecific != nil && t.EthereumSpecific.GasLimit != nil && t.EthereumSpecific.GasPrice != nil {
+		if t.EthereumSpecific != nil && t.EthereumSpecific.EnergyLimit != nil && t.EthereumSpecific.EnergyPrice != nil {
 			var fees big.Int
-			fees.Mul((*big.Int)(t.EthereumSpecific.GasPrice), t.EthereumSpecific.GasLimit)
+			fees.Mul((*big.Int)(t.EthereumSpecific.EnergyPrice), t.EthereumSpecific.EnergyLimit)
 			val.Add(&val, &fees)
 		}
 	}
@@ -1052,9 +1052,9 @@ func (w *Worker) balanceHistoryForTxid(addrDesc bchain.AddressDescriptor, txid s
 		}
 	} else if w.chainType == bchain.ChainEthereumType {
 		var value big.Int
-		ethTxData := eth.GetEthereumTxData(bchainTx)
+		xcbTxData := xcb.GetCoreblockchainTxData(bchainTx)
 		// add received amount only for OK or unknown status (old) transactions
-		if ethTxData.Status == eth.TxStatusOK || ethTxData.Status == eth.TxStatusUnknown {
+		if xcbTxData.Status == xcb.TxStatusOK || xcbTxData.Status == xcb.TxStatusUnknown {
 			if len(bchainTx.Vout) > 0 {
 				bchainVout := &bchainTx.Vout[0]
 				value = bchainVout.ValueSat
@@ -1081,7 +1081,7 @@ func (w *Worker) balanceHistoryForTxid(addrDesc bchain.AddressDescriptor, txid s
 				}
 				if bytes.Equal(addrDesc, txAddrDesc) {
 					// add received amount only for OK or unknown status (old) transactions, fees always
-					if ethTxData.Status == eth.TxStatusOK || ethTxData.Status == eth.TxStatusUnknown {
+					if xcbTxData.Status == xcb.TxStatusOK || xcbTxData.Status == xcb.TxStatusUnknown {
 						(*big.Int)(bh.SentSat).Add((*big.Int)(bh.SentSat), &value)
 						if countSentToSelf {
 							if _, found := selfAddrDesc[string(txAddrDesc)]; found {
@@ -1091,8 +1091,8 @@ func (w *Worker) balanceHistoryForTxid(addrDesc bchain.AddressDescriptor, txid s
 					}
 					var feesSat big.Int
 					// mempool txs do not have fees yet
-					if ethTxData.GasUsed != nil {
-						feesSat.Mul(ethTxData.GasPrice, ethTxData.GasUsed)
+					if xcbTxData.EnergyUsed != nil {
+						feesSat.Mul(xcbTxData.EnergyPrice, xcbTxData.EnergyUsed)
 					}
 					(*big.Int)(bh.SentSat).Add((*big.Int)(bh.SentSat), &feesSat)
 				}

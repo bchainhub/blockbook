@@ -5,7 +5,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && \
     apt-get upgrade -y && \
-    apt-get install -y build-essential git wget pkg-config lxc-dev libzmq3-dev \
+    apt-get install -y build-essential gcc git wget pkg-config lxc-dev libzmq3-dev \
                        libgflags-dev libsnappy-dev zlib1g-dev libbz2-dev \
                        liblz4-dev graphviz && \
     apt-get clean
@@ -42,6 +42,9 @@ RUN strip /opt/rocksdb/ldb /opt/rocksdb/sst_dump && \
 
 # install build tools
 RUN go get github.com/gobuffalo/packr/...
+
+# add permissions to download private repo go-core
+RUN git config --global url."https://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@github.com/core-coin/go-core".insteadOf "https://github.com/core-coin/go-core"
 
 # pre-load depencencies
 RUN \
