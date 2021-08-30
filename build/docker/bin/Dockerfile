@@ -45,6 +45,7 @@ RUN go get github.com/gobuffalo/packr/...
 
 # add permissions to download private repo go-core
 RUN git config --global url."https://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@github.com/core-coin/go-core".insteadOf "https://github.com/core-coin/go-core"
+RUN git config --global url."https://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@github.com/cryptohub-digital/blockbook".insteadOf "https://github.com/cryptohub-digital/blockbook"
 
 # pre-load depencencies
 RUN \
@@ -52,7 +53,7 @@ RUN \
     trap cleanup EXIT && \
     mkdir -p $GOPATH/src/github.com/trezor && \
     cd $GOPATH/src/github.com/trezor && \
-    git clone https://github.com/trezor/blockbook.git && \
+    git clone https://github.com/cryptohub-digital/blockbook.git && \
     cd blockbook && \
     go mod download
 
