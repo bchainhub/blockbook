@@ -1,3 +1,4 @@
+//go:build unittest
 // +build unittest
 
 package server
@@ -14,16 +15,16 @@ import (
 	"testing"
 	"time"
 
+	"github.com/cryptohub-digital/blockbook/bchain"
+	"github.com/cryptohub-digital/blockbook/bchain/coins/btc"
+	"github.com/cryptohub-digital/blockbook/common"
+	"github.com/cryptohub-digital/blockbook/db"
+	"github.com/cryptohub-digital/blockbook/tests/dbtestdata"
 	"github.com/golang/glog"
 	"github.com/gorilla/websocket"
 	"github.com/martinboehm/btcutil/chaincfg"
 	gosocketio "github.com/martinboehm/golang-socketio"
 	"github.com/martinboehm/golang-socketio/transport"
-	"github.com/trezor/blockbook/bchain"
-	"github.com/trezor/blockbook/bchain/coins/btc"
-	"github.com/trezor/blockbook/common"
-	"github.com/trezor/blockbook/db"
-	"github.com/trezor/blockbook/tests/dbtestdata"
 )
 
 func TestMain(m *testing.M) {
@@ -938,7 +939,7 @@ func socketioTestsBitcoinType(t *testing.T, ts *httptest.Server) {
 		{
 			name: "socketio getInfo",
 			req:  socketioReq{"getInfo", []interface{}{}},
-			want: `{"result":{"blocks":225494,"testnet":true,"network":"fakecoin","subversion":"/Fakecoin:0.0.1/","coin_name":"Fakecoin","about":"Blockbook - blockchain indexer for Trezor wallet https://trezor.io/. Do not use for any other purpose."}}`,
+			want: `{"result":{"blocks":225494,"testnet":true,"network":"fakecoin","subversion":"/Fakecoin:0.0.1/","coin_name":"Fakecoin","about":"Blockbook - blockchain indexer for Core network https://coreblockchain.cc/. Do not use for any other purpose."}}`,
 		},
 		{
 			name: "socketio estimateFee",

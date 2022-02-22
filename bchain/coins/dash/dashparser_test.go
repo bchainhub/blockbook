@@ -1,3 +1,4 @@
+//go:build unittest
 // +build unittest
 
 package dash
@@ -12,8 +13,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/trezor/blockbook/bchain"
-	"github.com/trezor/blockbook/bchain/coins/btc"
+	"github.com/cryptohub-digital/blockbook/bchain"
+	"github.com/cryptohub-digital/blockbook/bchain/coins/btc"
 )
 
 type testBlock struct {

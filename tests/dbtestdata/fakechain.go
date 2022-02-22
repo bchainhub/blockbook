@@ -6,7 +6,7 @@ import (
 	"errors"
 	"math/big"
 
-	"github.com/trezor/blockbook/bchain"
+	"github.com/cryptohub-digital/blockbook/bchain"
 )
 
 type fakeBlockChain struct {

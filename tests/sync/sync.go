@@ -1,3 +1,4 @@
+//go:build integration
 // +build integration
 
 package sync
@@ -10,9 +11,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/trezor/blockbook/bchain"
-	"github.com/trezor/blockbook/common"
-	"github.com/trezor/blockbook/db"
+	"github.com/cryptohub-digital/blockbook/bchain"
+	"github.com/cryptohub-digital/blockbook/common"
+	"github.com/cryptohub-digital/blockbook/db"
 )
 
 var testMap = map[string]func(t *testing.T, th *TestHandler){

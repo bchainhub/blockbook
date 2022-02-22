@@ -13,12 +13,12 @@ import (
 	"sync"
 	"time"
 
+	"github.com/cryptohub-digital/blockbook/bchain"
+	"github.com/cryptohub-digital/blockbook/bchain/coins/xcb"
+	"github.com/cryptohub-digital/blockbook/common"
+	"github.com/cryptohub-digital/blockbook/db"
 	"github.com/golang/glog"
 	"github.com/juju/errors"
-	"github.com/trezor/blockbook/bchain"
-	"github.com/trezor/blockbook/bchain/coins/xcb"
-	"github.com/trezor/blockbook/common"
-	"github.com/trezor/blockbook/db"
 )
 
 // Worker is handle to api worker

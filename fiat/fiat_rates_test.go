@@ -1,3 +1,4 @@
+//go:build unittest
 // +build unittest
 
 package fiat
@@ -12,12 +13,12 @@ import (
 	"testing"
 	"time"
 
+	"github.com/cryptohub-digital/blockbook/bchain"
+	"github.com/cryptohub-digital/blockbook/bchain/coins/btc"
+	"github.com/cryptohub-digital/blockbook/common"
+	"github.com/cryptohub-digital/blockbook/db"
 	"github.com/golang/glog"
 	"github.com/martinboehm/btcutil/chaincfg"
-	"github.com/trezor/blockbook/bchain"
-	"github.com/trezor/blockbook/bchain/coins/btc"
-	"github.com/trezor/blockbook/common"
-	"github.com/trezor/blockbook/db"
 )
 
 func TestMain(m *testing.M) {

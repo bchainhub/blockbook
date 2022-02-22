@@ -1,4 +1,4 @@
-module github.com/trezor/blockbook
+module github.com/cryptohub-digital/blockbook
 
 go 1.15
 

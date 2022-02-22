@@ -1,3 +1,4 @@
+//go:build integration
 // +build integration
 
 package tests
@@ -16,12 +17,12 @@ import (
 	"testing"
 	"time"
 
+	"github.com/cryptohub-digital/blockbook/bchain"
+	"github.com/cryptohub-digital/blockbook/bchain/coins"
+	build "github.com/cryptohub-digital/blockbook/build/tools"
+	"github.com/cryptohub-digital/blockbook/tests/rpc"
+	"github.com/cryptohub-digital/blockbook/tests/sync"
 	"github.com/martinboehm/btcutil/chaincfg"
-	"github.com/trezor/blockbook/bchain"
-	"github.com/trezor/blockbook/bchain/coins"
-	build "github.com/trezor/blockbook/build/tools"
-	"github.com/trezor/blockbook/tests/rpc"
-	"github.com/trezor/blockbook/tests/sync"
 )
 
 type TestFunc func(t *testing.T, coin string, chain bchain.BlockChain, mempool bchain.Mempool, testConfig json.RawMessage)

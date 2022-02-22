@@ -1,3 +1,4 @@
+//go:build unittest
 // +build unittest
 
 package eth
@@ -9,8 +10,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/trezor/blockbook/bchain"
-	"github.com/trezor/blockbook/tests/dbtestdata"
+	"github.com/cryptohub-digital/blockbook/bchain"
+	"github.com/cryptohub-digital/blockbook/tests/dbtestdata"
 )
 
 func TestEthParser_GetAddrDescFromAddress(t *testing.T) {

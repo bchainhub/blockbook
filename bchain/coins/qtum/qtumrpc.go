@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"math/big"
 
+	"github.com/cryptohub-digital/blockbook/bchain"
+	"github.com/cryptohub-digital/blockbook/bchain/coins/btc"
 	"github.com/golang/glog"
-	"github.com/trezor/blockbook/bchain"
-	"github.com/trezor/blockbook/bchain/coins/btc"
 )
 
 // QtumRPC is an interface to JSON-RPC bitcoind service.

@@ -1,3 +1,4 @@
+//go:build unittest
 // +build unittest
 
 package xcb
@@ -9,7 +10,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/trezor/blockbook/bchain"
+	"github.com/cryptohub-digital/blockbook/bchain"
 )
 
 const (

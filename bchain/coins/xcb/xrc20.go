@@ -10,9 +10,9 @@ import (
 	"unicode/utf8"
 
 	xcbcommon "github.com/core-coin/go-core/common"
+	"github.com/cryptohub-digital/blockbook/bchain"
 	"github.com/golang/glog"
 	"github.com/juju/errors"
-	"github.com/trezor/blockbook/bchain"
 )
 
 var xrc20abi = `[{"constant":true,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"payable":false,"type":"function","signature":"0x06fdde03"},
