@@ -1,5 +1,5 @@
 syntax = "proto3";
-option go_package = "github.com/trezor/blockbook/bchain/coins/xcb";
+option go_package = "github.com/cryptohub-digital/blockbook/bchain/coins/xcb";
 
 	package xcb;
 

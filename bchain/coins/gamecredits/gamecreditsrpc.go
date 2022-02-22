@@ -3,9 +3,9 @@ package gamecredits
 import (
 	"encoding/json"
 
+	"github.com/cryptohub-digital/blockbook/bchain"
+	"github.com/cryptohub-digital/blockbook/bchain/coins/btc"
 	"github.com/golang/glog"
-	"github.com/trezor/blockbook/bchain"
-	"github.com/trezor/blockbook/bchain/coins/btc"
 )
 
 // GameCreditsRPC is an interface to JSON-RPC bitcoind service.

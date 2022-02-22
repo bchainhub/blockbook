@@ -1,3 +1,4 @@
+//go:build unittest
 // +build unittest
 
 package eth
@@ -8,8 +9,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/trezor/blockbook/bchain"
-	"github.com/trezor/blockbook/tests/dbtestdata"
+	"github.com/cryptohub-digital/blockbook/bchain"
+	"github.com/cryptohub-digital/blockbook/tests/dbtestdata"
 )
 
 func TestErc20_erc20GetTransfersFromLog(t *testing.T) {

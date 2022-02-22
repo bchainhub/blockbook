@@ -1,11 +1,12 @@
+//go:build unittest
 // +build unittest
 
 package xcb
 
 import (
 	"fmt"
-	"github.com/trezor/blockbook/bchain"
-	"github.com/trezor/blockbook/tests/dbtestdata"
+	"github.com/cryptohub-digital/blockbook/bchain"
+	"github.com/cryptohub-digital/blockbook/tests/dbtestdata"
 	"math/big"
 	"strings"
 	"testing"

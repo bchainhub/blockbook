@@ -1,9 +1,10 @@
+//go:build integration
 // +build integration
 
 package db
 
 import (
-	"github.com/trezor/blockbook/bchain"
+	"github.com/cryptohub-digital/blockbook/bchain"
 )
 
 func SetBlockChain(w *SyncWorker, chain bchain.BlockChain) {

@@ -232,7 +232,7 @@ Get blockbook sources, install dependencies, build:
 
 ```
 cd $GOPATH/src
-git clone https://github.com/trezor/blockbook.git
+git clone https://github.com/cryptohub-digital/blockbook.git
 cd blockbook
 go build
 ```

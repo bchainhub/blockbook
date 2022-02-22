@@ -1,3 +1,4 @@
+//go:build unittest
 // +build unittest
 
 package btg
@@ -11,8 +12,8 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/cryptohub-digital/blockbook/bchain/coins/btc"
 	"github.com/martinboehm/btcutil/chaincfg"
-	"github.com/trezor/blockbook/bchain/coins/btc"
 )
 
 func TestMain(m *testing.M) {

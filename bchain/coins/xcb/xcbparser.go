@@ -6,9 +6,9 @@ import (
 	"strconv"
 
 	"github.com/core-coin/go-core/common/hexutil"
+	"github.com/cryptohub-digital/blockbook/bchain"
 	"github.com/golang/protobuf/proto"
 	"github.com/juju/errors"
-	"github.com/trezor/blockbook/bchain"
 )
 
 // CoreblockchainTypeAddressDescriptorLen - in case of EthereumType, the AddressDescriptor has fixed length

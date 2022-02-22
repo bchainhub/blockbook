@@ -1,9 +1,9 @@
 {
   "coin": {
-    "name": "Core Coin",
+    "name": "Core",
     "shortcut": "XCB",
-    "label": "Core Coin",
-    "alias": "core-coin"
+    "label": "Core",
+    "alias": "core"
   },
   "ports": {
     "backend_rpc": 8036,
@@ -36,7 +36,7 @@
     }
   },
   "meta": {
-    "package_maintainer": "IT",
-    "package_maintainer_email": "it@satoshilabs.com"
+    "package_maintainer": "Core Support",
+    "package_maintainer_email": "support@coreblockchain.cc"
   }
 }

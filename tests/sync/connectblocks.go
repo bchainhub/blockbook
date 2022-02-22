@@ -1,3 +1,4 @@
+//go:build integration
 // +build integration
 
 package sync
@@ -9,8 +10,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/trezor/blockbook/bchain"
-	"github.com/trezor/blockbook/db"
+	"github.com/cryptohub-digital/blockbook/bchain"
+	"github.com/cryptohub-digital/blockbook/db"
 )
 
 func testConnectBlocks(t *testing.T, h *TestHandler) {

@@ -41,18 +41,25 @@ Common principles used in API V2:
 
 The following methods are supported:
 
-- [Status](#status)
-- [Get block hash](#get-block-hash)
-- [Get transaction](#get-transaction)
-- [Get transaction specific](#get-transaction-specific)
-- [Get address](#get-address)
-- [Get xpub](#get-xpub)
-- [Get utxo](#get-utxo)
-- [Get block](#get-block)
-- [Send transaction](#send-transaction)
-- [Tickers list](#tickers-list)
-- [Tickers](#tickers)
-- [Balance history](#balance-history)
+- [Blockbook API](#blockbook-api)
+  - [Legacy API V1](#legacy-api-v1)
+    - [REST API](#rest-api)
+    - [Socket.io API](#socketio-api)
+  - [API V2](#api-v2)
+    - [REST API](#rest-api-1)
+      - [Status page](#status-page)
+      - [Get block hash](#get-block-hash)
+      - [Get transaction](#get-transaction)
+      - [Get transaction specific](#get-transaction-specific)
+      - [Get address](#get-address)
+      - [Get xpub](#get-xpub)
+      - [Get utxo](#get-utxo)
+      - [Get block](#get-block)
+      - [Send transaction](#send-transaction)
+      - [Tickers list](#tickers-list)
+      - [Tickers](#tickers)
+      - [Balance history](#balance-history)
+    - [Websocket API](#websocket-api)
 
 #### Status page
 Status page returns current status of Blockbook and connected backend.
@@ -80,7 +87,7 @@ Response:
     "mempoolSize": 17348,
     "decimals": 8,
     "dbSize": 191887866502,
-    "about": "Blockbook - blockchain indexer for Trezor wallet https://trezor.io/. Do not use for any other purpose."
+    "about": "Blockbook - blockchain indexer for Core network https://coreblockchain.cc/. Do not use for any other purpose."
   },
   "backend": {
     "chain": "main",
@@ -335,7 +342,7 @@ Returns balances and transactions of an xpub, applicable only for Bitcoin-type c
 
 Blockbook supports BIP44, BIP49 and BIP84 derivation schemes. It expects xpub at level 3 derivation path, i.e. *m/purpose'/coin_type'/account'/*. Blockbook completes the *change/address_index* part of the path when deriving addresses. 
 
-The BIP version is determined by the prefix of the xpub. The prefixes for each coin are defined by fields `xpub_magic`, `xpub_magic_segwit_p2sh`, `xpub_magic_segwit_native` in the [trezor-common](https://github.com/trezor/trezor-common/tree/master/defs/bitcoin) library. If the prefix is not recognized, Blockbook defaults to BIP44 derivation scheme.
+The BIP version is determined by the prefix of the xpub. The prefixes for each coin are defined by fields `xpub_magic`, `xpub_magic_segwit_p2sh`, `xpub_magic_segwit_native` in the [trezor-common](https://github.com/cryptohub-digital/trezor-common/tree/master/defs/bitcoin) library. If the prefix is not recognized, Blockbook defaults to BIP44 derivation scheme.
 
 The returned transactions are sorted by block height, newest blocks first.
 

@@ -7,8 +7,8 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/cryptohub-digital/blockbook/db"
 	"github.com/golang/glog"
-	"github.com/trezor/blockbook/db"
 )
 
 // OnNewFiatRatesTicker is used to send notification about a new FiatRates ticker

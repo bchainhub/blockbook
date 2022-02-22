@@ -15,10 +15,10 @@ import (
 	xcbtypes "github.com/core-coin/go-core/core/types"
 	"github.com/core-coin/go-core/rpc"
 	"github.com/core-coin/go-core/xcbclient"
+	"github.com/cryptohub-digital/blockbook/bchain"
+	"github.com/cryptohub-digital/blockbook/common"
 	"github.com/golang/glog"
 	"github.com/juju/errors"
-	"github.com/trezor/blockbook/bchain"
-	"github.com/trezor/blockbook/common"
 )
 
 // CoreblockchainNet type specifies the type of coreblockchain network

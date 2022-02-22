@@ -1,3 +1,4 @@
+//go:build unittest
 // +build unittest
 
 package bchain
@@ -6,7 +7,7 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/trezor/blockbook/common"
+	"github.com/cryptohub-digital/blockbook/common"
 )
 
 func NewBaseParser(adp int) *BaseParser {

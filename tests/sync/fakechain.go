@@ -1,8 +1,9 @@
+//go:build integration
 // +build integration
 
 package sync
 
-import "github.com/trezor/blockbook/bchain"
+import "github.com/cryptohub-digital/blockbook/bchain"
 
 type fakeBlockChain struct {
 	bchain.BlockChain
