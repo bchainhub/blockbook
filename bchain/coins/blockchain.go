@@ -121,7 +121,7 @@ func init() {
 	BlockChainFactories["Omotenashicoin Testnet"] = omotenashicoin.NewOmotenashiCoinRPC
 	BlockChainFactories["BitZeny"] = bitzeny.NewBitZenyRPC
 	BlockChainFactories["Trezarcoin"] = trezarcoin.NewTrezarcoinRPC
-	BlockChainFactories["Core Coin"] = xcb.NewCoreblockchainRPC
+	BlockChainFactories["Core"] = xcb.NewCoreblockchainRPC
 }
 
 // GetCoinNameFromConfig gets coin name and coin shortcut from config file
