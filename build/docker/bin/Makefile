@@ -9,12 +9,12 @@ ARGS ?=
 
 all: build tools
 
-build: prepare-sources generate-data
+build: prepare-sources
 	cd $(BLOCKBOOK_SRC) && go build -o $(CURDIR)/blockbook -ldflags="-s -w $(LDFLAGS)" $(ARGS)
 	cp $(CURDIR)/blockbook /out/blockbook
 	chown $(PACKAGER) /out/blockbook
 
-build-debug: prepare-sources generate-data
+build-debug: prepare-sources
 	cd $(BLOCKBOOK_SRC) && go build -o $(CURDIR)/blockbook -ldflags="$(LDFLAGS)" $(ARGS)
 	cp $(CURDIR)/blockbook /out/blockbook
 	chown $(PACKAGER) /out/blockbook
@@ -23,13 +23,13 @@ tools:
 	cp $(CURDIR)/{ldb,sst_dump} /out
 	chown $(PACKAGER) /out/{ldb,sst_dump}
 
-test: prepare-sources generate-data
+test: prepare-sources
 	cd $(BLOCKBOOK_SRC) && go test -tags unittest `go list ./... | grep -vP '^github.com/cryptohub-digital/blockbook/(contrib|tests)'` $(ARGS)
 
-test-integration: prepare-sources generate-data
+test-integration: prepare-sources
 	cd $(BLOCKBOOK_SRC) && go test -tags integration `go list github.com/cryptohub-digital/blockbook/tests/...` $(ARGS)
 
-test-all: prepare-sources generate-data
+test-all: prepare-sources
 	cd $(BLOCKBOOK_SRC) && go test -tags 'unittest integration' `go list ./... | grep -v '^github.com/cryptohub-digital/blockbook/contrib'` $(ARGS)
 
 prepare-sources:
@@ -39,5 +39,3 @@ prepare-sources:
 	cp -r /src $(BLOCKBOOK_SRC)
 	cd $(BLOCKBOOK_SRC) && go mod download
 
-generate-data:
-	cd $(BLOCKBOOK_SRC) && packr clean && packr
