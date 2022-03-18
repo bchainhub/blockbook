@@ -40,9 +40,6 @@ RUN cd /opt/rocksdb && CFLAGS=-fPIC CXXFLAGS=-fPIC make -j 4 release
 RUN strip /opt/rocksdb/ldb /opt/rocksdb/sst_dump && \
     cp /opt/rocksdb/ldb /opt/rocksdb/sst_dump /build
 
-# install build tools
-RUN go get github.com/gobuffalo/packr/...
-
 # add permissions to download private repo go-core
 RUN git config --global url."https://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@github.com/core-coin/go-core".insteadOf "https://github.com/core-coin/go-core"
 RUN git config --global url."https://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@github.com/cryptohub-digital/blockbook".insteadOf "https://github.com/cryptohub-digital/blockbook"
