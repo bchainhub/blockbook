@@ -17,9 +17,9 @@ import (
 	vlq "github.com/bsm/go-vlq"
 	"github.com/cryptohub-digital/blockbook/bchain"
 	"github.com/cryptohub-digital/blockbook/common"
+	"github.com/flier/gorocksdb"
 	"github.com/golang/glog"
 	"github.com/juju/errors"
-	"github.com/tecbot/gorocksdb"
 )
 
 const dbVersion = 5

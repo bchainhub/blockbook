@@ -4,8 +4,8 @@ import (
 	"time"
 
 	"github.com/cryptohub-digital/blockbook/bchain"
+	"github.com/flier/gorocksdb"
 	"github.com/golang/glog"
-	"github.com/tecbot/gorocksdb"
 )
 
 // bulk connect

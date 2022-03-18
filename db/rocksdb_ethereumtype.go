@@ -7,9 +7,9 @@ import (
 	vlq "github.com/bsm/go-vlq"
 	"github.com/cryptohub-digital/blockbook/bchain"
 	"github.com/cryptohub-digital/blockbook/bchain/coins/xcb"
+	"github.com/flier/gorocksdb"
 	"github.com/golang/glog"
 	"github.com/juju/errors"
-	"github.com/tecbot/gorocksdb"
 )
 
 // AddrContract is Contract address with number of transactions done by given address
