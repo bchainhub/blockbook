@@ -7,7 +7,7 @@ require (
 	github.com/allegro/bigcache v1.2.1 // indirect
 	github.com/bsm/go-vlq v0.0.0-20150828105119-ec6e8d4f5f4e
 	github.com/btcsuite/btcd v0.21.0-beta // indirect
-	github.com/core-coin/go-core v1.0.22-dev
+	github.com/core-coin/go-core v1.1.0
 	github.com/dchest/blake256 v1.0.0 // indirect
 	github.com/deckarep/golang-set v1.7.1
 	github.com/decred/dcrd/chaincfg/chainhash v1.0.2
@@ -38,21 +38,21 @@ require (
 	github.com/pebbe/zmq4 v1.2.1
 	github.com/prometheus/client_golang v1.8.0
 	github.com/schancel/cashaddr-converter v0.0.0-20181111022653-4769e7add95a
-	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2
+	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
 	google.golang.org/protobuf v1.26.0
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22 // indirect
 )
 
 require (
-	github.com/StackExchange/wmi v0.0.0-20180116203802-5d049714c4a6 // indirect
+	github.com/StackExchange/wmi v1.2.1 // indirect
 	github.com/VictoriaMetrics/fastcache v1.6.0 // indirect
 	github.com/agl/ed25519 v0.0.0-20170116200512-5312a6153412 // indirect
 	github.com/aristanetworks/goarista v0.0.0-20170210015632-ea17b1a17847 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/btcsuite/btclog v0.0.0-20170628155309-84c8d2346e9f // indirect
 	github.com/cespare/xxhash/v2 v2.1.1 // indirect
-	github.com/core-coin/go-goldilocks v1.0.3 // indirect
+	github.com/core-coin/go-goldilocks v1.0.9 // indirect
 	github.com/dchest/siphash v1.2.1 // indirect
 	github.com/decred/base58 v1.0.3 // indirect
 	github.com/decred/dcrd/crypto/blake256 v1.0.0 // indirect
@@ -62,7 +62,7 @@ require (
 	github.com/decred/dcrd/wire v1.4.0 // indirect
 	github.com/decred/slog v1.1.0 // indirect
 	github.com/elastic/gosigar v0.8.1-0.20180330100440-37f05ff46ffa // indirect
-	github.com/go-ole/go-ole v1.2.1 // indirect
+	github.com/go-ole/go-ole v1.2.5 // indirect
 	github.com/go-stack/stack v1.8.0 // indirect
 	github.com/golang/snappy v0.0.3 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
