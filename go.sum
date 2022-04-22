@@ -139,6 +139,8 @@ github.com/core-coin/go-core v1.0.22-dev h1:7T79G6hllo1kBsjTfOhCVAEZLtAOQS6gCEOP
 github.com/core-coin/go-core v1.0.22-dev/go.mod h1:km8qhNUBPU54F4xjN04iLAZwV7IX34Zc2MKni6idIws=
 github.com/core-coin/go-core v1.1.0 h1:VTRFt7JHV2pZ7I5ff7OAaVVPTON5rmrrboKP+wyXnMk=
 github.com/core-coin/go-core v1.1.0/go.mod h1:gTwqMxP9EdkVFVO8XYRw2IPYQR4gwTFW+v95UwcXDdw=
+github.com/core-coin/go-core v1.1.1 h1:r+2u5QtXAxA8lTfngXvsOCg/Yq+UnPRJT6YHUW/V40U=
+github.com/core-coin/go-core v1.1.1/go.mod h1:gTwqMxP9EdkVFVO8XYRw2IPYQR4gwTFW+v95UwcXDdw=
 github.com/core-coin/go-goldilocks v1.0.3 h1:0EQxaD4APSctj7fp8x0sWkGASsc0xQUzI2k6+zls4Js=
 github.com/core-coin/go-goldilocks v1.0.3/go.mod h1:uXjPZTv3XMF/wmyidKozOb8yQwWmg2ZbO0Amcuiw9mg=
 github.com/core-coin/go-goldilocks v1.0.9 h1:NEX5+LXeLpj3yJPKQgEffj2ly33rOvANsWDcQR8jBUs=
