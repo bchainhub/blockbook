@@ -7,7 +7,7 @@ require (
 	github.com/allegro/bigcache v1.2.1 // indirect
 	github.com/bsm/go-vlq v0.0.0-20150828105119-ec6e8d4f5f4e
 	github.com/btcsuite/btcd v0.21.0-beta // indirect
-	github.com/core-coin/go-core v1.1.0
+	github.com/core-coin/go-core v1.1.1
 	github.com/dchest/blake256 v1.0.0 // indirect
 	github.com/deckarep/golang-set v1.7.1
 	github.com/decred/dcrd/chaincfg/chainhash v1.0.2
