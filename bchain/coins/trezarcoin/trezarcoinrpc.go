@@ -2,6 +2,7 @@ package trezarcoin
 
 import (
 	"encoding/json"
+	"github.com/cryptohub-digital/blockbook/contracts"
 
 	"github.com/cryptohub-digital/blockbook/bchain"
 	"github.com/cryptohub-digital/blockbook/bchain/coins/btc"
@@ -28,6 +29,10 @@ func NewTrezarcoinRPC(config json.RawMessage, pushHandler func(bchain.Notificati
 	s.ChainConfig.SupportsEstimateFee = false
 
 	return s, nil
+}
+
+func (b *TrezarcoinRPC) GetSmartContracts() (*contracts.ChequableToken, *contracts.BountiableToken) {
+	return nil, nil
 }
 
 // Initialize initializes TrezarcoinRPC instance.

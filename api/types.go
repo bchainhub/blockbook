@@ -179,26 +179,52 @@ type CoreblockchainSpecific struct {
 	Data        string       `json:"data,omitempty"`
 }
 
+// CoreTokenSpecific contains core token specific transaction data
+type CoreTokenSpecific struct {
+	ChequeCash *ChequeCash `json:"cheque_cash,omitempty"`
+	BountyCash *BountyCash `json:"bounty_cash,omitempty"`
+}
+
+type ChequeCash struct {
+	Owner    string   `json:"owner,omitempty"`
+	Spender  string   `json:"spender,omitempty"`
+	Amount   *big.Int `json:"amount,omitempty"`
+	Nonce    *big.Int `json:"nonce,omitempty"`
+	Deadline *big.Int `json:"deadline,omitempty"`
+}
+
+type BountyCash struct {
+	Owner       string   `json:"owner,omitempty"`
+	Target      string   `json:"target,omitempty"`
+	Data        []byte   `json:"data,omitempty"`
+	Reward      *big.Int `json:"reward,omitempty"`
+	Nonce       *big.Int `json:"nonce,omitempty"`
+	Deadline    *big.Int `json:"deadline,omitempty"`
+	EnergyLimit *big.Int `json:"energy_limit,omitempty"`
+	Success     bool     `json:"success,omitempty"`
+}
+
 // Tx holds information about a transaction
 type Tx struct {
-	Txid             string                  `json:"txid"`
-	Version          int32                   `json:"version,omitempty"`
-	Locktime         uint32                  `json:"lockTime,omitempty"`
-	Vin              []Vin                   `json:"vin"`
-	Vout             []Vout                  `json:"vout"`
-	Blockhash        string                  `json:"blockHash,omitempty"`
-	Blockheight      int                     `json:"blockHeight"`
-	Confirmations    uint32                  `json:"confirmations"`
-	Blocktime        int64                   `json:"blockTime"`
-	Size             int                     `json:"size,omitempty"`
-	ValueOutSat      *Amount                 `json:"value"`
-	ValueInSat       *Amount                 `json:"valueIn,omitempty"`
-	FeesSat          *Amount                 `json:"fees,omitempty"`
-	Hex              string                  `json:"hex,omitempty"`
-	Rbf              bool                    `json:"rbf,omitempty"`
-	CoinSpecificData json.RawMessage         `json:"coinSpecificData,omitempty"`
-	TokenTransfers   []TokenTransfer         `json:"tokenTransfers,omitempty"`
-	EthereumSpecific *CoreblockchainSpecific `json:"ethereumSpecific,omitempty"`
+	Txid              string                  `json:"txid"`
+	Version           int32                   `json:"version,omitempty"`
+	Locktime          uint32                  `json:"lockTime,omitempty"`
+	Vin               []Vin                   `json:"vin"`
+	Vout              []Vout                  `json:"vout"`
+	Blockhash         string                  `json:"blockHash,omitempty"`
+	Blockheight       int                     `json:"blockHeight"`
+	Confirmations     uint32                  `json:"confirmations"`
+	Blocktime         int64                   `json:"blockTime"`
+	Size              int                     `json:"size,omitempty"`
+	ValueOutSat       *Amount                 `json:"value"`
+	ValueInSat        *Amount                 `json:"valueIn,omitempty"`
+	FeesSat           *Amount                 `json:"fees,omitempty"`
+	Hex               string                  `json:"hex,omitempty"`
+	Rbf               bool                    `json:"rbf,omitempty"`
+	CoinSpecificData  json.RawMessage         `json:"coinSpecificData,omitempty"`
+	TokenTransfers    []TokenTransfer         `json:"tokenTransfers,omitempty"`
+	EthereumSpecific  *CoreblockchainSpecific `json:"ethereumSpecific,omitempty"`
+	CoreTokenSpecific *CoreTokenSpecific      `json:"core_token_specific,omitempty"`
 }
 
 // FeeStats contains detailed block fee statistics

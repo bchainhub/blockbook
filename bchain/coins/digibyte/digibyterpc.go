@@ -2,6 +2,8 @@ package digibyte
 
 import (
 	"encoding/json"
+	"github.com/core-coin/go-core/xcbclient"
+	"github.com/cryptohub-digital/blockbook/contracts"
 
 	"github.com/cryptohub-digital/blockbook/bchain"
 	"github.com/cryptohub-digital/blockbook/bchain/coins/btc"
@@ -27,6 +29,14 @@ func NewDigiByteRPC(config json.RawMessage, pushHandler func(bchain.Notification
 	s.ChainConfig.SupportsEstimateFee = false
 
 	return s, nil
+}
+
+func (b *DigiByteRPC) GetRPCClient() *xcbclient.Client {
+	return nil
+}
+
+func (b *DigiByteRPC) GetSmartContracts() (*contracts.ChequableToken, *contracts.BountiableToken) {
+	return nil, nil
 }
 
 // Initialize initializes DigiByteRPC instance.

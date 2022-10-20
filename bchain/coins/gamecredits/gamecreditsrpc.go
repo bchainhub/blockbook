@@ -2,6 +2,8 @@ package gamecredits
 
 import (
 	"encoding/json"
+	"github.com/core-coin/go-core/xcbclient"
+	"github.com/cryptohub-digital/blockbook/contracts"
 
 	"github.com/cryptohub-digital/blockbook/bchain"
 	"github.com/cryptohub-digital/blockbook/bchain/coins/btc"
@@ -27,6 +29,14 @@ func NewGameCreditsRPC(config json.RawMessage, pushHandler func(bchain.Notificat
 	s.ChainConfig.SupportsEstimateFee = false
 
 	return s, nil
+}
+
+func (b *GameCreditsRPC) GetRPCClient() *xcbclient.Client {
+	return nil
+}
+
+func (b *GameCreditsRPC) GetSmartContracts() (*contracts.ChequableToken, *contracts.BountiableToken) {
+	return nil, nil
 }
 
 // Initialize initializes GameCreditsRPC instance.

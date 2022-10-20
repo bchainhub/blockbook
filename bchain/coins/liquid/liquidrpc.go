@@ -2,6 +2,8 @@ package liquid
 
 import (
 	"encoding/json"
+	"github.com/core-coin/go-core/xcbclient"
+	"github.com/cryptohub-digital/blockbook/contracts"
 
 	"github.com/cryptohub-digital/blockbook/bchain"
 	"github.com/cryptohub-digital/blockbook/bchain/coins/btc"
@@ -27,6 +29,14 @@ func NewLiquidRPC(config json.RawMessage, pushHandler func(bchain.NotificationTy
 	s.RPCMarshaler = btc.JSONMarshalerV2{}
 
 	return s, nil
+}
+
+func (b *LiquidRPC) GetRPCClient() *xcbclient.Client {
+	return nil
+}
+
+func (b *LiquidRPC) GetSmartContracts() (*contracts.ChequableToken, *contracts.BountiableToken) {
+	return nil, nil
 }
 
 // Initialize initializes GameCreditsRPC instance.

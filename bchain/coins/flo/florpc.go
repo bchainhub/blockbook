@@ -2,6 +2,8 @@ package flo
 
 import (
 	"encoding/json"
+	"github.com/core-coin/go-core/xcbclient"
+	"github.com/cryptohub-digital/blockbook/contracts"
 
 	"github.com/cryptohub-digital/blockbook/bchain"
 	"github.com/cryptohub-digital/blockbook/bchain/coins/btc"
@@ -28,6 +30,14 @@ func NewFloRPC(config json.RawMessage, pushHandler func(bchain.NotificationType)
 	s.ChainConfig.SupportsEstimateFee = false
 
 	return s, nil
+}
+
+func (f *FloRPC) GetRPCClient() *xcbclient.Client {
+	return nil
+}
+
+func (f *FloRPC) GetSmartContracts() (*contracts.ChequableToken, *contracts.BountiableToken) {
+	return nil, nil
 }
 
 // Initialize initializes FloRPC instance.

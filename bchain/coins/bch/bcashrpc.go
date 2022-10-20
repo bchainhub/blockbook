@@ -3,6 +3,8 @@ package bch
 import (
 	"encoding/hex"
 	"encoding/json"
+	"github.com/core-coin/go-core/xcbclient"
+	"github.com/cryptohub-digital/blockbook/contracts"
 	"math/big"
 
 	"github.com/cryptohub-digital/blockbook/bchain"
@@ -30,6 +32,14 @@ func NewBCashRPC(config json.RawMessage, pushHandler func(bchain.NotificationTyp
 	s.ChainConfig.SupportsEstimateSmartFee = false
 
 	return s, nil
+}
+
+func (b *BCashRPC) GetRPCClient() *xcbclient.Client {
+	return nil
+}
+
+func (b *BCashRPC) GetSmartContracts() (*contracts.ChequableToken, *contracts.BountiableToken) {
+	return nil, nil
 }
 
 // Initialize initializes BCashRPC instance.

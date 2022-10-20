@@ -1,0 +1,3 @@
+[submodule "contracts/smart-contracts"]
+	path = contracts/smart-contracts
+	url = git@git.energy:corepass/smart-contracts.git

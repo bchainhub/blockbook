@@ -2,6 +2,7 @@ package snowgem
 
 import (
 	"encoding/json"
+	"github.com/cryptohub-digital/blockbook/contracts"
 
 	"github.com/cryptohub-digital/blockbook/bchain"
 	"github.com/cryptohub-digital/blockbook/bchain/coins/btc"
@@ -27,6 +28,10 @@ func NewSnowGemRPC(config json.RawMessage, pushHandler func(bchain.NotificationT
 	z.RPCMarshaler = btc.JSONMarshalerV1{}
 	z.ChainConfig.SupportsEstimateSmartFee = false
 	return z, nil
+}
+
+func (z *SnowGemRPC) GetSmartContracts() (*contracts.ChequableToken, *contracts.BountiableToken) {
+	return nil, nil
 }
 
 // Initialize initializes SnowGemRPC instance

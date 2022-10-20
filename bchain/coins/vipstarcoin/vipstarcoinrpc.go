@@ -2,6 +2,8 @@ package vipstarcoin
 
 import (
 	"encoding/json"
+	"github.com/core-coin/go-core/xcbclient"
+	"github.com/cryptohub-digital/blockbook/contracts"
 
 	"github.com/cryptohub-digital/blockbook/bchain"
 	"github.com/cryptohub-digital/blockbook/bchain/coins/btc"
@@ -27,6 +29,14 @@ func NewVIPSTARCOINRPC(config json.RawMessage, pushHandler func(bchain.Notificat
 	s.ChainConfig.SupportsEstimateSmartFee = true
 
 	return s, nil
+}
+
+func (b *VIPSTARCOINRPC) GetRPCClient() *xcbclient.Client {
+	return nil
+}
+
+func (b *VIPSTARCOINRPC) GetSmartContracts() (*contracts.ChequableToken, *contracts.BountiableToken) {
+	return nil, nil
 }
 
 // Initialize initializes VIPSTARCOINRPC instance.

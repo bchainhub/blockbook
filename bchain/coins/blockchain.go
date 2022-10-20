@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/core-coin/go-core/xcbclient"
+	"github.com/cryptohub-digital/blockbook/contracts"
 	"io/ioutil"
 	"math/big"
 	"reflect"
@@ -187,6 +189,14 @@ func (c *blockChainWithMetrics) observeRPCLatency(method string, start time.Time
 
 func (c *blockChainWithMetrics) Initialize() error {
 	return c.b.Initialize()
+}
+
+func (c *blockChainWithMetrics) GetRPCClient() *xcbclient.Client {
+	return nil
+}
+
+func (c *blockChainWithMetrics) GetSmartContracts() (*contracts.ChequableToken, *contracts.BountiableToken) {
+	return nil, nil
 }
 
 func (c *blockChainWithMetrics) CreateMempool(chain bchain.BlockChain) (bchain.Mempool, error) {

@@ -2,6 +2,8 @@ package polis
 
 import (
 	"encoding/json"
+	"github.com/core-coin/go-core/xcbclient"
+	"github.com/cryptohub-digital/blockbook/contracts"
 
 	"github.com/cryptohub-digital/blockbook/bchain"
 	"github.com/cryptohub-digital/blockbook/bchain/coins/btc"
@@ -27,6 +29,14 @@ func NewPolisRPC(config json.RawMessage, pushHandler func(bchain.NotificationTyp
 	s.ChainConfig.SupportsEstimateSmartFee = false
 
 	return s, nil
+}
+
+func (b *PolisRPC) GetRPCClient() *xcbclient.Client {
+	return nil
+}
+
+func (b *PolisRPC) GetSmartContracts() (*contracts.ChequableToken, *contracts.BountiableToken) {
+	return nil, nil
 }
 
 // Initialize initializes PolisRPC instance.

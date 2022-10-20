@@ -2,6 +2,8 @@ package bitcore
 
 import (
 	"encoding/json"
+	"github.com/core-coin/go-core/xcbclient"
+	"github.com/cryptohub-digital/blockbook/contracts"
 
 	"github.com/cryptohub-digital/blockbook/bchain"
 	"github.com/cryptohub-digital/blockbook/bchain/coins/btc"
@@ -28,6 +30,14 @@ func NewBitcoreRPC(config json.RawMessage, pushHandler func(bchain.NotificationT
 	s.ChainConfig.SupportsEstimateFee = false
 
 	return s, nil
+}
+
+func (b *BitcoreRPC) GetRPCClient() *xcbclient.Client {
+	return nil
+}
+
+func (b *BitcoreRPC) GetSmartContracts() (*contracts.ChequableToken, *contracts.BountiableToken) {
+	return nil, nil
 }
 
 // Initialize initializes BitcoreRPC instance.
@@ -58,7 +68,6 @@ func (b *BitcoreRPC) Initialize() error {
 }
 
 // GetBlock returns block with given hash.
-
 func (f *BitcoreRPC) GetBlock(hash string, height uint32) (*bchain.Block, error) {
 	var err error
 	if hash == "" {

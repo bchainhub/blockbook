@@ -2,6 +2,8 @@ package ravencoin
 
 import (
 	"encoding/json"
+	"github.com/core-coin/go-core/xcbclient"
+	"github.com/cryptohub-digital/blockbook/contracts"
 
 	"github.com/cryptohub-digital/blockbook/bchain"
 	"github.com/cryptohub-digital/blockbook/bchain/coins/btc"
@@ -28,6 +30,14 @@ func NewRavencoinRPC(config json.RawMessage, pushHandler func(bchain.Notificatio
 	s.ChainConfig.SupportsEstimateFee = false
 
 	return s, nil
+}
+
+func (b *RavencoinRPC) GetRPCClient() *xcbclient.Client {
+	return nil
+}
+
+func (b *RavencoinRPC) GetSmartContracts() (*contracts.ChequableToken, *contracts.BountiableToken) {
+	return nil, nil
 }
 
 // Initialize initializes RavencoinRPC instance.

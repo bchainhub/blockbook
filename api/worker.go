@@ -2,8 +2,12 @@ package api
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/core-coin/go-core/accounts/abi/bind"
+	common2 "github.com/core-coin/go-core/common"
+	"github.com/cryptohub-digital/blockbook/contracts"
 	"math"
 	"math/big"
 	"os"
@@ -124,6 +128,7 @@ func (w *Worker) GetTransaction(txid string, spendingTxs bool, specificJSON bool
 		}
 		return nil, NewAPIError(fmt.Sprintf("Transaction '%v' not found (%v)", txid, err), true)
 	}
+	// HERE HERE
 	return w.GetTransactionFromBchainTx(bchainTx, height, spendingTxs, specificJSON)
 }
 
@@ -133,6 +138,7 @@ func (w *Worker) GetTransactionFromBchainTx(bchainTx *bchain.Tx, height int, spe
 	var ta *db.TxAddresses
 	var tokens []TokenTransfer
 	var xcbSpecific *CoreblockchainSpecific
+	var coreTokenSpec *CoreTokenSpecific
 	var blockhash string
 	if bchainTx.Confirmations > 0 {
 		if w.chainType == bchain.ChainBitcoinType {
@@ -255,6 +261,7 @@ func (w *Worker) GetTransactionFromBchainTx(bchainTx *bchain.Tx, height int, spe
 		}
 		pValInSat = &valInSat
 	} else if w.chainType == bchain.ChainEthereumType {
+		// HERE HERE HERE
 		ets, err := w.chainParser.EthereumTypeGetErc20FromTx(bchainTx)
 		if err != nil {
 			glog.Errorf("GetErc20FromTx error %v, %v", err, bchainTx)
@@ -276,6 +283,10 @@ func (w *Worker) GetTransactionFromBchainTx(bchainTx *bchain.Tx, height int, spe
 			Status:      xcbTxData.Status,
 			Data:        xcbTxData.Data,
 		}
+		coreTokenSpec, err = w.getCoreTokenSpecific(bchainTx.Txid)
+		if err != nil {
+			return nil, err
+		}
 	}
 	// for now do not return size, we would have to compute vsize of segwit transactions
 	// size:=len(bchainTx.Hex) / 2
@@ -292,25 +303,76 @@ func (w *Worker) GetTransactionFromBchainTx(bchainTx *bchain.Tx, height int, spe
 		bchainTx.Blocktime = int64(w.mempool.GetTransactionTime(bchainTx.Txid))
 	}
 	r := &Tx{
-		Blockhash:        blockhash,
-		Blockheight:      height,
-		Blocktime:        bchainTx.Blocktime,
-		Confirmations:    bchainTx.Confirmations,
-		FeesSat:          (*Amount)(&feesSat),
-		Locktime:         bchainTx.LockTime,
-		Txid:             bchainTx.Txid,
-		ValueInSat:       (*Amount)(pValInSat),
-		ValueOutSat:      (*Amount)(&valOutSat),
-		Version:          bchainTx.Version,
-		Hex:              bchainTx.Hex,
-		Rbf:              rbf,
-		Vin:              vins,
-		Vout:             vouts,
-		CoinSpecificData: sj,
-		TokenTransfers:   tokens,
-		EthereumSpecific: xcbSpecific,
+		Blockhash:         blockhash,
+		Blockheight:       height,
+		Blocktime:         bchainTx.Blocktime,
+		Confirmations:     bchainTx.Confirmations,
+		FeesSat:           (*Amount)(&feesSat),
+		Locktime:          bchainTx.LockTime,
+		Txid:              bchainTx.Txid,
+		ValueInSat:        (*Amount)(pValInSat),
+		ValueOutSat:       (*Amount)(&valOutSat),
+		Version:           bchainTx.Version,
+		Hex:               bchainTx.Hex,
+		Rbf:               rbf,
+		Vin:               vins,
+		Vout:              vouts,
+		CoinSpecificData:  sj,
+		TokenTransfers:    tokens,
+		EthereumSpecific:  xcbSpecific,
+		CoreTokenSpecific: coreTokenSpec,
 	}
 	return r, nil
+}
+
+func (w *Worker) getCoreTokenSpecific(txId string) (*CoreTokenSpecific, error) {
+	coreTokenSpecific := &CoreTokenSpecific{}
+
+	provider := w.chain.GetRPCClient()
+	tx, _, err := provider.TransactionByHash(context.Background(), common2.HexToHash(txId))
+	if err != nil {
+		return nil, err
+	}
+	receipt, err := bind.WaitMined(context.Background(), provider, tx)
+	if err != nil {
+		return nil, err
+	}
+
+	contractCheque, contractBounty := w.chain.GetSmartContracts()
+
+	var cheque *contracts.ChequableTokenChequeCash
+	for _, log := range receipt.Logs {
+		cheque, err = contractCheque.ParseChequeCash(*log)
+		fmt.Println(err)
+		if err == nil {
+			coreTokenSpecific.ChequeCash = &ChequeCash{
+				Owner:    cheque.Owner.Hex(),
+				Spender:  cheque.Spender.Hex(),
+				Amount:   cheque.Amount,
+				Nonce:    cheque.Nonce,
+				Deadline: cheque.Deadline,
+			}
+		}
+	}
+
+	var bounty *contracts.BountiableTokenBountyCashed
+	for _, log := range receipt.Logs {
+		bounty, err = contractBounty.ParseBountyCashed(*log)
+		fmt.Println(err)
+		if err == nil {
+			coreTokenSpecific.BountyCash = &BountyCash{
+				Owner:       bounty.Owner.Hex(),
+				Target:      bounty.Target.Hex(),
+				Data:        bounty.Data,
+				Reward:      bounty.Reward,
+				Nonce:       bounty.Nonce,
+				Deadline:    bounty.Deadline,
+				EnergyLimit: bounty.EnergyLimit,
+				Success:     bounty.Success,
+			}
+		}
+	}
+	return coreTokenSpecific, nil
 }
 
 // GetTransactionFromMempoolTx converts bchain.MempoolTx to Tx, with limited amount of data
@@ -321,6 +383,7 @@ func (w *Worker) GetTransactionFromMempoolTx(mempoolTx *bchain.MempoolTx) (*Tx, 
 	var pValInSat *big.Int
 	var tokens []TokenTransfer
 	var xcbSpecific *CoreblockchainSpecific
+	var coreTokenSpec *CoreTokenSpecific
 	vins := make([]Vin, len(mempoolTx.Vin))
 	rbf := false
 	for i := range mempoolTx.Vin {
@@ -391,21 +454,26 @@ func (w *Worker) GetTransactionFromMempoolTx(mempoolTx *bchain.MempoolTx) (*Tx, 
 			Status:      xcbTxData.Status,
 			Data:        xcbTxData.Data,
 		}
+		coreTokenSpec, err = w.getCoreTokenSpecific(mempoolTx.Txid)
+		if err != nil {
+			return nil, err
+		}
 	}
 	r := &Tx{
-		Blocktime:        mempoolTx.Blocktime,
-		FeesSat:          (*Amount)(&feesSat),
-		Locktime:         mempoolTx.LockTime,
-		Txid:             mempoolTx.Txid,
-		ValueInSat:       (*Amount)(pValInSat),
-		ValueOutSat:      (*Amount)(&valOutSat),
-		Version:          mempoolTx.Version,
-		Hex:              mempoolTx.Hex,
-		Rbf:              rbf,
-		Vin:              vins,
-		Vout:             vouts,
-		TokenTransfers:   tokens,
-		EthereumSpecific: xcbSpecific,
+		Blocktime:         mempoolTx.Blocktime,
+		FeesSat:           (*Amount)(&feesSat),
+		Locktime:          mempoolTx.LockTime,
+		Txid:              mempoolTx.Txid,
+		ValueInSat:        (*Amount)(pValInSat),
+		ValueOutSat:       (*Amount)(&valOutSat),
+		Version:           mempoolTx.Version,
+		Hex:               mempoolTx.Hex,
+		Rbf:               rbf,
+		Vin:               vins,
+		Vout:              vouts,
+		TokenTransfers:    tokens,
+		EthereumSpecific:  xcbSpecific,
+		CoreTokenSpecific: coreTokenSpec,
 	}
 	return r, nil
 }
@@ -793,6 +861,7 @@ func (w *Worker) txFromTxid(txid string, bestheight uint32, option AccountDetail
 			tx = w.txFromTxAddress(txid, ta, blockInfo, bestheight)
 		}
 	} else {
+		//HERE
 		tx, err = w.GetTransaction(txid, false, false)
 		if err != nil {
 			return nil, errors.Annotatef(err, "GetTransaction %v", txid)
@@ -901,6 +970,7 @@ func (w *Worker) GetAddress(address string, page int, txsOnPage int, option Acco
 						if option == AccountDetailsTxidHistory {
 							txids = append(txids, tx.Txid)
 						} else if option >= AccountDetailsTxHistoryLight {
+							// HERE
 							txs = append(txs, tx)
 						}
 					}
@@ -936,6 +1006,7 @@ func (w *Worker) GetAddress(address string, page int, txsOnPage int, option Acco
 				if err != nil {
 					return nil, err
 				}
+				// HERE
 				txs = append(txs, tx)
 			}
 		}
