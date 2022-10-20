@@ -5,6 +5,8 @@ import (
 	"context"
 	"encoding/hex"
 	"encoding/json"
+	"github.com/core-coin/go-core/xcbclient"
+	"github.com/cryptohub-digital/blockbook/contracts"
 	"io"
 	"io/ioutil"
 	"math/big"
@@ -107,6 +109,14 @@ func NewBitcoinRPC(config json.RawMessage, pushHandler func(bchain.NotificationT
 	}
 
 	return s, nil
+}
+
+func (b *BitcoinRPC) GetRPCClient() *xcbclient.Client {
+	return nil
+}
+
+func (b *BitcoinRPC) GetSmartContracts() (*contracts.ChequableToken, *contracts.BountiableToken) {
+	return nil, nil
 }
 
 // Initialize initializes BitcoinRPC instance.

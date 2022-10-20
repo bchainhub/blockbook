@@ -2,6 +2,8 @@ package monetaryunit
 
 import (
 	"encoding/json"
+	"github.com/core-coin/go-core/xcbclient"
+	"github.com/cryptohub-digital/blockbook/contracts"
 
 	"github.com/cryptohub-digital/blockbook/bchain"
 	"github.com/cryptohub-digital/blockbook/bchain/coins/btc"
@@ -28,6 +30,14 @@ func NewMonetaryUnitRPC(config json.RawMessage, pushHandler func(bchain.Notifica
 	s.ChainConfig.SupportsEstimateSmartFee = false
 
 	return s, nil
+}
+
+func (b *MonetaryUnitRPC) GetRPCClient() *xcbclient.Client {
+	return nil
+}
+
+func (b *MonetaryUnitRPC) GetSmartContracts() (*contracts.ChequableToken, *contracts.BountiableToken) {
+	return nil, nil
 }
 
 // Initialize initializes MonetaryUnitRPC instance.

@@ -3,6 +3,8 @@ package firo
 import (
 	"encoding/hex"
 	"encoding/json"
+	"github.com/core-coin/go-core/xcbclient"
+	"github.com/cryptohub-digital/blockbook/contracts"
 
 	"github.com/cryptohub-digital/blockbook/bchain"
 	"github.com/cryptohub-digital/blockbook/bchain/coins/btc"
@@ -33,6 +35,14 @@ func NewFiroRPC(config json.RawMessage, pushHandler func(bchain.NotificationType
 	zc.RPCMarshaler = btc.JSONMarshalerV1{}
 
 	return zc, nil
+}
+
+func (zc *FiroRPC) GetRPCClient() *xcbclient.Client {
+	return nil
+}
+
+func (zc *FiroRPC) GetSmartContracts() (*contracts.ChequableToken, *contracts.BountiableToken) {
+	return nil, nil
 }
 
 func (zc *FiroRPC) Initialize() error {

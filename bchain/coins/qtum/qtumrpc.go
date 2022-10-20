@@ -2,6 +2,8 @@ package qtum
 
 import (
 	"encoding/json"
+	"github.com/core-coin/go-core/xcbclient"
+	"github.com/cryptohub-digital/blockbook/contracts"
 	"math/big"
 
 	"github.com/cryptohub-digital/blockbook/bchain"
@@ -30,6 +32,14 @@ func NewQtumRPC(config json.RawMessage, pushHandler func(bchain.NotificationType
 	s.ChainConfig.SupportsEstimateSmartFee = true
 
 	return s, nil
+}
+
+func (b *QtumRPC) GetRPCClient() *xcbclient.Client {
+	return nil
+}
+
+func (b *QtumRPC) GetSmartContracts() (*contracts.ChequableToken, *contracts.BountiableToken) {
+	return nil, nil
 }
 
 // Initialize initializes QtumRPC instance.

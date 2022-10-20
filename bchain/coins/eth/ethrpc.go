@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/core-coin/go-core/xcbclient"
+	"github.com/cryptohub-digital/blockbook/contracts"
 	"math/big"
 	"strconv"
 	"sync"
@@ -140,6 +142,14 @@ func openRPC(url string) (*rpc.Client, *ethclient.Client, error) {
 	}
 	ec := ethclient.NewClient(rc)
 	return rc, ec, nil
+}
+
+func (b *EthereumRPC) GetRPCClient() *xcbclient.Client {
+	return nil
+}
+
+func (b *EthereumRPC) GetSmartContracts() (*contracts.ChequableToken, *contracts.BountiableToken) {
+	return nil, nil
 }
 
 // Initialize initializes ethereum rpc interface

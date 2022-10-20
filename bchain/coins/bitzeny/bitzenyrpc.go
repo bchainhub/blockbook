@@ -2,6 +2,8 @@ package bitzeny
 
 import (
 	"encoding/json"
+	"github.com/core-coin/go-core/xcbclient"
+	"github.com/cryptohub-digital/blockbook/contracts"
 
 	"github.com/cryptohub-digital/blockbook/bchain"
 	"github.com/cryptohub-digital/blockbook/bchain/coins/btc"
@@ -28,6 +30,14 @@ func NewBitZenyRPC(config json.RawMessage, pushHandler func(bchain.NotificationT
 	s.ChainConfig.SupportsEstimateFee = false
 
 	return s, nil
+}
+
+func (b *BitZenyRPC) GetRPCClient() *xcbclient.Client {
+	return nil
+}
+
+func (b *BitZenyRPC) GetSmartContracts() (*contracts.ChequableToken, *contracts.BountiableToken) {
+	return nil, nil
 }
 
 // Initialize initializes BitZenyRPC instance.

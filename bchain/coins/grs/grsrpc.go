@@ -2,6 +2,8 @@ package grs
 
 import (
 	"encoding/json"
+	"github.com/core-coin/go-core/xcbclient"
+	"github.com/cryptohub-digital/blockbook/contracts"
 
 	"github.com/cryptohub-digital/blockbook/bchain"
 	"github.com/cryptohub-digital/blockbook/bchain/coins/btc"
@@ -25,6 +27,14 @@ func NewGroestlcoinRPC(config json.RawMessage, pushHandler func(bchain.Notificat
 	}
 	g.RPCMarshaler = btc.JSONMarshalerV1{}
 	return g, nil
+}
+
+func (g *GroestlcoinRPC) GetRPCClient() *xcbclient.Client {
+	return nil
+}
+
+func (g *GroestlcoinRPC) GetSmartContracts() (*contracts.ChequableToken, *contracts.BountiableToken) {
+	return nil, nil
 }
 
 // Initialize initializes GroestlcoinRPC instance.

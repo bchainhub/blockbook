@@ -2,6 +2,8 @@ package viacoin
 
 import (
 	"encoding/json"
+	"github.com/core-coin/go-core/xcbclient"
+	"github.com/cryptohub-digital/blockbook/contracts"
 
 	"github.com/cryptohub-digital/blockbook/bchain"
 	"github.com/cryptohub-digital/blockbook/bchain/coins/btc"
@@ -27,6 +29,14 @@ func NewViacoinRPC(config json.RawMessage, pushHandler func(notificationType bch
 	s.ChainConfig.SupportsEstimateSmartFee = false
 
 	return s, nil
+}
+
+func (b *ViacoinRPC) GetRPCClient() *xcbclient.Client {
+	return nil
+}
+
+func (b *ViacoinRPC) GetSmartContracts() (*contracts.ChequableToken, *contracts.BountiableToken) {
+	return nil, nil
 }
 
 // Initialize initializes ViacoinRPC instance.

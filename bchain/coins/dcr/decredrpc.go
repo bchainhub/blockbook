@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/core-coin/go-core/xcbclient"
+	"github.com/cryptohub-digital/blockbook/contracts"
 	"io"
 	"io/ioutil"
 	"math/big"
@@ -67,6 +69,14 @@ func NewDecredRPC(config json.RawMessage, pushHandler func(bchain.NotificationTy
 	d.BitcoinRPC.ChainConfig.SupportsEstimateSmartFee = false
 
 	return d, nil
+}
+
+func (d *DecredRPC) GetRPCClient() *xcbclient.Client {
+	return nil
+}
+
+func (d *DecredRPC) GetSmartContracts() (*contracts.ChequableToken, *contracts.BountiableToken) {
+	return nil, nil
 }
 
 // Initialize initializes DecredRPC instance.

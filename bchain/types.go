@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/core-coin/go-core/xcbclient"
+	"github.com/cryptohub-digital/blockbook/contracts"
 	"math/big"
 
 	"github.com/cryptohub-digital/blockbook/common"
@@ -279,6 +281,9 @@ type BlockChain interface {
 	EthereumTypeEstimateGas(params map[string]interface{}) (uint64, error)
 	EthereumTypeGetErc20ContractInfo(contractDesc AddressDescriptor) (*Erc20Contract, error)
 	EthereumTypeGetErc20ContractBalance(addrDesc, contractDesc AddressDescriptor) (*big.Int, error)
+	//Coreblockchain specific
+	GetRPCClient() *xcbclient.Client
+	GetSmartContracts() (*contracts.ChequableToken, *contracts.BountiableToken)
 }
 
 // BlockChainParser defines common interface to parsing and conversions of block chain data

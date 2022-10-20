@@ -2,6 +2,8 @@ package deeponion
 
 import (
 	"encoding/json"
+	"github.com/core-coin/go-core/xcbclient"
+	"github.com/cryptohub-digital/blockbook/contracts"
 
 	"github.com/cryptohub-digital/blockbook/bchain"
 	"github.com/cryptohub-digital/blockbook/bchain/coins/btc"
@@ -28,6 +30,14 @@ func NewDeepOnionRPC(config json.RawMessage, pushHandler func(bchain.Notificatio
 	s.ChainConfig.SupportsEstimateFee = false
 
 	return s, nil
+}
+
+func (b *DeepOnionRPC) GetRPCClient() *xcbclient.Client {
+	return nil
+}
+
+func (b *DeepOnionRPC) GetSmartContracts() (*contracts.ChequableToken, *contracts.BountiableToken) {
+	return nil, nil
 }
 
 // Initialize initializes DeepOnionRPC instance.

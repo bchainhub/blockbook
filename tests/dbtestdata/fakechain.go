@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"github.com/core-coin/go-core/xcbclient"
+	"github.com/cryptohub-digital/blockbook/contracts"
 	"math/big"
 
 	"github.com/cryptohub-digital/blockbook/bchain"
@@ -24,6 +26,14 @@ func (c *fakeBlockChain) CreateMempool(chain bchain.BlockChain) (bchain.Mempool,
 
 func (c *fakeBlockChain) Initialize() error {
 	return nil
+}
+
+func (c *fakeBlockChain) GetRPCClient() *xcbclient.Client {
+	return nil
+}
+
+func (c *fakeBlockChain) GetSmartContracts() (*contracts.ChequableToken, *contracts.BountiableToken) {
+	return nil, nil
 }
 
 func (c *fakeBlockChain) InitializeMempool(addrDescForOutpoint bchain.AddrDescForOutpointFunc, onNewTxAddr bchain.OnNewTxAddrFunc, onNewTx bchain.OnNewTxFunc) error {

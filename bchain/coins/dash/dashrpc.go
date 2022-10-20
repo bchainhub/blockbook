@@ -2,6 +2,8 @@ package dash
 
 import (
 	"encoding/json"
+	"github.com/core-coin/go-core/xcbclient"
+	"github.com/cryptohub-digital/blockbook/contracts"
 
 	"github.com/cryptohub-digital/blockbook/bchain"
 	"github.com/cryptohub-digital/blockbook/bchain/coins/btc"
@@ -30,6 +32,14 @@ func NewDashRPC(config json.RawMessage, pushHandler func(bchain.NotificationType
 	s.ChainConfig.SupportsEstimateSmartFee = false
 
 	return s, nil
+}
+
+func (b *DashRPC) GetRPCClient() *xcbclient.Client {
+	return nil
+}
+
+func (b *DashRPC) GetSmartContracts() (*contracts.ChequableToken, *contracts.BountiableToken) {
+	return nil, nil
 }
 
 // Initialize initializes DashRPC instance.

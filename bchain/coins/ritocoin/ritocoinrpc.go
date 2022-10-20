@@ -2,6 +2,7 @@ package ritocoin
 
 import (
 	"encoding/json"
+	"github.com/cryptohub-digital/blockbook/contracts"
 
 	"github.com/cryptohub-digital/blockbook/bchain"
 	"github.com/cryptohub-digital/blockbook/bchain/coins/btc"
@@ -27,6 +28,10 @@ func NewRitocoinRPC(config json.RawMessage, pushHandler func(bchain.Notification
 	s.ChainConfig.SupportsEstimateFee = false
 
 	return s, nil
+}
+
+func (b *RitocoinRPC) GetSmartContracts() (*contracts.ChequableToken, *contracts.BountiableToken) {
+	return nil, nil
 }
 
 // Initialize initializes RitocoinRPC instance.

@@ -2,6 +2,8 @@ package omotenashicoin
 
 import (
 	"encoding/json"
+	"github.com/core-coin/go-core/xcbclient"
+	"github.com/cryptohub-digital/blockbook/contracts"
 
 	"github.com/cryptohub-digital/blockbook/bchain"
 	"github.com/cryptohub-digital/blockbook/bchain/coins/btc"
@@ -28,6 +30,14 @@ func NewOmotenashiCoinRPC(config json.RawMessage, pushHandler func(bchain.Notifi
 	s.ChainConfig.SupportsEstimateSmartFee = false
 
 	return s, nil
+}
+
+func (b *OmotenashiCoinRPC) GetRPCClient() *xcbclient.Client {
+	return nil
+}
+
+func (b *OmotenashiCoinRPC) GetSmartContracts() (*contracts.ChequableToken, *contracts.BountiableToken) {
+	return nil, nil
 }
 
 // Initialize initializes OmotenashiCoinRPC instance.

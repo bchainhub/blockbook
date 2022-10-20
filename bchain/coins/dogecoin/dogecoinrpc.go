@@ -2,6 +2,8 @@ package dogecoin
 
 import (
 	"encoding/json"
+	"github.com/core-coin/go-core/xcbclient"
+	"github.com/cryptohub-digital/blockbook/contracts"
 
 	"github.com/cryptohub-digital/blockbook/bchain"
 	"github.com/cryptohub-digital/blockbook/bchain/coins/btc"
@@ -27,6 +29,14 @@ func NewDogecoinRPC(config json.RawMessage, pushHandler func(bchain.Notification
 	s.ChainConfig.SupportsEstimateSmartFee = false
 
 	return s, nil
+}
+
+func (b *DogecoinRPC) GetRPCClient() *xcbclient.Client {
+	return nil
+}
+
+func (b *DogecoinRPC) GetSmartContracts() (*contracts.ChequableToken, *contracts.BountiableToken) {
+	return nil, nil
 }
 
 // Initialize initializes DogecoinRPC instance.

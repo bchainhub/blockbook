@@ -2,6 +2,8 @@ package koto
 
 import (
 	"encoding/json"
+	"github.com/core-coin/go-core/xcbclient"
+	"github.com/cryptohub-digital/blockbook/contracts"
 
 	"github.com/cryptohub-digital/blockbook/bchain"
 	"github.com/cryptohub-digital/blockbook/bchain/coins/btc"
@@ -26,6 +28,14 @@ func NewKotoRPC(config json.RawMessage, pushHandler func(bchain.NotificationType
 	z.RPCMarshaler = btc.JSONMarshalerV1{}
 	z.ChainConfig.SupportsEstimateSmartFee = false
 	return z, nil
+}
+
+func (z *KotoRPC) GetRPCClient() *xcbclient.Client {
+	return nil
+}
+
+func (z *KotoRPC) GetSmartContracts() (*contracts.ChequableToken, *contracts.BountiableToken) {
+	return nil, nil
 }
 
 // Initialize initializes KotoRPC instance.

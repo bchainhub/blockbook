@@ -5,6 +5,8 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
+	"github.com/core-coin/go-core/xcbclient"
+	"github.com/cryptohub-digital/blockbook/contracts"
 	"io"
 	"io/ioutil"
 	"math/big"
@@ -59,6 +61,14 @@ func NewNulsRPC(config json.RawMessage, pushHandler func(bchain.NotificationType
 	s.BitcoinRPC.ChainConfig.SupportsEstimateSmartFee = false
 
 	return s, nil
+}
+
+func (n *NulsRPC) GetRPCClient() *xcbclient.Client {
+	return nil
+}
+
+func (n *NulsRPC) GetSmartContracts() (*contracts.ChequableToken, *contracts.BountiableToken) {
+	return nil, nil
 }
 
 // Initialize initializes GincoinRPC instance.

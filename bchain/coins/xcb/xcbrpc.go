@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/cryptohub-digital/blockbook/contracts"
 	"math/big"
 	"strconv"
 	"sync"
@@ -33,6 +34,7 @@ type Configuration struct {
 	BlockAddressesToKeep        int    `json:"block_addresses_to_keep"`
 	MempoolTxTimeoutHours       int    `json:"mempoolTxTimeoutHours"`
 	QueryBackendOnMempoolResync bool   `json:"queryBackendOnMempoolResync"`
+	RegistryAddress             string `json:"registry_address"`
 }
 
 // CoreblockchainRPC is an interface to JSON-RPC eth service.
@@ -52,6 +54,9 @@ type CoreblockchainRPC struct {
 	chanNewTx            chan xcbcommon.Hash
 	newTxSubscription    *rpc.ClientSubscription
 	ChainConfig          *Configuration
+
+	bountibleToken *contracts.BountiableToken
+	chequableToken *contracts.ChequableToken
 }
 
 // NewCoreblockchainRPC returns new XcbRPC instance.
@@ -126,7 +131,13 @@ func NewCoreblockchainRPC(config json.RawMessage, pushHandler func(bchain.Notifi
 		return nil, err
 	}
 	xcbcommon.DefaultNetworkID = xcbcommon.NetworkID(networkID.Uint64())
+	registry, err := xcbcommon.HexToAddress(c.RegistryAddress)
+	if err != nil {
+		return nil, err
+	}
 
+	s.chequableToken, err = contracts.GetChequableToken(context.Background(), registry, s.client)
+	s.bountibleToken, err = contracts.GetBountiableToken(context.Background(), registry, s.client)
 	return s, nil
 }
 
@@ -137,6 +148,14 @@ func openRPC(url string) (*rpc.Client, *xcbclient.Client, error) {
 	}
 	ec := xcbclient.NewClient(rc)
 	return rc, ec, nil
+}
+
+func (b *CoreblockchainRPC) GetRPCClient() *xcbclient.Client {
+	return b.client
+}
+
+func (b *CoreblockchainRPC) GetSmartContracts() (*contracts.ChequableToken, *contracts.BountiableToken) {
+	return b.chequableToken, b.bountibleToken
 }
 
 // Initialize initializes coreblockchain rpc interface
