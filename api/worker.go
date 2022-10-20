@@ -128,7 +128,6 @@ func (w *Worker) GetTransaction(txid string, spendingTxs bool, specificJSON bool
 		}
 		return nil, NewAPIError(fmt.Sprintf("Transaction '%v' not found (%v)", txid, err), true)
 	}
-	// HERE HERE
 	return w.GetTransactionFromBchainTx(bchainTx, height, spendingTxs, specificJSON)
 }
 
@@ -261,7 +260,6 @@ func (w *Worker) GetTransactionFromBchainTx(bchainTx *bchain.Tx, height int, spe
 		}
 		pValInSat = &valInSat
 	} else if w.chainType == bchain.ChainEthereumType {
-		// HERE HERE HERE
 		ets, err := w.chainParser.EthereumTypeGetErc20FromTx(bchainTx)
 		if err != nil {
 			glog.Errorf("GetErc20FromTx error %v, %v", err, bchainTx)
@@ -861,7 +859,6 @@ func (w *Worker) txFromTxid(txid string, bestheight uint32, option AccountDetail
 			tx = w.txFromTxAddress(txid, ta, blockInfo, bestheight)
 		}
 	} else {
-		//HERE
 		tx, err = w.GetTransaction(txid, false, false)
 		if err != nil {
 			return nil, errors.Annotatef(err, "GetTransaction %v", txid)
@@ -970,7 +967,6 @@ func (w *Worker) GetAddress(address string, page int, txsOnPage int, option Acco
 						if option == AccountDetailsTxidHistory {
 							txids = append(txids, tx.Txid)
 						} else if option >= AccountDetailsTxHistoryLight {
-							// HERE
 							txs = append(txs, tx)
 						}
 					}
@@ -1006,7 +1002,6 @@ func (w *Worker) GetAddress(address string, page int, txsOnPage int, option Acco
 				if err != nil {
 					return nil, err
 				}
-				// HERE
 				txs = append(txs, tx)
 			}
 		}

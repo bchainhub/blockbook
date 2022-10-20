@@ -224,7 +224,7 @@ type Tx struct {
 	CoinSpecificData  json.RawMessage         `json:"coinSpecificData,omitempty"`
 	TokenTransfers    []TokenTransfer         `json:"tokenTransfers,omitempty"`
 	EthereumSpecific  *CoreblockchainSpecific `json:"ethereumSpecific,omitempty"`
-	CoreTokenSpecific *CoreTokenSpecific      `json:"core_token_specific,omitempty"`
+	CoreTokenSpecific *CoreTokenSpecific      `json:"coretoken_specific,omitempty"`
 }
 
 // FeeStats contains detailed block fee statistics
