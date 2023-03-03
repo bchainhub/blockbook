@@ -4,10 +4,8 @@ go 1.17
 
 require (
 	github.com/Groestlcoin/go-groestl-hash v0.0.0-20181012171753-790653ac190c // indirect
-	github.com/allegro/bigcache v1.2.1 // indirect
 	github.com/bsm/go-vlq v0.0.0-20150828105119-ec6e8d4f5f4e
 	github.com/btcsuite/btcd v0.21.0-beta // indirect
-	github.com/core-coin/go-core v1.1.4
 	github.com/dchest/blake256 v1.0.0 // indirect
 	github.com/deckarep/golang-set v1.7.1
 	github.com/decred/dcrd/chaincfg/chainhash v1.0.2
@@ -44,15 +42,17 @@ require (
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22 // indirect
 )
 
+require github.com/core-coin/go-core/v2 v2.0.0-beta3
+
 require (
 	github.com/StackExchange/wmi v1.2.1 // indirect
-	github.com/VictoriaMetrics/fastcache v1.6.0 // indirect
 	github.com/agl/ed25519 v0.0.0-20170116200512-5312a6153412 // indirect
 	github.com/aristanetworks/goarista v0.0.0-20170210015632-ea17b1a17847 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/btcsuite/btclog v0.0.0-20170628155309-84c8d2346e9f // indirect
 	github.com/cespare/xxhash/v2 v2.1.1 // indirect
-	github.com/core-coin/go-goldilocks v1.0.9 // indirect
+	github.com/core-coin/ed448 v1.0.2 // indirect
+	github.com/core-coin/go-goldilocks v1.0.15 // indirect
 	github.com/dchest/siphash v1.2.1 // indirect
 	github.com/decred/base58 v1.0.3 // indirect
 	github.com/decred/dcrd/crypto/blake256 v1.0.0 // indirect
@@ -61,21 +61,15 @@ require (
 	github.com/decred/dcrd/dcrec/secp256k1/v3 v3.0.0 // indirect
 	github.com/decred/dcrd/wire v1.4.0 // indirect
 	github.com/decred/slog v1.1.0 // indirect
-	github.com/elastic/gosigar v0.8.1-0.20180330100440-37f05ff46ffa // indirect
 	github.com/go-ole/go-ole v1.2.5 // indirect
 	github.com/go-stack/stack v1.8.0 // indirect
-	github.com/golang/snappy v0.0.3 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
-	github.com/pkg/errors v0.9.1 // indirect
 	github.com/prometheus/client_model v0.2.0 // indirect
 	github.com/prometheus/common v0.14.0 // indirect
 	github.com/prometheus/procfs v0.2.0 // indirect
-	github.com/rs/cors v1.7.0 // indirect
 	github.com/shirou/gopsutil v3.21.4-0.20210419000835-c7a38de76ee5+incompatible // indirect
-	github.com/steakknife/bloomfilter v0.0.0-20180922174646-6819c0d2a570 // indirect
-	github.com/steakknife/hamming v0.0.0-20180906055917-c99c65617cd3 // indirect
 	github.com/tklauser/go-sysconf v0.3.5 // indirect
 	github.com/tklauser/numcpus v0.2.2 // indirect
-	golang.org/x/sys v0.0.0-20210816183151-1e6c022a8912 // indirect
+	golang.org/x/sys v0.0.0-20221010170243-090e33056c14 // indirect
 	gopkg.in/natefinch/npipe.v2 v2.0.0-20160621034901-c1b8fa8bdcce // indirect
 )
