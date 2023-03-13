@@ -9,16 +9,17 @@ import (
 	"sync"
 	"time"
 
-	coreblockchain "github.com/core-coin/go-core"
-	xcbcommon "github.com/core-coin/go-core/common"
-	"github.com/core-coin/go-core/common/hexutil"
-	xcbtypes "github.com/core-coin/go-core/core/types"
-	"github.com/core-coin/go-core/rpc"
-	"github.com/core-coin/go-core/xcbclient"
-	"github.com/cryptohub-digital/blockbook/bchain"
-	"github.com/cryptohub-digital/blockbook/common"
+	coreblockchain "github.com/core-coin/go-core/v2"
+	xcbcommon "github.com/core-coin/go-core/v2/common"
+	"github.com/core-coin/go-core/v2/common/hexutil"
+	xcbtypes "github.com/core-coin/go-core/v2/core/types"
+	"github.com/core-coin/go-core/v2/rpc"
+	"github.com/core-coin/go-core/v2/xcbclient"
 	"github.com/golang/glog"
 	"github.com/juju/errors"
+
+	"github.com/cryptohub-digital/blockbook/bchain"
+	"github.com/cryptohub-digital/blockbook/common"
 )
 
 // CoreblockchainNet type specifies the type of coreblockchain network

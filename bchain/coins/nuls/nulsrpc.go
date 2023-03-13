@@ -8,16 +8,16 @@ import (
 	"io"
 	"io/ioutil"
 	"math/big"
-	"net"
 	"net/http"
 	"runtime/debug"
 	"strconv"
 	"time"
 
-	"github.com/cryptohub-digital/blockbook/bchain"
-	"github.com/cryptohub-digital/blockbook/bchain/coins/btc"
 	"github.com/golang/glog"
 	"github.com/juju/errors"
+
+	"github.com/cryptohub-digital/blockbook/bchain"
+	"github.com/cryptohub-digital/blockbook/bchain/coins/btc"
 )
 
 // NulsRPC is an interface to JSON-RPC bitcoind service
@@ -43,7 +43,7 @@ func NewNulsRPC(config json.RawMessage, pushHandler func(bchain.NotificationType
 	}
 
 	transport := &http.Transport{
-		Dial:                (&net.Dialer{KeepAlive: 600 * time.Second}).Dial,
+		//Dial:                (&net.Dialer{KeepAlive: 600 * time.Second}).Dial,
 		MaxIdleConns:        100,
 		MaxIdleConnsPerHost: 100, // necessary to not to deplete ports
 	}

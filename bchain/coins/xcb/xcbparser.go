@@ -5,10 +5,11 @@ import (
 	"math/big"
 	"strconv"
 
-	"github.com/core-coin/go-core/common/hexutil"
-	"github.com/cryptohub-digital/blockbook/bchain"
+	"github.com/core-coin/go-core/v2/common/hexutil"
 	"github.com/golang/protobuf/proto"
 	"github.com/juju/errors"
+
+	"github.com/cryptohub-digital/blockbook/bchain"
 )
 
 // CoreblockchainTypeAddressDescriptorLen - in case of EthereumType, the AddressDescriptor has fixed length
@@ -161,7 +162,7 @@ func has0xPrefix(s string) bool {
 
 // GetAddrDescFromAddress returns internal address representation of given address
 func (p *CoreblockchainParser) GetAddrDescFromAddress(address string) (bchain.AddressDescriptor, error) {
-	// github.com/core-coin/go-core/common.HexToAddress does not handle address errors, using own decoding
+	// github.com/core-coin/go-core/v2/common.HexToAddress does not handle address errors, using own decoding
 	if has0xPrefix(address) {
 		address = address[2:]
 	}

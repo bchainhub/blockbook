@@ -9,10 +9,11 @@ import (
 	"sync"
 	"unicode/utf8"
 
-	xcbcommon "github.com/core-coin/go-core/common"
-	"github.com/cryptohub-digital/blockbook/bchain"
+	xcbcommon "github.com/core-coin/go-core/v2/common"
 	"github.com/golang/glog"
 	"github.com/juju/errors"
+
+	"github.com/cryptohub-digital/blockbook/bchain"
 )
 
 var xrc20abi = `[{"constant":true,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"payable":false,"type":"function","signature":"0x06fdde03"},
@@ -188,7 +189,7 @@ func (b *CoreblockchainRPC) EthereumTypeGetErc20ContractInfo(contractDesc bchain
 		if err != nil {
 			// ignore the error from the xcb_call - since geth v1.9.15 they changed the behavior
 			// and returning error "execution reverted" for some non contract addresses
-			// https://github.com/core-coin/go-core/issues/21249#issuecomment-648647672
+			// https://github.com/core-coin/go-core/v2/issues/21249#issuecomment-648647672
 			glog.Warning(errors.Annotatef(err, "xrc20NameSignature %v", address))
 			return nil, nil
 			// return nil, errors.Annotatef(err, "xrc20NameSignature %v", address)
