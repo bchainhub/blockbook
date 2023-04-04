@@ -42,7 +42,7 @@ require (
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22 // indirect
 )
 
-require github.com/core-coin/go-core/v2 v2.0.0-beta5
+require github.com/core-coin/go-core/v2 v2.0.2
 
 require (
 	github.com/StackExchange/wmi v1.2.1 // indirect
