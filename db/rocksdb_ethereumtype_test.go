@@ -8,10 +8,10 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/cryptohub-digital/blockbook-fork/bchain"
-	"github.com/cryptohub-digital/blockbook-fork/bchain/coins/eth"
-	"github.com/cryptohub-digital/blockbook-fork/common"
-	"github.com/cryptohub-digital/blockbook-fork/tests/dbtestdata"
+	"github.com/cryptohub-digital/blockbook/bchain"
+	"github.com/cryptohub-digital/blockbook/bchain/coins/eth"
+	"github.com/cryptohub-digital/blockbook/common"
+	"github.com/cryptohub-digital/blockbook/tests/dbtestdata"
 	"github.com/juju/errors"
 	"github.com/linxGnu/grocksdb"
 )

@@ -3,7 +3,7 @@ package dbtestdata
 import (
 	"encoding/hex"
 
-	"github.com/cryptohub-digital/blockbook-fork/bchain"
+	"github.com/cryptohub-digital/blockbook/bchain"
 )
 
 const (

@@ -6,7 +6,7 @@ import (
 	"math/big"
 	"strings"
 
-	"github.com/cryptohub-digital/blockbook-fork/common"
+	"github.com/cryptohub-digital/blockbook/common"
 	"github.com/golang/glog"
 	"github.com/juju/errors"
 	"google.golang.org/protobuf/proto"

@@ -45,11 +45,11 @@ RUN strip /opt/rocksdb/ldb /opt/rocksdb/sst_dump && \
 
 # pre-load depencencies
 RUN \
-    cleanup() { rm -rf $GOPATH/src/github.com/trezor ; } && \
+    cleanup() { rm -rf $GOPATH/src/github.com/cryptohub-digital ; } && \
     trap cleanup EXIT && \
-    mkdir -p $GOPATH/src/github.com/trezor && \
-    cd $GOPATH/src/github.com/trezor && \
-    git clone https://github.com/trezor/blockbook.git && \
+    mkdir -p $GOPATH/src/github.com/cryptohub-digital && \
+    cd $GOPATH/src/github.com/cryptohub-digital && \
+    git clone https://github.com/cryptohub-digital/blockbook.git && \
     cd blockbook && \
     go mod download
 

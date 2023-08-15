@@ -1,7 +1,7 @@
 package gamecredits
 
 import (
-	"github.com/cryptohub-digital/blockbook-fork/bchain/coins/btc"
+	"github.com/cryptohub-digital/blockbook/bchain/coins/btc"
 	"github.com/martinboehm/btcd/wire"
 	"github.com/martinboehm/btcutil/chaincfg"
 )

@@ -1,9 +1,9 @@
 SHELL = /bin/bash
 VERSION ?= devel
-GITCOMMIT = $(shell cd /src && git config --global --add safe.directory /src && git describe --always --dirty)
+GITCOMMIT = $(shell cd /src && git config --global --add safe.directory /src && git describe --always)
 BUILDTIME = $(shell date --iso-8601=seconds)
-LDFLAGS := -X github.com/trezor/blockbook/common.version=$(VERSION) -X github.com/trezor/blockbook/common.gitcommit=$(GITCOMMIT) -X github.com/trezor/blockbook/common.buildtime=$(BUILDTIME)
-BLOCKBOOK_BASE := $(GOPATH)/src/github.com/trezor
+LDFLAGS := -X github.com/cryptohub-digital/blockbook/common.version=$(VERSION) -X github.com/cryptohub-digital/blockbook/common.gitcommit=$(GITCOMMIT) -X github.com/cryptohub-digital/blockbook/common.buildtime=$(BUILDTIME)
+BLOCKBOOK_BASE := $(GOPATH)/src/github.com/cryptohub-digital
 BLOCKBOOK_SRC := $(BLOCKBOOK_BASE)/blockbook
 ARGS ?=
 
@@ -24,13 +24,13 @@ tools:
 	chown $(PACKAGER) /out/{ldb,sst_dump}
 
 test: prepare-sources
-	cd $(BLOCKBOOK_SRC) && go test -tags 'unittest' `go list ./... | grep -vP '^github.com/trezor/blockbook/(contrib|tests)'` $(ARGS)
+	cd $(BLOCKBOOK_SRC) && go test -tags 'unittest' `go list ./... | grep -vP '^github.com/cryptohub-digital/blockbook/(contrib|tests)'` $(ARGS)
 
 test-integration: prepare-sources
-	cd $(BLOCKBOOK_SRC) && go test -tags 'integration' `go list github.com/trezor/blockbook/tests/...` $(ARGS)
+	cd $(BLOCKBOOK_SRC) && go test -tags 'integration' `go list github.com/cryptohub-digital/blockbook/tests/...` $(ARGS)
 
 test-all: prepare-sources
-	cd $(BLOCKBOOK_SRC) && go test -tags 'unittest integration' `go list ./... | grep -v '^github.com/trezor/blockbook/contrib'` $(ARGS)
+	cd $(BLOCKBOOK_SRC) && go test -tags 'unittest integration' `go list ./... | grep -v '^github.com/cryptohub-digital/blockbook/contrib'` $(ARGS)
 
 prepare-sources:
 	@ [ -n "`ls /src 2> /dev/null`" ] || (echo "/src doesn't exist or is empty" 1>&2 && exit 1)

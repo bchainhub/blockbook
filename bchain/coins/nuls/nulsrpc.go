@@ -14,8 +14,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/cryptohub-digital/blockbook-fork/bchain"
-	"github.com/cryptohub-digital/blockbook-fork/bchain/coins/btc"
+	"github.com/cryptohub-digital/blockbook/bchain"
+	"github.com/cryptohub-digital/blockbook/bchain/coins/btc"
 	"github.com/golang/glog"
 	"github.com/juju/errors"
 )

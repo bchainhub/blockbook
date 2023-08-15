@@ -8,11 +8,11 @@ import (
 	"net/http"
 	"path/filepath"
 
-	"github.com/cryptohub-digital/blockbook-fork/api"
-	"github.com/cryptohub-digital/blockbook-fork/bchain"
-	"github.com/cryptohub-digital/blockbook-fork/common"
-	"github.com/cryptohub-digital/blockbook-fork/db"
-	"github.com/cryptohub-digital/blockbook-fork/fiat"
+	"github.com/cryptohub-digital/blockbook/api"
+	"github.com/cryptohub-digital/blockbook/bchain"
+	"github.com/cryptohub-digital/blockbook/common"
+	"github.com/cryptohub-digital/blockbook/db"
+	"github.com/cryptohub-digital/blockbook/fiat"
 	"github.com/golang/glog"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )

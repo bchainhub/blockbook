@@ -1,10 +1,10 @@
 package db
 
 import (
-	"github.com/cryptohub-digital/blockbook-fork/bchain"
-	"github.com/cryptohub-digital/blockbook-fork/bchain/coins/eth"
-	"github.com/cryptohub-digital/blockbook-fork/bchain/coins/xcb"
-	"github.com/cryptohub-digital/blockbook-fork/common"
+	"github.com/cryptohub-digital/blockbook/bchain"
+	"github.com/cryptohub-digital/blockbook/bchain/coins/eth"
+	"github.com/cryptohub-digital/blockbook/bchain/coins/xcb"
+	"github.com/cryptohub-digital/blockbook/common"
 	"github.com/golang/glog"
 	"github.com/juju/errors"
 )

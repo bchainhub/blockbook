@@ -16,11 +16,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cryptohub-digital/blockbook-fork/bchain"
-	"github.com/cryptohub-digital/blockbook-fork/bchain/coins"
-	build "github.com/cryptohub-digital/blockbook-fork/build/tools"
-	"github.com/cryptohub-digital/blockbook-fork/tests/rpc"
-	"github.com/cryptohub-digital/blockbook-fork/tests/sync"
+	"github.com/cryptohub-digital/blockbook/bchain"
+	"github.com/cryptohub-digital/blockbook/bchain/coins"
+	build "github.com/cryptohub-digital/blockbook/build/tools"
+	"github.com/cryptohub-digital/blockbook/tests/rpc"
+	"github.com/cryptohub-digital/blockbook/tests/sync"
 	"github.com/martinboehm/btcutil/chaincfg"
 )
 

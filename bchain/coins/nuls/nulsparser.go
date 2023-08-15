@@ -7,8 +7,8 @@ import (
 	"errors"
 
 	vlq "github.com/bsm/go-vlq"
-	"github.com/cryptohub-digital/blockbook-fork/bchain"
-	"github.com/cryptohub-digital/blockbook-fork/bchain/coins/btc"
+	"github.com/cryptohub-digital/blockbook/bchain"
+	"github.com/cryptohub-digital/blockbook/bchain/coins/btc"
 	"github.com/martinboehm/btcd/wire"
 	"github.com/martinboehm/btcutil/base58"
 	"github.com/martinboehm/btcutil/chaincfg"

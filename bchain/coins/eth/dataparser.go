@@ -10,7 +10,7 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/cryptohub-digital/blockbook-fork/bchain"
+	"github.com/cryptohub-digital/blockbook/bchain"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/golang/glog"
 )

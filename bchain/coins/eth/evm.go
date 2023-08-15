@@ -4,7 +4,7 @@ import (
 	"context"
 	"math/big"
 
-	"github.com/cryptohub-digital/blockbook-fork/bchain"
+	"github.com/cryptohub-digital/blockbook/bchain"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"

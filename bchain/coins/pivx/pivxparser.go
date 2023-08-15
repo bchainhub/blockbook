@@ -7,9 +7,9 @@ import (
 	"io"
 	"math/big"
 
-	"github.com/cryptohub-digital/blockbook-fork/bchain"
-	"github.com/cryptohub-digital/blockbook-fork/bchain/coins/btc"
-	"github.com/cryptohub-digital/blockbook-fork/bchain/coins/utils"
+	"github.com/cryptohub-digital/blockbook/bchain"
+	"github.com/cryptohub-digital/blockbook/bchain/coins/btc"
+	"github.com/cryptohub-digital/blockbook/bchain/coins/utils"
 	"github.com/juju/errors"
 	"github.com/martinboehm/btcd/blockchain"
 	"github.com/martinboehm/btcd/wire"

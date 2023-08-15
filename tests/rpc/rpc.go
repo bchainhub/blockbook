@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cryptohub-digital/blockbook-fork/bchain"
+	"github.com/cryptohub-digital/blockbook/bchain"
 	mapset "github.com/deckarep/golang-set"
 	"github.com/juju/errors"
 )

@@ -6,8 +6,8 @@ import (
 	"testing"
 
 	"github.com/core-coin/go-core/v2/common"
-	"github.com/cryptohub-digital/blockbook-fork/bchain"
-	"github.com/cryptohub-digital/blockbook-fork/tests/dbtestdata"
+	"github.com/cryptohub-digital/blockbook/bchain"
+	"github.com/cryptohub-digital/blockbook/tests/dbtestdata"
 )
 
 func TestCrc20_getTokenTransfersFromLog(t *testing.T) {

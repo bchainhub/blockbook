@@ -11,7 +11,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/cryptohub-digital/blockbook-fork/bchain/coins/btc"
+	"github.com/cryptohub-digital/blockbook/bchain/coins/btc"
 	"github.com/martinboehm/btcutil/chaincfg"
 )
 

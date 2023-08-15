@@ -12,7 +12,7 @@ import (
 	"unicode/utf8"
 
 	vlq "github.com/bsm/go-vlq"
-	"github.com/cryptohub-digital/blockbook-fork/bchain"
+	"github.com/cryptohub-digital/blockbook/bchain"
 	"github.com/juju/errors"
 	"github.com/martinboehm/btcd/blockchain"
 	"github.com/martinboehm/btcd/btcec"

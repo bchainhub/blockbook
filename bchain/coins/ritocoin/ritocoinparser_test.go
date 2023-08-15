@@ -9,8 +9,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/cryptohub-digital/blockbook-fork/bchain"
-	"github.com/cryptohub-digital/blockbook-fork/bchain/coins/btc"
+	"github.com/cryptohub-digital/blockbook/bchain"
+	"github.com/cryptohub-digital/blockbook/bchain/coins/btc"
 	"github.com/martinboehm/btcutil/chaincfg"
 )
 

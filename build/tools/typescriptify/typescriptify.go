@@ -5,9 +5,9 @@ import (
 	"math/big"
 	"time"
 
-	"github.com/cryptohub-digital/blockbook-fork/api"
-	"github.com/cryptohub-digital/blockbook-fork/bchain"
-	"github.com/cryptohub-digital/blockbook-fork/server"
+	"github.com/cryptohub-digital/blockbook/api"
+	"github.com/cryptohub-digital/blockbook/bchain"
+	"github.com/cryptohub-digital/blockbook/server"
 	"github.com/tkrajina/typescriptify-golang-structs/typescriptify"
 )
 

@@ -9,8 +9,8 @@ import (
 	"sync"
 
 	vlq "github.com/bsm/go-vlq"
-	"github.com/cryptohub-digital/blockbook-fork/bchain"
-	"github.com/cryptohub-digital/blockbook-fork/bchain/coins/eth"
+	"github.com/cryptohub-digital/blockbook/bchain"
+	"github.com/cryptohub-digital/blockbook/bchain/coins/eth"
 	"github.com/golang/glog"
 	"github.com/juju/errors"
 	"github.com/linxGnu/grocksdb"

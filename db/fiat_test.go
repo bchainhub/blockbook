@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cryptohub-digital/blockbook-fork/common"
+	"github.com/cryptohub-digital/blockbook/common"
 	"github.com/linxGnu/grocksdb"
 )
 

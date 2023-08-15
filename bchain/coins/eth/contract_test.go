@@ -8,8 +8,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/cryptohub-digital/blockbook-fork/bchain"
-	"github.com/cryptohub-digital/blockbook-fork/tests/dbtestdata"
+	"github.com/cryptohub-digital/blockbook/bchain"
+	"github.com/cryptohub-digital/blockbook/tests/dbtestdata"
 )
 
 func Test_contractGetTransfersFromLog(t *testing.T) {

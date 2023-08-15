@@ -11,8 +11,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cryptohub-digital/blockbook-fork/api"
-	"github.com/cryptohub-digital/blockbook-fork/common"
+	"github.com/cryptohub-digital/blockbook/api"
+	"github.com/cryptohub-digital/blockbook/common"
 	"github.com/golang/glog"
 )
 

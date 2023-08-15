@@ -12,10 +12,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cryptohub-digital/blockbook-fork/bchain"
-	"github.com/cryptohub-digital/blockbook-fork/bchain/coins/btc"
-	"github.com/cryptohub-digital/blockbook-fork/common"
-	"github.com/cryptohub-digital/blockbook-fork/db"
+	"github.com/cryptohub-digital/blockbook/bchain"
+	"github.com/cryptohub-digital/blockbook/bchain/coins/btc"
+	"github.com/cryptohub-digital/blockbook/common"
+	"github.com/cryptohub-digital/blockbook/db"
 	"github.com/golang/glog"
 	"github.com/martinboehm/btcutil/chaincfg"
 )
