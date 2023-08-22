@@ -10,7 +10,7 @@ import (
 	"github.com/cryptohub-digital/blockbook/tests/dbtestdata"
 )
 
-func TestCrc20_getTokenTransfersFromLog(t *testing.T) {
+func TestCbc20_getTokenTransfersFromLog(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    []*RpcLog
@@ -139,7 +139,7 @@ func TestCrc20_getTokenTransfersFromLog(t *testing.T) {
 	}
 }
 
-func TestCrc20_parseCRC20StringProperty(t *testing.T) {
+func TestCbc20_parseCBC20StringProperty(t *testing.T) {
 	tests := []struct {
 		name string
 		args string
@@ -178,16 +178,16 @@ func TestCrc20_parseCRC20StringProperty(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := parseCRC20StringProperty(nil, tt.args)
+			got := parseCBC20StringProperty(nil, tt.args)
 			// the addresses could have different case
 			if got != tt.want {
-				t.Errorf("parseCRC20StringProperty = %v, want %v", got, tt.want)
+				t.Errorf("parseCBC20StringProperty = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func TestCrc20_getTokenTransfersFromTx(t *testing.T) {
+func TestCbc20_getTokenTransfersFromTx(t *testing.T) {
 	common.DefaultNetworkID = common.NetworkID(3)
 	p := NewCoreCoinParser(1)
 	b := dbtestdata.GetTestCoreCoinTypeBlock1(p)

@@ -122,8 +122,8 @@ type TokenType int
 
 // TokenType enumeration
 const (
-	FungibleToken    = TokenType(iota) // ERC20/BEP20/CRC20
-	NonFungibleToken                   // ERC721/BEP721/CRC721
+	FungibleToken    = TokenType(iota) // ERC20/BEP20/CBC20
+	NonFungibleToken                   // ERC721/BEP721/CBC721
 	MultiToken                         // ERC1155/BEP1155
 )
 
@@ -330,7 +330,7 @@ type BlockChain interface {
 	CoreCoinTypeGetBalance(addrDesc AddressDescriptor) (*big.Int, error)
 	CoreCoinTypeGetNonce(addrDesc AddressDescriptor) (uint64, error)
 	CoreCoinTypeEstimateEnergy(params map[string]interface{}) (uint64, error)
-	CoreCoinTypeGetCrc20ContractBalance(addrDesc, contractDesc AddressDescriptor) (*big.Int, error)
+	CoreCoinTypeGetCbc20ContractBalance(addrDesc, contractDesc AddressDescriptor) (*big.Int, error)
 }
 
 // BlockChainParser defines common interface to parsing and conversions of block chain data

@@ -20,16 +20,16 @@ import (
 const tokenTransferEventSignature = "0xc17a9d92b89f27cb79cc390f23a1a5d302fefab8c7911075ede952ac2b5607a1"
 
 // doing the parsing/processing without using go-core/accounts/abi library, it is simple to get data from Transfer event
-const crc20TransferMethodSignature = "0x4b40e901"
+const cbc20TransferMethodSignature = "0x4b40e901"
 
 const nameSignature = "0x07ba2a17"
 const symbolSignature = "0x231782d8"
 const decimalsSignature = "0x5d1fb5f9"
 const balanceOfSignature = "0x1d7976f3"
 
-const crc721TransferFromMethodSignature = "0x31f2e679"             // transferFrom(address,address,uint256)
-const crc721SafeTransferFromMethodSignature = "0x3453ba4a"         // safeTransferFrom(address,address,uint256)
-const crc721SafeTransferFromWithDataMethodSignature = "0xf3d63809" // safeTransferFrom(address,address,uint256,bytes)
+const cbc721TransferFromMethodSignature = "0x31f2e679"             // transferFrom(address,address,uint256)
+const cbc721SafeTransferFromMethodSignature = "0x3453ba4a"         // safeTransferFrom(address,address,uint256)
+const cbc721SafeTransferFromWithDataMethodSignature = "0xf3d63809" // safeTransferFrom(address,address,uint256,bytes)
 
 var cachedContracts = make(map[string]*bchain.ContractInfo)
 var cachedContractsMux sync.Mutex
@@ -81,13 +81,13 @@ func processtokenTransferEventFromLogs(log *RpcLog) (*bchain.TokenTransfer, erro
 		ttt = bchain.FungibleToken
 		_, ok := value.SetString(log.Data, 0)
 		if !ok {
-			return nil, errors.New("CRC20 log Data is not a number")
+			return nil, errors.New("CBC20 log Data is not a number")
 		}
 	} else if tl == 4 {
 		ttt = bchain.NonFungibleToken
 		_, ok := value.SetString(log.Topics[3], 0)
 		if !ok {
-			return nil, errors.New("CRC721 log Topics[3] is not a number")
+			return nil, errors.New("CBC721 log Topics[3] is not a number")
 		}
 	} else {
 		return nil, nil
@@ -112,13 +112,13 @@ func processtokenTransferEventFromLogs(log *RpcLog) (*bchain.TokenTransfer, erro
 
 func getTokenTransfersFromTx(tx *RpcTransaction) (bchain.TokenTransfers, error) {
 	var r bchain.TokenTransfers
-	if len(tx.Payload)%(128+len(crc20TransferMethodSignature)) == 0 && strings.HasPrefix(tx.Payload, crc20TransferMethodSignature) {
-		to, err := addressFromPaddedHex(tx.Payload[len(crc20TransferMethodSignature) : 64+len(crc20TransferMethodSignature)])
+	if len(tx.Payload)%(128+len(cbc20TransferMethodSignature)) == 0 && strings.HasPrefix(tx.Payload, cbc20TransferMethodSignature) {
+		to, err := addressFromPaddedHex(tx.Payload[len(cbc20TransferMethodSignature) : 64+len(cbc20TransferMethodSignature)])
 		if err != nil {
 			return nil, err
 		}
 		var t big.Int
-		_, ok := t.SetString(tx.Payload[len(crc20TransferMethodSignature)+64:], 16)
+		_, ok := t.SetString(tx.Payload[len(cbc20TransferMethodSignature)+64:], 16)
 		if !ok {
 			return nil, errors.New("Data is not a number")
 		}
@@ -130,9 +130,9 @@ func getTokenTransfersFromTx(tx *RpcTransaction) (bchain.TokenTransfers, error) 
 			Type:     bchain.FungibleToken,
 		})
 	} else if len(tx.Payload) >= 10+192 &&
-		(strings.HasPrefix(tx.Payload, crc721TransferFromMethodSignature) ||
-			strings.HasPrefix(tx.Payload, crc721SafeTransferFromMethodSignature) ||
-			strings.HasPrefix(tx.Payload, crc721SafeTransferFromWithDataMethodSignature)) {
+		(strings.HasPrefix(tx.Payload, cbc721TransferFromMethodSignature) ||
+			strings.HasPrefix(tx.Payload, cbc721SafeTransferFromMethodSignature) ||
+			strings.HasPrefix(tx.Payload, cbc721SafeTransferFromWithDataMethodSignature)) {
 		from, err := addressFromPaddedHex(tx.Payload[10 : 10+64])
 		if err != nil {
 			return nil, err
@@ -171,7 +171,7 @@ func (b *CoreblockchainRPC) xcbCall(data, to string) (string, error) {
 	return r, nil
 }
 
-func parseCRC20NumericProperty(contractDesc bchain.AddressDescriptor, data string) *big.Int {
+func parseCBC20NumericProperty(contractDesc bchain.AddressDescriptor, data string) *big.Int {
 	if has0xPrefix(data) {
 		data = data[2:]
 	}
@@ -191,12 +191,12 @@ func parseCRC20NumericProperty(contractDesc bchain.AddressDescriptor, data strin
 	return nil
 }
 
-func parseCRC20StringProperty(contractDesc bchain.AddressDescriptor, data string) string {
+func parseCBC20StringProperty(contractDesc bchain.AddressDescriptor, data string) string {
 	if has0xPrefix(data) {
 		data = data[2:]
 	}
 	if len(data) > 128 {
-		n := parseCRC20NumericProperty(contractDesc, data[64:128])
+		n := parseCBC20NumericProperty(contractDesc, data[64:128])
 		if n != nil {
 			l := n.Uint64()
 			if l > 0 && 2*int(l) <= len(data)-128 {
@@ -245,35 +245,35 @@ func (b *CoreblockchainRPC) GetContractInfo(contractDesc bchain.AddressDescripto
 		data, err := b.xcbCall(nameSignature, address.Hex())
 		if err != nil {
 			if strings.Contains(err.Error(), "execution reverted") {
-				// if execution reverted -> it is not crc20 smart contract
+				// if execution reverted -> it is not cbc20 smart contract
 				return &bchain.ContractInfo{
 					Contract: address.Hex(),
-					Type:     CRC721TokenType,
+					Type:     CBC721TokenType,
 				}, nil
 			}
 			return nil, nil
 		}
-		name := parseCRC20StringProperty(contractDesc, data)
+		name := parseCBC20StringProperty(contractDesc, data)
 		if name != "" {
 			data, err = b.xcbCall(symbolSignature, address.Hex())
 			if err != nil {
-				glog.Warning(errors.Annotatef(err, "crc20SymbolSignature %v", address))
+				glog.Warning(errors.Annotatef(err, "cbc20SymbolSignature %v", address))
 				return nil, nil
-				// return nil, errors.Annotatef(err, "crc20SymbolSignature %v", address)
+				// return nil, errors.Annotatef(err, "cbc20SymbolSignature %v", address)
 			}
-			symbol := parseCRC20StringProperty(contractDesc, data)
+			symbol := parseCBC20StringProperty(contractDesc, data)
 			data, err = b.xcbCall(decimalsSignature, address.Hex())
 			if err != nil {
-				glog.Warning(errors.Annotatef(err, "crc20DecimalsSignature %v", address))
-				// return nil, errors.Annotatef(err, "crc20DecimalsSignature %v", address)
+				glog.Warning(errors.Annotatef(err, "cbc20DecimalsSignature %v", address))
+				// return nil, errors.Annotatef(err, "cbc20DecimalsSignature %v", address)
 			}
 			contract = &bchain.ContractInfo{
 				Contract: address.Hex(),
 				Name:     name,
 				Symbol:   symbol,
-				Type:     CRC20TokenType,
+				Type:     CBC20TokenType,
 			}
-			d := parseCRC20NumericProperty(contractDesc, data)
+			d := parseCBC20NumericProperty(contractDesc, data)
 			if d != nil {
 				contract.Decimals = int(uint8(d.Uint64()))
 			} else {
@@ -289,8 +289,8 @@ func (b *CoreblockchainRPC) GetContractInfo(contractDesc bchain.AddressDescripto
 	return contract, nil
 }
 
-// CoreCoinTypeGetCrc20ContractBalance returns balance of crc20 contract for given address
-func (b *CoreblockchainRPC) CoreCoinTypeGetCrc20ContractBalance(addrDesc, contractDesc bchain.AddressDescriptor) (*big.Int, error) {
+// CoreCoinTypeGetCbc20ContractBalance returns balance of cbc20 contract for given address
+func (b *CoreblockchainRPC) CoreCoinTypeGetCbc20ContractBalance(addrDesc, contractDesc bchain.AddressDescriptor) (*big.Int, error) {
 	addr := cutAddress(addrDesc)
 	contract := "0x" + cutAddress(contractDesc)
 
@@ -299,7 +299,7 @@ func (b *CoreblockchainRPC) CoreCoinTypeGetCrc20ContractBalance(addrDesc, contra
 	if err != nil {
 		return nil, err
 	}
-	r := parseCRC20NumericProperty(contractDesc, data)
+	r := parseCBC20NumericProperty(contractDesc, data)
 	if r == nil {
 		return nil, errors.New("Invalid balance")
 	}

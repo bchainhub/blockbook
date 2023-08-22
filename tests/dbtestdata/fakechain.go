@@ -227,6 +227,6 @@ func (c *fakeBlockChain) CoreCoinTypeGetNonce(addrDesc bchain.AddressDescriptor)
 func (c *fakeBlockChain) CoreCoinTypeEstimateEnergy(params map[string]interface{}) (uint64, error) {
 	return 0, errors.New("Not implemented")
 }
-func (c *fakeBlockChain) CoreCoinTypeGetCrc20ContractBalance(addrDesc, contractDesc bchain.AddressDescriptor) (*big.Int, error) {
+func (c *fakeBlockChain) CoreCoinTypeGetCbc20ContractBalance(addrDesc, contractDesc bchain.AddressDescriptor) (*big.Int, error) {
 	return nil, errors.New("Not implemented")
 }
