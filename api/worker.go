@@ -1086,11 +1086,11 @@ func (w *Worker) getCoreCoinContractBalance(addrDesc bchain.AddressDescriptor, i
 	// return contract balances/values only at or above AccountDetailsTokenBalances
 	if details >= AccountDetailsTokenBalances && validContract {
 		if c.Type == bchain.FungibleToken {
-			// get Crc20 Contract Balance from blockchain, balance obtained from adding and subtracting transfers is not correct
-			b, err := w.chain.CoreCoinTypeGetCrc20ContractBalance(addrDesc, c.Contract)
+			// get Cbc20 Contract Balance from blockchain, balance obtained from adding and subtracting transfers is not correct
+			b, err := w.chain.CoreCoinTypeGetCbc20ContractBalance(addrDesc, c.Contract)
 			if err != nil {
-				// return nil, nil, nil, errors.Annotatef(err, "CoreCoinTypeGetCrc20ContractBalance %v %v", addrDesc, c.Contract)
-				glog.Warningf("CoreCoinTypeGetCrc20ContractBalance addr %v, contract %v, %v", addrDesc, c.Contract, err)
+				// return nil, nil, nil, errors.Annotatef(err, "CoreCoinTypeGetCbc20ContractBalance %v %v", addrDesc, c.Contract)
+				glog.Warningf("CoreCoinTypeGetCbc20ContractBalance addr %v, contract %v, %v", addrDesc, c.Contract, err)
 			} else {
 				t.BalanceSat = (*Amount)(b)
 			}
@@ -1117,10 +1117,10 @@ func (w *Worker) getCoreCoinContractBalanceFromBlockchain(addrDesc, contract bch
 	}
 	// do not read contract balances etc in case of Basic option
 	if details >= AccountDetailsTokenBalances && validContract {
-		b, err = w.chain.CoreCoinTypeGetCrc20ContractBalance(addrDesc, contract)
+		b, err = w.chain.CoreCoinTypeGetCbc20ContractBalance(addrDesc, contract)
 		if err != nil {
-			// return nil, nil, nil, errors.Annotatef(err, "CoreCoinTypeGetCrc20ContractBalance %v %v", addrDesc, c.Contract)
-			glog.Warningf("CoreCoinTypeGetCrc20ContractBalance addr %v, contract %v, %v", addrDesc, contract, err)
+			// return nil, nil, nil, errors.Annotatef(err, "CoreCoinTypeGetCbc20ContractBalance %v %v", addrDesc, c.Contract)
+			glog.Warningf("CoreCoinTypeGetCbc20ContractBalance addr %v, contract %v, %v", addrDesc, contract, err)
 		}
 	} else {
 		b = nil
@@ -1417,10 +1417,10 @@ func (w *Worker) getCoreCoinToken(index int, addrDesc, contract bchain.AddressDe
 	}
 	// do not read contract balances etc in case of Basic option
 	if details >= AccountDetailsTokenBalances && validContract {
-		b, err = w.chain.CoreCoinTypeGetCrc20ContractBalance(addrDesc, contract)
+		b, err = w.chain.CoreCoinTypeGetCbc20ContractBalance(addrDesc, contract)
 		if err != nil {
-			// return nil, nil, nil, errors.Annotatef(err, "CoreCoinTypeGetCrc20ContractBalance %v %v", addrDesc, c.Contract)
-			glog.Warningf("CoreCoinTypeGetCrc20ContractBalance addr %v, contract %v, %v", addrDesc, contract, err)
+			// return nil, nil, nil, errors.Annotatef(err, "CoreCoinTypeGetCbc20ContractBalance %v %v", addrDesc, c.Contract)
+			glog.Warningf("CoreCoinTypeGetCbc20ContractBalance addr %v, contract %v, %v", addrDesc, contract, err)
 		}
 	} else {
 		b = nil
@@ -1690,7 +1690,7 @@ func (w *Worker) GetAddress(address string, page int, txsOnPage int, option Acco
 		AddressAliases:        w.getAddressAliases(addresses),
 	}
 	// keep address backward compatible, set deprecated Erc20Contract value if ERC20 token
-	if ed.contractInfo != nil && (ed.contractInfo.Type == bchain.ERC20TokenType || ed.contractInfo.Type == xcb.CRC20TokenType) {
+	if ed.contractInfo != nil && (ed.contractInfo.Type == bchain.ERC20TokenType || ed.contractInfo.Type == xcb.CBC20TokenType) {
 		r.Erc20Contract = ed.contractInfo
 	}
 	glog.Info("GetAddress ", address, ", ", time.Since(start))

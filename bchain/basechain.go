@@ -84,7 +84,7 @@ func (cp *BaseChain) CoreCoinTypeEstimateEnergy(params map[string]interface{}) (
 	return 0, errors.New("Not supported")
 }
 
-// CoreCoinTypeGetCrc20ContractBalance is not supported
-func (cp *BaseChain) CoreCoinTypeGetCrc20ContractBalance(addrDesc, contractDesc AddressDescriptor) (*big.Int, error) {
+// CoreCoinTypeGetCbc20ContractBalance is not supported
+func (cp *BaseChain) CoreCoinTypeGetCbc20ContractBalance(addrDesc, contractDesc AddressDescriptor) (*big.Int, error) {
 	return nil, errors.New("Not supported")
 }

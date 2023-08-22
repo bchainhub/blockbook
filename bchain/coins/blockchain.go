@@ -363,9 +363,9 @@ func (c *blockChainWithMetrics) CoreCoinTypeEstimateEnergy(params map[string]int
 	return c.b.CoreCoinTypeEstimateEnergy(params)
 }
 
-func (c *blockChainWithMetrics) CoreCoinTypeGetCrc20ContractBalance(addrDesc, contractDesc bchain.AddressDescriptor) (v *big.Int, err error) {
-	defer func(s time.Time) { c.observeRPCLatency("CoreCoinTypeGetCrc20ContractBalance", s, err) }(time.Now())
-	return c.b.CoreCoinTypeGetCrc20ContractBalance(addrDesc, contractDesc)
+func (c *blockChainWithMetrics) CoreCoinTypeGetCbc20ContractBalance(addrDesc, contractDesc bchain.AddressDescriptor) (v *big.Int, err error) {
+	defer func(s time.Time) { c.observeRPCLatency("CoreCoinTypeGetCbc20ContractBalance", s, err) }(time.Now())
+	return c.b.CoreCoinTypeGetCbc20ContractBalance(addrDesc, contractDesc)
 }
 
 type mempoolWithMetrics struct {

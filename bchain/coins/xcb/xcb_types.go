@@ -101,7 +101,7 @@ type CoreCoinBlockSpecificData struct {
 }
 
 const (
-	// crc token type names
-	CRC20TokenType  bchain.TokenTypeName = "CRC20"
-	CRC721TokenType bchain.TokenTypeName = "CRC721"
+	// cbc token type names
+	CBC20TokenType  bchain.TokenTypeName = "CBC20"
+	CBC721TokenType bchain.TokenTypeName = "CBC721"
 )
