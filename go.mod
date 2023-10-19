@@ -50,7 +50,7 @@ require (
 	github.com/btcsuite/btcd/btcec/v2 v2.3.2 // indirect
 	github.com/btcsuite/btclog v0.0.0-20170628155309-84c8d2346e9f // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
-	github.com/core-coin/go-core/v2 v2.0.6
+	github.com/core-coin/go-core/v2 v2.1.4
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dchest/blake256 v1.0.0 // indirect
 	github.com/dchest/siphash v1.2.1 // indirect
