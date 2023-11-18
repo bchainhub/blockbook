@@ -9,6 +9,9 @@ import (
 	"sync"
 	"unicode/utf8"
 
+	"golang.org/x/text/language"
+	"golang.org/x/text/message"
+
 	"github.com/core-coin/go-core/v2/common"
 	"github.com/core-coin/go-core/v2/common/hexutil"
 	"github.com/golang/glog"
@@ -232,7 +235,9 @@ func (b *CoreblockchainRPC) AddVerifiedSCData(contract *bchain.ContractInfo) *bc
 		if sc := b.smartContractVerifier.GetVerified(contract.Contract); sc != nil {
 			contract.Icon = sc.Icon
 			contract.VerifierWebAddress = sc.Web
-			contract.TotalSupply = sc.TotalSupply
+
+			p := message.NewPrinter(language.English)
+			contract.TotalSupply = p.Sprintf("%d\n", sc.TotalSupply)
 		}
 	}
 	return contract
@@ -258,7 +263,9 @@ func (b *CoreblockchainRPC) GetContractInfo(contractDesc bchain.AddressDescripto
 		if sc := b.smartContractVerifier.GetVerified(common.Bytes2Hex(contractDesc[:])); sc != nil {
 			contractInfo.Icon = sc.Icon
 			contractInfo.VerifierWebAddress = sc.Web
-			contractInfo.TotalSupply = sc.TotalSupply
+
+			p := message.NewPrinter(language.English)
+			contractInfo.TotalSupply = p.Sprintf("%d", sc.TotalSupply)
 		}
 		data, err := b.xcbCall(nameSignature, address.Hex())
 		if err != nil {
