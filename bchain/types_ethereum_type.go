@@ -68,7 +68,7 @@ type ContractInfo struct {
 	DestructedInBlock uint32        `json:"destructedInBlock,omitempty"`
 
 	VerifierWebAddress string `json:"web"`
-	TotalSupply        int32  `json:"totalSupply"`
+	TotalSupply        string `json:"totalSupply"`
 	Icon               string `json:"icon"`
 }
 
