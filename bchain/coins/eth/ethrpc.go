@@ -980,3 +980,7 @@ func (b *EthereumRPC) EthereumTypeGetNonce(addrDesc bchain.AddressDescriptor) (u
 func (b *EthereumRPC) GetChainParser() bchain.BlockChainParser {
 	return b.Parser
 }
+
+func (c *EthereumRPC) AddVerifiedSCData(contract *bchain.ContractInfo) *bchain. ContractInfo {
+	return contract
+}

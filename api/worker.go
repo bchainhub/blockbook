@@ -655,6 +655,7 @@ func (w *Worker) getContractDescriptorInfo(cd bchain.AddressDescriptor, typeFrom
 	if err != nil {
 		return nil, false, err
 	}
+	contractInfo = w.chain.AddVerifiedSCData(contractInfo)
 	if contractInfo == nil {
 		// log warning only if the contract should have been known from processing of the internal data
 		if eth.ProcessInternalTransactions {
@@ -1263,6 +1264,7 @@ func (w *Worker) getEthereumTypeAddressBalances(addrDesc bchain.AddressDescripto
 		if err != nil {
 			return nil, nil, err
 		}
+		d.contractInfo = w.chain.AddVerifiedSCData(d.contractInfo)
 		if filter.FromHeight == 0 && filter.ToHeight == 0 {
 			// compute total results for paging
 			if filter.Vout == AddressFilterVoutOff {
@@ -1360,6 +1362,7 @@ func (w *Worker) getCoreCoinTypeAddressBalances(addrDesc bchain.AddressDescripto
 		if err != nil {
 			return nil, nil, err
 		}
+		d.contractInfo = w.chain.AddVerifiedSCData(d.contractInfo)
 		if filter.FromHeight == 0 && filter.ToHeight == 0 {
 			// compute total results for paging
 			if filter.Vout == AddressFilterVoutOff {

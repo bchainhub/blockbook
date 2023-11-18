@@ -66,6 +66,10 @@ type ContractInfo struct {
 	Decimals          int           `json:"decimals"`
 	CreatedInBlock    uint32        `json:"createdInBlock,omitempty"`
 	DestructedInBlock uint32        `json:"destructedInBlock,omitempty"`
+
+	VerifierWebAddress string `json:"web"`
+	TotalSupply        int32  `json:"totalSupply"`
+	Icon               string `json:"icon"`
 }
 
 // Token type names

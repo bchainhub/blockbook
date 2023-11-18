@@ -246,6 +246,7 @@ type CoreCoinSpecific struct {
 	EnergyUsed  *big.Int     `json:"energyUsed,omitempty"`
 	EnergyPrice *Amount      `json:"energyPrice"`
 	Data        string       `json:"data,omitempty"`
+	Error       string       `json:error,omitempty`
 }
 
 type AddressAlias struct {

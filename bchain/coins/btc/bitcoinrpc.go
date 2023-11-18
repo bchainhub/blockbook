@@ -929,3 +929,7 @@ func (b *BitcoinRPC) Call(req interface{}, res interface{}) error {
 	}
 	return safeDecodeResponse(httpRes.Body, &res)
 }
+
+func (c *BitcoinRPC) AddVerifiedSCData(contract *bchain.ContractInfo) *bchain. ContractInfo {
+	return contract
+}
