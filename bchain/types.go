@@ -331,6 +331,8 @@ type BlockChain interface {
 	CoreCoinTypeGetNonce(addrDesc AddressDescriptor) (uint64, error)
 	CoreCoinTypeEstimateEnergy(params map[string]interface{}) (uint64, error)
 	CoreCoinTypeGetCbc20ContractBalance(addrDesc, contractDesc AddressDescriptor) (*big.Int, error)
+
+	AddVerifiedSCData(contract *ContractInfo) *ContractInfo
 }
 
 // BlockChainParser defines common interface to parsing and conversions of block chain data

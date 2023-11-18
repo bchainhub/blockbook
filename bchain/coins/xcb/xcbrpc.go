@@ -33,39 +33,41 @@ const (
 
 // Configuration represents json config file
 type Configuration struct {
-	CoinName                        string `json:"coin_name"`
-	CoinShortcut                    string `json:"coin_shortcut"`
-	RPCURL                          string `json:"rpc_url"`
-	RPCTimeout                      int    `json:"rpc_timeout"`
-	BlockAddressesToKeep            int    `json:"block_addresses_to_keep"`
-	AddressAliases                  bool   `json:"address_aliases,omitempty"`
-	MempoolTxTimeoutHours           int    `json:"mempoolTxTimeoutHours"`
-	QueryBackendOnMempoolResync     bool   `json:"queryBackendOnMempoolResync"`
-	ProcessInternalTransactions     bool   `json:"processInternalTransactions"`
-	ProcessZeroInternalTransactions bool   `json:"processZeroInternalTransactions"`
-	ConsensusNodeVersionURL         string `json:"consensusNodeVersion"`
+	CoinName                        string        `json:"coin_name"`
+	CoinShortcut                    string        `json:"coin_shortcut"`
+	RPCURL                          string        `json:"rpc_url"`
+	RPCTimeout                      int           `json:"rpc_timeout"`
+	BlockAddressesToKeep            int           `json:"block_addresses_to_keep"`
+	AddressAliases                  bool          `json:"address_aliases,omitempty"`
+	MempoolTxTimeoutHours           int           `json:"mempoolTxTimeoutHours"`
+	QueryBackendOnMempoolResync     bool          `json:"queryBackendOnMempoolResync"`
+	ProcessInternalTransactions     bool          `json:"processInternalTransactions"`
+	ProcessZeroInternalTransactions bool          `json:"processZeroInternalTransactions"`
+	ConsensusNodeVersionURL         string        `json:"consensusNodeVersion"`
+	VerifiedSmartContracts          []*VerifiedSC `json:"verifiedSmartContracts"`
 }
 
 // CoreblockchainRPC is an interface to JSON-RPC xcb service.
 type CoreblockchainRPC struct {
 	*bchain.BaseChain
-	Client               CVMClient
-	RPC                  CVMRPCClient
-	MainNetChainID       Network
-	Timeout              time.Duration
-	Parser               *CoreCoinParser
-	PushHandler          func(bchain.NotificationType)
-	OpenRPC              func(string) (CVMRPCClient, CVMClient, error)
-	Mempool              *bchain.MempoolCoreCoinType
-	mempoolInitialized   bool
-	bestHeaderLock       sync.Mutex
-	bestHeader           CVMHeader
-	bestHeaderTime       time.Time
-	NewBlock             CVMNewBlockSubscriber
-	newBlockSubscription CVMClientSubscription
-	NewTx                CVMNewTxSubscriber
-	newTxSubscription    CVMClientSubscription
-	ChainConfig          *Configuration
+	Client                CVMClient
+	RPC                   CVMRPCClient
+	MainNetChainID        Network
+	Timeout               time.Duration
+	Parser                *CoreCoinParser
+	PushHandler           func(bchain.NotificationType)
+	OpenRPC               func(string) (CVMRPCClient, CVMClient, error)
+	Mempool               *bchain.MempoolCoreCoinType
+	mempoolInitialized    bool
+	bestHeaderLock        sync.Mutex
+	bestHeader            CVMHeader
+	bestHeaderTime        time.Time
+	NewBlock              CVMNewBlockSubscriber
+	newBlockSubscription  CVMClientSubscription
+	NewTx                 CVMNewTxSubscriber
+	newTxSubscription     CVMClientSubscription
+	ChainConfig           *Configuration
+	smartContractVerifier *smartContractVerifier
 }
 
 // ProcessInternalTransactions specifies if internal transactions are processed
@@ -98,6 +100,8 @@ func NewCoreblockchainRPC(config json.RawMessage, pushHandler func(bchain.Notifi
 	s.Parser = NewCoreCoinParser(c.BlockAddressesToKeep)
 	s.Timeout = time.Duration(c.RPCTimeout) * time.Second
 	s.PushHandler = pushHandler
+
+	s.smartContractVerifier = newSmartContractVerifier(c.VerifiedSmartContracts)
 
 	return s, nil
 }

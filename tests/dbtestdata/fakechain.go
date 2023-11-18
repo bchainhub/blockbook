@@ -230,3 +230,7 @@ func (c *fakeBlockChain) CoreCoinTypeEstimateEnergy(params map[string]interface{
 func (c *fakeBlockChain) CoreCoinTypeGetCbc20ContractBalance(addrDesc, contractDesc bchain.AddressDescriptor) (*big.Int, error) {
 	return nil, errors.New("Not implemented")
 }
+
+func (c *fakeBlockChain) AddVerifiedSCData(contract *bchain.ContractInfo) *bchain.ContractInfo {
+	return contract
+}

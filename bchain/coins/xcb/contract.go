@@ -227,6 +227,17 @@ func parseCBC20StringProperty(contractDesc bchain.AddressDescriptor, data string
 	return ""
 }
 
+func (b *CoreblockchainRPC) AddVerifiedSCData(contract *bchain.ContractInfo) *bchain.ContractInfo {
+	if contract != nil {
+		if sc := b.smartContractVerifier.GetVerified(contract.Contract); sc != nil {
+			contract.Icon = sc.Icon
+			contract.VerifierWebAddress = sc.Web
+			contract.TotalSupply = sc.TotalSupply
+		}
+	}
+	return contract
+}
+
 // GetContractInfo returns information about smart contract
 func (b *CoreblockchainRPC) GetContractInfo(contractDesc bchain.AddressDescriptor) (*bchain.ContractInfo, error) {
 	cds, err := b.Parser.GetAddrDescFromAddress(common.Bytes2Hex(contractDesc[:]))
@@ -242,14 +253,20 @@ func (b *CoreblockchainRPC) GetContractInfo(contractDesc bchain.AddressDescripto
 		if err != nil {
 			return nil, err
 		}
+
+		contractInfo := &bchain.ContractInfo{}
+		if sc := b.smartContractVerifier.GetVerified(common.Bytes2Hex(contractDesc[:])); sc != nil {
+			contractInfo.Icon = sc.Icon
+			contractInfo.VerifierWebAddress = sc.Web
+			contractInfo.TotalSupply = sc.TotalSupply
+		}
 		data, err := b.xcbCall(nameSignature, address.Hex())
 		if err != nil {
 			if strings.Contains(err.Error(), "execution reverted") {
 				// if execution reverted -> it is not cbc20 smart contract
-				return &bchain.ContractInfo{
-					Contract: address.Hex(),
-					Type:     CBC721TokenType,
-				}, nil
+				contractInfo.Contract = address.Hex()
+				contractInfo.Type = CBC721TokenType
+				return contractInfo, nil
 			}
 			return nil, nil
 		}
@@ -267,24 +284,24 @@ func (b *CoreblockchainRPC) GetContractInfo(contractDesc bchain.AddressDescripto
 				glog.Warning(errors.Annotatef(err, "cbc20DecimalsSignature %v", address))
 				// return nil, errors.Annotatef(err, "cbc20DecimalsSignature %v", address)
 			}
-			contract = &bchain.ContractInfo{
-				Contract: address.Hex(),
-				Name:     name,
-				Symbol:   symbol,
-				Type:     CBC20TokenType,
-			}
+			contractInfo.Contract = address.Hex()
+			contractInfo.Name = name
+			contractInfo.Symbol = symbol
+			contractInfo.Type = CBC20TokenType
+
 			d := parseCBC20NumericProperty(contractDesc, data)
 			if d != nil {
-				contract.Decimals = int(uint8(d.Uint64()))
+				contractInfo.Decimals = int(uint8(d.Uint64()))
 			} else {
-				contract.Decimals = CoreAmountDecimalPoint
+				contractInfo.Decimals = CoreAmountDecimalPoint
 			}
 		} else {
-			contract = nil
+			contractInfo = nil
 		}
 		cachedContractsMux.Lock()
-		cachedContracts[common.Bytes2Hex(cds)] = contract
+		cachedContracts[common.Bytes2Hex(cds)] = contractInfo
 		cachedContractsMux.Unlock()
+		return contractInfo, nil
 	}
 	return contract, nil
 }

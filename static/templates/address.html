@@ -1,7 +1,7 @@
 {{define "specific"}}{{$addr := .Address}}{{$data := .}}
 <div class="row g-0 ms-2 ms-lg-0">
     <div class="col-md-10 order-2 order-md-1">
-        <h1>{{if $addr.ContractInfo}}Contract {{$addr.ContractInfo.Name}}{{if $addr.ContractInfo.Symbol}} ({{$addr.ContractInfo.Symbol}}){{end}}{{else}}Address {{addressAlias $addr.AddrStr $data}}{{end}}</h1>
+        <h1>{{if $addr.ContractInfo}}Contract {{$addr.ContractInfo.Name}}{{if $addr.ContractInfo.Symbol}} ({{$addr.ContractInfo.Symbol}}){{end}} {{if $addr.ContractInfo.Icon}}<img src="/static/verified.svg" style="width: 32px; height: 32px; margin-left: .3em;">{{end}} {{else}}Address {{addressAlias $addr.AddrStr $data}}{{end}}</h1>
         <h5 class="col-12 d-flex h-data pb-2"><span class="ellipsis copyable">{{$addr.AddrStr}}</span></h5>
         <h4 class="row">
             <div class="col-lg-6">{{formattedAmountSpan $addr.BalanceSat 0 $data.CoinShortcut $data "copyable"}}</div>
@@ -56,6 +56,16 @@
             <td style="width: 25%;">Contract type</td>
             <td>{{$addr.ContractInfo.Type}}</td>
         </tr>
+        {{if $addr.ContractInfo.VerifierWebAddress}}
+        <tr>
+            <td style="width: 25%;">Token Tracker</td>
+            <td><a href="{{$addr.ContractInfo.VerifierWebAddress}}" target="_blank" style="text-align: center;"><img src="/static/{{$addr.ContractInfo.Icon}}" style="width: 16px; height: 16px; margin-right: .5em;">{{$addr.ContractInfo.Name}} ({{$addr.ContractInfo.Symbol}})</a></td>
+        </tr>
+        <tr>
+            <td style="width: 25%;">Token Total Supply</td>
+            <td>{{$addr.ContractInfo.TotalSupply}}</td>
+        </tr>    
+        {{end}}
         {{end}}
         {{if $addr.ContractInfo.CreatedInBlock}}
         <tr>

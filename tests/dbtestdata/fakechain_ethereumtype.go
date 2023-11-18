@@ -138,3 +138,7 @@ func (c *fakeBlockChainEthereumType) EthereumTypeGetErc20ContractBalance(addrDes
 func (c *fakeBlockChainEthereumType) GetTokenURI(contractDesc bchain.AddressDescriptor, tokenID *big.Int) (string, error) {
 	return "https://ipfs.io/ipfs/" + contractDesc.String()[3:] + ".json", nil
 }
+
+func (c *fakeBlockChainEthereumType) AddVerifiedSCData(contract *bchain.ContractInfo) *bchain.ContractInfo {
+	return contract
+}
