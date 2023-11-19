@@ -1692,10 +1692,6 @@ func (w *Worker) GetAddress(address string, page int, txsOnPage int, option Acco
 		Nonce:                 ed.nonce,
 		AddressAliases:        w.getAddressAliases(addresses),
 	}
-	// keep address backward compatible, set deprecated Erc20Contract value if ERC20 token
-	if ed.contractInfo != nil && (ed.contractInfo.Type == bchain.ERC20TokenType || ed.contractInfo.Type == xcb.CBC20TokenType) {
-		r.Erc20Contract = ed.contractInfo
-	}
 	glog.Info("GetAddress ", address, ", ", time.Since(start))
 	return r, nil
 }
