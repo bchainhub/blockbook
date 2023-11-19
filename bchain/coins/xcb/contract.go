@@ -232,9 +232,10 @@ func parseCBC20StringProperty(contractDesc bchain.AddressDescriptor, data string
 
 func (b *CoreblockchainRPC) AddVerifiedSCData(contract *bchain.ContractInfo) *bchain.ContractInfo {
 	if contract != nil {
-		// if smart contract ticker is verified but address is wrong -> do not show SC
+		// if smart contract ticker is verified but address is wrong -> do not show SC symbol (ticker)
 		if !b.smartContractVerifier.IsValidVerifiedSC(contract.Contract, contract.Symbol) {
-			return nil
+			contract.Symbol = ""
+			return contract
 		}
 		// if smart contract address is verified -> add verifying data
 		if sc := b.smartContractVerifier.GetVerified(contract.Contract); sc != nil {
@@ -301,9 +302,9 @@ func (b *CoreblockchainRPC) GetContractInfo(contractDesc bchain.AddressDescripto
 			contractInfo.Symbol = symbol
 			contractInfo.Type = CBC20TokenType
 
-			// if smart contract ticker is verified but address is wrong -> do not show SC
+			// if smart contract ticker is verified but address is wrong -> do not show SC symbol (ticker)
 			if !b.smartContractVerifier.IsValidVerifiedSC(contractInfo.Contract, contractInfo.Symbol) {
-				return nil, nil
+				contractInfo.Symbol = ""
 			}
 			d := parseCBC20NumericProperty(contractDesc, data)
 			if d != nil {
