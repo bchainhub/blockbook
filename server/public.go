@@ -211,16 +211,22 @@ func (s *PublicServer) ConnectFullPublicInterface() {
 	serveMux.HandleFunc(path+"api/v2/tickers/", s.jsonHandler(s.apiTickers, apiV2))
 	serveMux.HandleFunc(path+"api/v2/multi-tickers/", s.jsonHandler(s.apiMultiTickers, apiV2))
 	serveMux.HandleFunc(path+"api/v2/tickers-list/", s.jsonHandler(s.apiAvailableVsCurrencies, apiV2))
-	// coins in use
-	serveMux.HandleFunc(path+"api/v2/circulated-coins/", s.jsonHandler(s.apiCirculatedCoins, apiV2))
-	serveMux.HandleFunc(path+"api/v2/circulated-coins-prealloc/", s.jsonHandler(s.apiCirculatedCoinsWithPrealloc, apiV2))
-	serveMux.HandleFunc(path+"api/v2/prealloc-coins/", s.jsonHandler(s.apiAllocatedCoins, apiV2))
+	// supply api
+	serveMux.HandleFunc(path+"api/v2/circulating-supply/", s.jsonHandler(s.apiCirculatingSupply, apiV2))
+	serveMux.HandleFunc(path+"api/v2/total-supply/", s.jsonHandler(s.apiTotalSupply, apiV2))
+	serveMux.HandleFunc(path+"api/v2/mined-supply/", s.jsonHandler(s.apiMinedSupply, apiV2))
+	serveMux.HandleFunc(path+"api/v2/circulating-supply-text/", s.jsonHandler(s.apiCirculatingSupplyText, apiV2))
+	serveMux.HandleFunc(path+"api/v2/total-supply-text/", s.jsonHandler(s.apiTotalSupplyText, apiV2))
 
 	// socket.io interface
 	serveMux.Handle(path+"socket.io/", s.socketio.GetHandler())
 	// websocket interface
 	serveMux.Handle(path+"websocket", s.websocket.GetHandler())
 }
+
+// total - 342223378
+// circu - 43227818
+// mined - 42223378
 
 // Close closes the server
 func (s *PublicServer) Close() error {
@@ -1484,9 +1490,9 @@ func (s *PublicServer) apiAvailableVsCurrencies(r *http.Request, apiVersion int)
 	return result, err
 }
 
-// apiCirculatedCoins returns a number of circulated coins in blockchain without preallocated coins
-func (s *PublicServer) apiCirculatedCoins(r *http.Request, apiVersion int) (interface{}, error) {
-	s.metrics.ExplorerViews.With(common.Labels{"action": "api-circulated-coins"}).Inc()
+// apiMinedSupply returns a number of circulated coins in blockchain without preallocated coins (only mined coins)
+func (s *PublicServer) apiMinedSupply(r *http.Request, apiVersion int) (interface{}, error) {
+	s.metrics.ExplorerViews.With(common.Labels{"action": "api-mined-supply"}).Inc()
 	chainInfo, err := s.chain.GetChainInfo()
 	if err != nil {
 		return nil, api.NewAPIError("Cannot get chain info", true)
@@ -1501,46 +1507,84 @@ func (s *PublicServer) apiCirculatedCoins(r *http.Request, apiVersion int) (inte
 	if height <= 0 {
 		return nil, api.NewAPIError("No blocks", true)
 	}
-	circulatedBlocksReward := new(big.Int).Mul(big.NewInt(int64(height)), big.NewInt(5)) // block height * block reward (5 coins)
+	blocksReward := new(big.Int).Mul(big.NewInt(int64(height)), big.NewInt(5)) // block height * block reward (5 coins)
 
-	unclesReward := new(big.Int).Mul(big.NewInt(int64(height)), big.NewInt(4))                               // block height * uncle reward (4 coins)
-	circulatedUnclesReward := new(big.Float).Mul(big.NewFloat(0.0426), big.NewFloat(0).SetInt(unclesReward)) // average uncle rate is 4.26%
-	circulatedUnclesRewardInt, _ := circulatedUnclesReward.Int(nil)                                          // converting to int
+	unclesReward := new(big.Int).Mul(big.NewInt(int64(height)), big.NewInt(4))                           // block height * uncle reward (4 coins)
+	unclesRewardInRate := new(big.Float).Mul(big.NewFloat(0.0426), big.NewFloat(0).SetInt(unclesReward)) // average uncle rate is 4.26%
+	unclesRewardInRateInt, _ := unclesRewardInRate.Int(nil)                                              // converting to int
 
-	circulated := new(big.Int).Add(circulatedBlocksReward, circulatedUnclesRewardInt) // block reward + uncle reward
+	mined := new(big.Int).Add(blocksReward, unclesRewardInRateInt) // block reward + uncle reward
 
 	result := map[string]interface{}{
-		"circulated":  circulated,
+		"mined":       mined,
 		"blockHeight": height,
 		"timestamp":   time.Now().Unix(),
 	}
 	return result, err
 }
 
-// genesis preallocated wallets
-var gWallets = []string{"cb062b0d7e13b47c40350d2bb77940084737deaab755", "cb357d2b2a6c1d6f4169f3b618f953ea9e2371a9d8b2", "cb555aa34251ab3437359b0ca65fdd55f6758558aca1", "cb89e8496e3aab9b4dee805c92c5db86053780c013eb", "cb930433682e5cd726d9f6069f08c5be2fc6460baff4", "cb9485e8523dffd750102cd03c228768e30028d8f503", "cb9516eb8a65b760d9d626ebdc33c222fe6b5e8b70e0"}
+// apiTotalSupply returns all supply in blockchain (all mined + all preallocated)
+func (s *PublicServer) apiTotalSupply(r *http.Request, apiVersion int) (interface{}, error) {
+	s.metrics.ExplorerViews.With(common.Labels{"action": "api-total-supply"}).Inc()
 
-// genesis preallocated wallets balances
-var gValues = []string{"0x5955e3bb3e743fec000000", "0x18d0bf423c03d8de000000", "0x165578eecf9d0ffb000000", "0x18d0bf423c03d8de000000", "0x4f68ca6d8cd91c6000000", "0x3913517ebd3c0c65000000", "0x18d0bf423c03d8de000000"}
-
-// apiAllocatedCoins returns a list of preallocated wallets and their balances
-func (s *PublicServer) apiAllocatedCoins(r *http.Request, apiVersion int) (interface{}, error) {
-	s.metrics.ExplorerViews.With(common.Labels{"action": "api-prealloc-coins"}).Inc()
-
-	chainInfo, err := s.chain.GetChainInfo()
+	minedSupply, err := s.apiMinedSupply(r, apiVersion)
 	if err != nil {
-		return nil, api.NewAPIError("Cannot get chain info", true)
+		return nil, err
 	}
-	if chainInfo.Chain != "mainnet" {
-		return nil, api.NewAPIError("Endpoint works only for mainnet version", true)
-	}
-	height, err := s.chain.GetBestBlockHeight()
+	minedMap := minedSupply.(map[string]interface{})
+
+	allocated, err := s.getAllocatedSupply()
 	if err != nil {
-		return nil, api.NewAPIError("Cannot get latest block header", true)
+		return nil, err
 	}
-	if height <= 0 {
-		return nil, api.NewAPIError("No blocks", true)
+
+	mined := minedMap["mined"].(*big.Int)                   //get circulated coins from blocks rewards and uncles rewards
+	allocatedAll := allocated["initialPrealloc"].(*big.Int) //get all preallocated coins
+
+	total := mined.Add(mined, allocatedAll) // add all preallocated coins to circulated coins
+
+	result := map[string]interface{}{
+		"blockHeight": minedMap["blockHeight"],
+		"timestamp":   time.Now().Unix(),
+		"total":       total,
 	}
+	return result, err
+}
+
+// apiCirculatingSupply returns a number of circulated coins in blockchain with preallocated coins
+func (s *PublicServer) apiCirculatingSupply(r *http.Request, apiVersion int) (interface{}, error) {
+	s.metrics.ExplorerViews.With(common.Labels{"action": "api-circulating-supply"}).Inc()
+	minedSupply, err := s.apiMinedSupply(r, apiVersion)
+	if err != nil {
+		return nil, err
+	}
+	minedMap := minedSupply.(map[string]interface{})
+
+	allocated, err := s.getAllocatedSupply()
+	if err != nil {
+		return nil, err
+	}
+
+	mined := minedMap["mined"].(*big.Int)                       //get circulated coins from blocks rewards and uncles rewards
+	allocatedUsed := allocated["circulatedPrealloc"].(*big.Int) //get preallocated coins used
+
+	circulating := mined.Add(mined, allocatedUsed) // add preallocated coins to circulated coins
+
+	result := map[string]interface{}{
+		"blockHeight": minedMap["blockHeight"],
+		"timestamp":   time.Now().Unix(),
+		"circulating": circulating,
+	}
+	return result, err
+}
+
+// getAllocatedSupply gets allocated supply in map format (initial preallocation, current preallocation status and number of coins that are currently circulated)
+func (s *PublicServer) getAllocatedSupply() (map[string]interface{}, error) {
+	// genesis preallocated wallets
+	var gWallets = []string{"cb062b0d7e13b47c40350d2bb77940084737deaab755", "cb357d2b2a6c1d6f4169f3b618f953ea9e2371a9d8b2", "cb555aa34251ab3437359b0ca65fdd55f6758558aca1", "cb89e8496e3aab9b4dee805c92c5db86053780c013eb", "cb930433682e5cd726d9f6069f08c5be2fc6460baff4", "cb9485e8523dffd750102cd03c228768e30028d8f503", "cb9516eb8a65b760d9d626ebdc33c222fe6b5e8b70e0"}
+
+	// genesis preallocated wallets balances
+	var gValues = []string{"0x5955e3bb3e743fec000000", "0x18d0bf423c03d8de000000", "0x165578eecf9d0ffb000000", "0x18d0bf423c03d8de000000", "0x4f68ca6d8cd91c6000000", "0x3913517ebd3c0c65000000", "0x18d0bf423c03d8de000000"}
 
 	preallocatedUsed := big.NewInt(0)
 	preallocatedInitial := big.NewInt(0)
@@ -1568,38 +1612,39 @@ func (s *PublicServer) apiAllocatedCoins(r *http.Request, apiVersion int) (inter
 		}
 	}
 
-	result := map[string]interface{}{
+	return map[string]interface{}{
 		"initialPrealloc":    preallocatedInitial,
 		"currentPrealloc":    preallocatedCurrent,
 		"circulatedPrealloc": preallocatedUsed,
-		"blockHeight":        height,
-		"timestamp":          time.Now().Unix(),
-	}
-	return result, err
+	}, nil
 }
 
-// apiCirculatedCoinsWithPrealloc returns a number of circulated coins in blockchain with preallocated coins
-func (s *PublicServer) apiCirculatedCoinsWithPrealloc(r *http.Request, apiVersion int) (interface{}, error) {
-	s.metrics.ExplorerViews.With(common.Labels{"action": "api-circulated-coins-prealloc"}).Inc()
-	apiCirculatedCoins, err := s.apiCirculatedCoins(r, apiVersion)
+// apiCirculatingSupplyText returns a number of circulated coins in blockchain in text format
+func (s *PublicServer) apiCirculatingSupplyText(r *http.Request, apiVersion int) (interface{}, error) {
+	s.metrics.ExplorerViews.With(common.Labels{"action": "api-circulated-supply-text"}).Inc()
+	circulatingSupply, err := s.apiCirculatingSupply(r, apiVersion)
 	if err != nil {
 		return nil, err
 	}
+	circulatingSupplyMap := circulatingSupply.(map[string]interface{})
 
-	apiAllocatedCoins, err := s.apiAllocatedCoins(r, apiVersion)
+	circulating := circulatingSupplyMap["circulating"].(*big.Int) //get circulated coins from blocks rewards and uncles rewards
+
+	return circulating.String(), err
+}
+
+// apiTotalSupplyText returns total supply in blockchain in text format
+func (s *PublicServer) apiTotalSupplyText(r *http.Request, apiVersion int) (interface{}, error) {
+	s.metrics.ExplorerViews.With(common.Labels{"action": "api-total-supply-text"}).Inc()
+	totalSupply, err := s.apiTotalSupply(r, apiVersion)
 	if err != nil {
 		return nil, err
 	}
+	totalSupplyMap := totalSupply.(map[string]interface{})
 
-	apiCirculatedCoinsMap := apiCirculatedCoins.(map[string]interface{})
-	apiAllocatedCoinsMap := apiAllocatedCoins.(map[string]interface{})
+	total := totalSupplyMap["total"].(*big.Int) //get total supply in blockchain
 
-	circulated := apiCirculatedCoinsMap["circulated"].(*big.Int)           //get circulated coints from blocks rewards and uncles rewards
-	allocatedUsed := apiAllocatedCoinsMap["circulatedPrealloc"].(*big.Int) //get preallocated coins used
-
-	apiCirculatedCoinsMap["circulated"] = circulated.Add(circulated, allocatedUsed) // add preallocated coins to circulated coins
-
-	return apiCirculatedCoinsMap, err
+	return total.String(), err
 }
 
 // apiTickers returns FiatRates ticker prices for the specified block or timestamp.
