@@ -224,10 +224,6 @@ func (s *PublicServer) ConnectFullPublicInterface() {
 	serveMux.Handle(path+"websocket", s.websocket.GetHandler())
 }
 
-// total - 342223378
-// circu - 43227818
-// mined - 42223378
-
 // Close closes the server
 func (s *PublicServer) Close() error {
 	glog.Infof("public server: closing")
