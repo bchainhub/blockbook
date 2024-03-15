@@ -215,8 +215,9 @@ func (s *PublicServer) ConnectFullPublicInterface() {
 	serveMux.HandleFunc(path+"api/v2/circulating-supply/", s.jsonHandler(s.apiCirculatingSupply, apiV2))
 	serveMux.HandleFunc(path+"api/v2/total-supply/", s.jsonHandler(s.apiTotalSupply, apiV2))
 	serveMux.HandleFunc(path+"api/v2/mined-supply/", s.jsonHandler(s.apiMinedSupply, apiV2))
-	serveMux.HandleFunc(path+"api/v2/circulating-supply-text/", s.jsonHandler(s.apiCirculatingSupplyText, apiV2))
-	serveMux.HandleFunc(path+"api/v2/total-supply-text/", s.jsonHandler(s.apiTotalSupplyText, apiV2))
+
+	serveMux.HandleFunc(path+"api/v2/circulating-supply-raw/", s.rawHandler(s.apiCirculatingSupplyRaw, apiV2))
+	serveMux.HandleFunc(path+"api/v2/total-supply-raw/", s.rawHandler(s.apiTotalSupplyRaw, apiV2))
 
 	// socket.io interface
 	serveMux.Handle(path+"socket.io/", s.socketio.GetHandler())
@@ -319,6 +320,68 @@ func (s *PublicServer) jsonHandler(handler func(r *http.Request, apiVersion int)
 				w.WriteHeader(e.HTTPStatus)
 			}
 			err = json.NewEncoder(w).Encode(data)
+			if err != nil {
+				glog.Warning("json encode ", err)
+			}
+			s.metrics.ExplorerPendingRequests.With((common.Labels{"method": handlerName})).Dec()
+		}()
+		s.metrics.ExplorerPendingRequests.With((common.Labels{"method": handlerName})).Inc()
+		data, err = handler(r, apiVersion)
+		if err != nil || data == nil {
+			if apiErr, ok := err.(*api.APIError); ok {
+				if apiErr.Public {
+					data = jsonError{apiErr.Error(), http.StatusBadRequest}
+				} else {
+					data = jsonError{apiErr.Error(), http.StatusInternalServerError}
+				}
+			} else {
+				if err != nil {
+					glog.Error(handlerName, " error: ", err)
+				}
+				if s.debug {
+					if data != nil {
+						data = jsonError{fmt.Sprintf("Internal server error: %v, data %+v", err, data), http.StatusInternalServerError}
+					} else {
+						data = jsonError{fmt.Sprintf("Internal server error: %v", err), http.StatusInternalServerError}
+					}
+				} else {
+					data = jsonError{"Internal server error", http.StatusInternalServerError}
+				}
+			}
+		}
+	}
+}
+
+func (s *PublicServer) rawHandler(handler func(r *http.Request, apiVersion int) (interface{}, error), apiVersion int) func(w http.ResponseWriter, r *http.Request) {
+	type jsonError struct {
+		Text       string `json:"error"`
+		HTTPStatus int    `json:"-"`
+	}
+	handlerName := getFunctionName(handler)
+	return func(w http.ResponseWriter, r *http.Request) {
+		var data interface{}
+		var err error
+		defer func() {
+			if e := recover(); e != nil {
+				glog.Error(handlerName, " recovered from panic: ", e)
+				debug.PrintStack()
+				if s.debug {
+					data = jsonError{fmt.Sprint("Internal server error: recovered from panic ", e), http.StatusInternalServerError}
+				} else {
+					data = jsonError{"Internal server error", http.StatusInternalServerError}
+				}
+			}
+			w.Header().Set("Content-Type", "application/json; charset=utf-8")
+			if e, isError := data.(jsonError); isError {
+				w.WriteHeader(e.HTTPStatus)
+				err = json.NewEncoder(w).Encode(data)
+				if err != nil {
+					glog.Warning("json encode ", err)
+				}
+				s.metrics.ExplorerPendingRequests.With((common.Labels{"method": handlerName})).Dec()
+				return
+			}
+			_, err = w.Write([]byte(data.(string)))
 			if err != nil {
 				glog.Warning("json encode ", err)
 			}
@@ -1503,16 +1566,17 @@ func (s *PublicServer) apiMinedSupply(r *http.Request, apiVersion int) (interfac
 	if height <= 0 {
 		return nil, api.NewAPIError("No blocks", true)
 	}
-	blocksReward := new(big.Int).Mul(big.NewInt(int64(height)), big.NewInt(5)) // block height * block reward (5 coins)
+	blocksReward := new(big.Int).Mul(big.NewInt(int64(height)), big.NewInt(5))                       // block height * block reward (5 coins)
+	blocksRewardInOre := new(big.Float).Mul(new(big.Float).SetInt(blocksReward), big.NewFloat(1e18)) // converting to ore
 
 	unclesReward := new(big.Int).Mul(big.NewInt(int64(height)), big.NewInt(4))                           // block height * uncle reward (4 coins)
 	unclesRewardInRate := new(big.Float).Mul(big.NewFloat(0.0426), big.NewFloat(0).SetInt(unclesReward)) // average uncle rate is 4.26%
-	unclesRewardInRateInt, _ := unclesRewardInRate.Int(nil)                                              // converting to int
+	unclesRewardInRateOre := new(big.Float).Mul(unclesRewardInRate, big.NewFloat(1e18))                  // converting to ore
 
-	mined := new(big.Int).Add(blocksReward, unclesRewardInRateInt) // block reward + uncle reward
+	mined := new(big.Float).Add(blocksRewardInOre, unclesRewardInRateOre) // block reward + uncle reward
 
 	result := map[string]interface{}{
-		"mined":       mined,
+		"result":      fmt.Sprintf("%.18f", new(big.Float).Quo(mined, big.NewFloat(1e18))),
 		"blockHeight": height,
 		"timestamp":   time.Now().Unix(),
 	}
@@ -1534,15 +1598,20 @@ func (s *PublicServer) apiTotalSupply(r *http.Request, apiVersion int) (interfac
 		return nil, err
 	}
 
-	mined := minedMap["mined"].(*big.Int)                   //get circulated coins from blocks rewards and uncles rewards
-	allocatedAll := allocated["initialPrealloc"].(*big.Int) //get all preallocated coins
+	mined := minedMap["result"].(string) //get circulated coins from blocks rewards and uncles rewards
+	minedFloat, success := new(big.Float).SetString(mined)
+	if !success {
+		return nil, api.NewAPIError("Cannot parse mined value", true)
+	}
 
-	total := mined.Add(mined, allocatedAll) // add all preallocated coins to circulated coins
+	allocatedAll := allocated["initialPrealloc"].(*big.Float) //get all preallocated coins
+
+	total := minedFloat.Add(minedFloat, allocatedAll) // add all preallocated coins to circulated coins
 
 	result := map[string]interface{}{
 		"blockHeight": minedMap["blockHeight"],
 		"timestamp":   time.Now().Unix(),
-		"total":       total,
+		"result":      fmt.Sprintf("%.18f", total),
 	}
 	return result, err
 }
@@ -1561,15 +1630,19 @@ func (s *PublicServer) apiCirculatingSupply(r *http.Request, apiVersion int) (in
 		return nil, err
 	}
 
-	mined := minedMap["mined"].(*big.Int)                       //get circulated coins from blocks rewards and uncles rewards
-	allocatedUsed := allocated["circulatedPrealloc"].(*big.Int) //get preallocated coins used
+	mined := minedMap["result"].(string) //get circulated coins from blocks rewards and uncles rewards
+	minedFloat, success := new(big.Float).SetString(mined)
+	if !success {
+		return nil, api.NewAPIError("Cannot parse mined value", true)
+	}
+	allocatedUsed := allocated["circulatedPrealloc"].(*big.Float) //get preallocated coins used
 
-	circulating := mined.Add(mined, allocatedUsed) // add preallocated coins to circulated coins
+	circulating := minedFloat.Add(minedFloat, allocatedUsed) // add preallocated coins to circulated coins
 
 	result := map[string]interface{}{
 		"blockHeight": minedMap["blockHeight"],
 		"timestamp":   time.Now().Unix(),
-		"circulating": circulating,
+		"result":      fmt.Sprintf("%.18f", circulating),
 	}
 	return result, err
 }
@@ -1582,31 +1655,36 @@ func (s *PublicServer) getAllocatedSupply() (map[string]interface{}, error) {
 	// genesis preallocated wallets balances
 	var gValues = []string{"0x5955e3bb3e743fec000000", "0x18d0bf423c03d8de000000", "0x165578eecf9d0ffb000000", "0x18d0bf423c03d8de000000", "0x4f68ca6d8cd91c6000000", "0x3913517ebd3c0c65000000", "0x18d0bf423c03d8de000000"}
 
-	preallocatedUsed := big.NewInt(0)
-	preallocatedInitial := big.NewInt(0)
-	preallocatedCurrent := big.NewInt(0)
+	preallocatedUsed := big.NewFloat(0)
+	preallocatedInitial := big.NewFloat(0)
+	preallocatedCurrent := big.NewFloat(0)
 
 	for i, wallet := range gWallets {
 		currentBalance, err := s.chain.CoreCoinTypeGetBalance(xcbcommon.Hex2Bytes(wallet)) // current balance
 		if err != nil {
 			return nil, api.NewAPIError("Cannot get preallocated address balance", true)
 		}
-		currentBalanceInXcb := new(big.Int).Div(currentBalance, big.NewInt(1e18))
-		preallocatedCurrent = preallocatedCurrent.Add(preallocatedCurrent, currentBalanceInXcb) // add all current balances
+		currentBalanceFloat := new(big.Float).SetInt(currentBalance)
+
+		preallocatedCurrent = preallocatedCurrent.Add(preallocatedCurrent, currentBalanceFloat) // add all current balances
 
 		allocatedBalance, success := new(big.Int).SetString(gValues[i][2:], 16) // preallocated balance
 		if !success {
 			return nil, api.NewAPIError("Cannot parse preallocated address balance", true)
 		}
-		allocatedBalanceInXcb := new(big.Int).Div(allocatedBalance, big.NewInt(1e18))
-		preallocatedInitial = preallocatedInitial.Add(preallocatedInitial, allocatedBalanceInXcb) // add all preallocated initial balances
+		allocatedBalanceFloat := new(big.Float).SetInt(allocatedBalance)
 
-		if currentBalanceInXcb.Cmp(allocatedBalanceInXcb) < 0 { //if some coins were used from preallocated wallets
-			used := new(big.Int).Sub(allocatedBalanceInXcb, currentBalanceInXcb)
+		preallocatedInitial = preallocatedInitial.Add(preallocatedInitial, allocatedBalanceFloat) // add all preallocated initial balances
+
+		if currentBalanceFloat.Cmp(allocatedBalanceFloat) < 0 { //if some coins were used from preallocated wallets
+			used := new(big.Float).Sub(allocatedBalanceFloat, currentBalanceFloat)
 
 			preallocatedUsed = preallocatedUsed.Add(preallocatedUsed, used)
 		}
 	}
+	preallocatedInitial = preallocatedInitial.Quo(preallocatedInitial, big.NewFloat(1e18))
+	preallocatedCurrent = preallocatedCurrent.Quo(preallocatedCurrent, big.NewFloat(1e18))
+	preallocatedUsed = preallocatedUsed.Quo(preallocatedUsed, big.NewFloat(1e18))
 
 	return map[string]interface{}{
 		"initialPrealloc":    preallocatedInitial,
@@ -1615,32 +1693,32 @@ func (s *PublicServer) getAllocatedSupply() (map[string]interface{}, error) {
 	}, nil
 }
 
-// apiCirculatingSupplyText returns a number of circulated coins in blockchain in text format
-func (s *PublicServer) apiCirculatingSupplyText(r *http.Request, apiVersion int) (interface{}, error) {
-	s.metrics.ExplorerViews.With(common.Labels{"action": "api-circulated-supply-text"}).Inc()
+// apiCirculatingSupplyRaw returns a number of circulated coins in blockchain in raw format
+func (s *PublicServer) apiCirculatingSupplyRaw(r *http.Request, apiVersion int) (interface{}, error) {
+	s.metrics.ExplorerViews.With(common.Labels{"action": "api-circulated-supply-raw"}).Inc()
 	circulatingSupply, err := s.apiCirculatingSupply(r, apiVersion)
 	if err != nil {
 		return nil, err
 	}
 	circulatingSupplyMap := circulatingSupply.(map[string]interface{})
 
-	circulating := circulatingSupplyMap["circulating"].(*big.Int) //get circulated coins from blocks rewards and uncles rewards
+	circulating := circulatingSupplyMap["result"].(string) //get circulated coins from blocks rewards and uncles rewards
 
-	return circulating.String(), err
+	return circulating, err
 }
 
-// apiTotalSupplyText returns total supply in blockchain in text format
-func (s *PublicServer) apiTotalSupplyText(r *http.Request, apiVersion int) (interface{}, error) {
-	s.metrics.ExplorerViews.With(common.Labels{"action": "api-total-supply-text"}).Inc()
+// apiTotalSupplyRaw returns total supply in blockchain in raw format
+func (s *PublicServer) apiTotalSupplyRaw(r *http.Request, apiVersion int) (interface{}, error) {
+	s.metrics.ExplorerViews.With(common.Labels{"action": "api-total-supply-raw"}).Inc()
 	totalSupply, err := s.apiTotalSupply(r, apiVersion)
 	if err != nil {
 		return nil, err
 	}
 	totalSupplyMap := totalSupply.(map[string]interface{})
 
-	total := totalSupplyMap["total"].(*big.Int) //get total supply in blockchain
+	total := totalSupplyMap["result"].(string) //get total supply in blockchain
 
-	return total.String(), err
+	return total, err
 }
 
 // apiTickers returns FiatRates ticker prices for the specified block or timestamp.
