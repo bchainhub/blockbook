@@ -1138,6 +1138,17 @@ func (s *PublicServer) explorerIndex(w http.ResponseWriter, r *http.Request) (tp
 	}
 	data := s.newTemplateData(r)
 	data.Info = si
+
+	chainInfo, _ := s.chain.GetChainInfo()
+	if chainInfo.Chain != "mainnet" {
+		data.Info.Blockbook.CirculatingSupply = ""
+	} else {
+		result, err := s.apiCirculatingSupplyRaw(r, apiV2)
+		if err != nil {
+			return errorTpl, nil, err
+		}
+		data.Info.Blockbook.CirculatingSupply = result.(string)
+	}
 	return indexTpl, data, nil
 }
 

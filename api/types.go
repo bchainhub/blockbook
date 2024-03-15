@@ -519,6 +519,7 @@ type BlockbookInfo struct {
 	DbSizeFromColumns            int64                        `json:"dbSizeFromColumns,omitempty"`
 	DbColumns                    []common.InternalStateColumn `json:"dbColumns,omitempty"`
 	About                        string                       `json:"about"`
+	CirculatingSupply            string                       `json:"circulatingSupply"`
 }
 
 // SystemInfo contains information about the running blockbook and backend instance
