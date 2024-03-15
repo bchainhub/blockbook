@@ -1556,7 +1556,7 @@ func (s *PublicServer) apiMinedSupply(r *http.Request, apiVersion int) (interfac
 	if err != nil {
 		return nil, api.NewAPIError("Cannot get chain info", true)
 	}
-	if chainInfo.Chain != "devin" {
+	if chainInfo.Chain != "mainnet" {
 		return nil, api.NewAPIError("Endpoint works only for mainnet version", true)
 	}
 	height, err := s.chain.GetBestBlockHeight()
