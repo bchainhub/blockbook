@@ -38,6 +38,12 @@
                     <td>Last Block Update</td>
                     <td>{{timeSpan $bb.LastBlockTime}}</td>
                 </tr>
+                {{if $bb.CirculatingSupply}}
+                <tr>
+                    <td>Circulating Supply</td>
+                    <td>{{$bb.CirculatingSupply}}</td>
+                </tr>
+                {{end}}
                 <tr>
                     <td>Mempool in Sync</td>
                     <td><h6 class="badge {{if not $bb.InSyncMempool}}bg-danger{{else}}bg-success{{end}}">{{$bb.InSyncMempool}}</h6></td>
