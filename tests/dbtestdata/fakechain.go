@@ -234,3 +234,7 @@ func (c *fakeBlockChain) CoreCoinTypeGetCbc20ContractBalance(addrDesc, contractD
 func (c *fakeBlockChain) AddVerifiedSCData(contract *bchain.ContractInfo) *bchain.ContractInfo {
 	return contract
 }
+
+func (c *fakeBlockChain) AddVerifiedAddressData(address bchain.AddressDescriptor) *bchain.VerifiedAddress {
+	return &bchain.VerifiedAddress{}
+}

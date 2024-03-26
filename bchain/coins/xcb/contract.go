@@ -249,6 +249,10 @@ func (b *CoreblockchainRPC) AddVerifiedSCData(contract *bchain.ContractInfo) *bc
 	return contract
 }
 
+func (b *CoreblockchainRPC) AddVerifiedAddressData(address bchain.AddressDescriptor) *bchain.VerifiedAddress {
+	return b.addressVerifier.GetVerified(common.Bytes2Hex(address))
+}
+
 // GetContractInfo returns information about smart contract
 func (b *CoreblockchainRPC) GetContractInfo(contractDesc bchain.AddressDescriptor) (*bchain.ContractInfo, error) {
 	cds, err := b.Parser.GetAddrDescFromAddress(common.Bytes2Hex(contractDesc[:]))

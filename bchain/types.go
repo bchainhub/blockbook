@@ -236,6 +236,14 @@ func AddressDescriptorFromString(s string) (AddressDescriptor, error) {
 	return nil, errors.New("invalid address descriptor")
 }
 
+type VerifiedAddress struct {
+	Address  string `json:"address"`
+	Name     string `json:"name"`
+	Icon     string `json:"icon"`
+	URL      string `json:"url"`
+	URLTitle string `json:"urlTitle"`
+}
+
 // MempoolTxidEntry contains mempool txid with first seen time
 type MempoolTxidEntry struct {
 	Txid string
@@ -333,6 +341,7 @@ type BlockChain interface {
 	CoreCoinTypeGetCbc20ContractBalance(addrDesc, contractDesc AddressDescriptor) (*big.Int, error)
 
 	AddVerifiedSCData(contract *ContractInfo) *ContractInfo
+	AddVerifiedAddressData(address AddressDescriptor) *VerifiedAddress
 }
 
 // BlockChainParser defines common interface to parsing and conversions of block chain data

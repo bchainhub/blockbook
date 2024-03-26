@@ -33,18 +33,19 @@ const (
 
 // Configuration represents json config file
 type Configuration struct {
-	CoinName                        string        `json:"coin_name"`
-	CoinShortcut                    string        `json:"coin_shortcut"`
-	RPCURL                          string        `json:"rpc_url"`
-	RPCTimeout                      int           `json:"rpc_timeout"`
-	BlockAddressesToKeep            int           `json:"block_addresses_to_keep"`
-	AddressAliases                  bool          `json:"address_aliases,omitempty"`
-	MempoolTxTimeoutHours           int           `json:"mempoolTxTimeoutHours"`
-	QueryBackendOnMempoolResync     bool          `json:"queryBackendOnMempoolResync"`
-	ProcessInternalTransactions     bool          `json:"processInternalTransactions"`
-	ProcessZeroInternalTransactions bool          `json:"processZeroInternalTransactions"`
-	ConsensusNodeVersionURL         string        `json:"consensusNodeVersion"`
-	VerifiedSmartContracts          []*VerifiedSC `json:"verifiedSmartContracts"`
+	CoinName                        string                    `json:"coin_name"`
+	CoinShortcut                    string                    `json:"coin_shortcut"`
+	RPCURL                          string                    `json:"rpc_url"`
+	RPCTimeout                      int                       `json:"rpc_timeout"`
+	BlockAddressesToKeep            int                       `json:"block_addresses_to_keep"`
+	AddressAliases                  bool                      `json:"address_aliases,omitempty"`
+	MempoolTxTimeoutHours           int                       `json:"mempoolTxTimeoutHours"`
+	QueryBackendOnMempoolResync     bool                      `json:"queryBackendOnMempoolResync"`
+	ProcessInternalTransactions     bool                      `json:"processInternalTransactions"`
+	ProcessZeroInternalTransactions bool                      `json:"processZeroInternalTransactions"`
+	ConsensusNodeVersionURL         string                    `json:"consensusNodeVersion"`
+	VerifiedSmartContracts          []*VerifiedSC             `json:"verifiedSmartContracts"`
+	VerifiedAddresses               []*bchain.VerifiedAddress `json:"verifiedAddresses"`
 }
 
 // CoreblockchainRPC is an interface to JSON-RPC xcb service.
@@ -68,6 +69,7 @@ type CoreblockchainRPC struct {
 	newTxSubscription     CVMClientSubscription
 	ChainConfig           *Configuration
 	smartContractVerifier *smartContractVerifier
+	addressVerifier       *addressVerifier
 }
 
 // ProcessInternalTransactions specifies if internal transactions are processed
@@ -102,6 +104,7 @@ func NewCoreblockchainRPC(config json.RawMessage, pushHandler func(bchain.Notifi
 	s.PushHandler = pushHandler
 
 	s.smartContractVerifier = newSmartContractVerifier(c.VerifiedSmartContracts)
+	s.addressVerifier = newAddressVerifier(c.VerifiedAddresses)
 
 	return s, nil
 }

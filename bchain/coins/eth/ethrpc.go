@@ -984,3 +984,7 @@ func (b *EthereumRPC) GetChainParser() bchain.BlockChainParser {
 func (c *EthereumRPC) AddVerifiedSCData(contract *bchain.ContractInfo) *bchain. ContractInfo {
 	return contract
 }
+
+func (c *EthereumRPC) AddVerifiedAddressData(address bchain.AddressDescriptor) *bchain.VerifiedAddress {
+	return &bchain.VerifiedAddress{}
+}
