@@ -1202,6 +1202,7 @@ type ethereumTypeAddressData struct {
 	totalResults         int
 	tokensBaseValue      float64
 	tokensSecondaryValue float64
+	verified             *bchain.VerifiedAddress
 }
 
 func (w *Worker) getEthereumTypeAddressBalances(addrDesc bchain.AddressDescriptor, details AccountDetails, filter *AddressFilter, secondaryCoin string) (*db.AddrBalance, *ethereumTypeAddressData, error) {
@@ -1399,6 +1400,8 @@ func (w *Worker) getCoreCoinTypeAddressBalances(addrDesc bchain.AddressDescripto
 		filter.Vout = AddressFilterVoutQueryNotNecessary
 		d.totalResults = -1
 	}
+	d.verified = w.chain.AddVerifiedAddressData(addrDesc)
+
 	return ba, &d, nil
 }
 
@@ -1691,6 +1694,7 @@ func (w *Worker) GetAddress(address string, page int, txsOnPage int, option Acco
 		ContractInfo:          ed.contractInfo,
 		Nonce:                 ed.nonce,
 		AddressAliases:        w.getAddressAliases(addresses),
+		VerifiedData:          ed.verified,
 	}
 	glog.Info("GetAddress ", address, ", ", time.Since(start))
 	return r, nil

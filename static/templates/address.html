@@ -1,7 +1,19 @@
 {{define "specific"}}{{$addr := .Address}}{{$data := .}}
 <div class="row g-0 ms-2 ms-lg-0">
     <div class="col-md-10 order-2 order-md-1">
-        <h1>{{if $addr.ContractInfo}}Contract {{$addr.ContractInfo.Name}}{{if $addr.ContractInfo.Symbol}} ({{$addr.ContractInfo.Symbol}}){{end}} {{if $addr.ContractInfo.Icon}}<img src="/static/verified.svg" style="width: 32px; height: 32px; margin-left: .3em;">{{end}} {{else}}Address {{addressAlias $addr.AddrStr $data}}{{end}}</h1>
+        <h1>
+            {{if $addr.ContractInfo}}
+                Contract {{$addr.ContractInfo.Name}}
+                {{if $addr.ContractInfo.Symbol}} ({{$addr.ContractInfo.Symbol}}){{end}} 
+                {{if $addr.ContractInfo.Icon}}<img src="/static/verified.svg" style="width: 32px; height: 32px; margin-left: .3em;">{{end}} 
+            {{else}}
+                {{if $addr.VerifiedData}}
+                    {{$addr.VerifiedData.Name}} <img src="/static/verified.svg" style="width: 32px; height: 32px; margin-left: .3em;">
+                {{else}}
+                    Address {{addressAlias $addr.AddrStr $data}}
+                {{end}}
+            {{end}}
+        </h1>
         <h5 class="col-12 d-flex h-data pb-2"><span class="ellipsis copyable">{{$addr.AddrStr}}</span></h5>
         <h4 class="row">
             <div class="col-lg-6">{{formattedAmountSpan $addr.BalanceSat 0 $data.CoinShortcut $data "copyable"}}</div>
@@ -30,56 +42,70 @@
             <td></td>
         </tr>
         {{if or (eq .ChainType 1) (eq .ChainType 2)}}
-        <tr>
-            <td style="width: 25%;">Balance</td>
-            <td>{{amountSpan $addr.BalanceSat $data "copyable"}}</td>
-        </tr>
-        <tr>
-            <td>Transactions</td>
-            <td>{{formatInt $addr.Txs}}</td>
-        </tr>
-        <tr>
-            <td>Non-contract Transactions</td>
-            <td>{{formatInt $addr.NonTokenTxs}}</td>
-        </tr>
-        <tr>
-            <td>Internal Transactions</td>
-            <td>{{formatInt $addr.InternalTxs}}</td>
-        </tr>
-        <tr>
-            <td>Nonce</td>
-            <td>{{$addr.Nonce}}</td>
-        </tr>
-        {{if $addr.ContractInfo}}
-        {{if $addr.ContractInfo.Type}}
-        <tr>
-            <td style="width: 25%;">Contract type</td>
-            <td>{{$addr.ContractInfo.Type}}</td>
-        </tr>
-        {{if $addr.ContractInfo.VerifierWebAddress}}
-        <tr>
-            <td style="width: 25%;">Token Tracker</td>
-            <td><a href="{{$addr.ContractInfo.VerifierWebAddress}}" target="_blank" style="text-align: center;"><img src="/static/{{$addr.ContractInfo.Icon}}" style="width: 16px; height: 16px; margin-right: .5em;">{{$addr.ContractInfo.Name}} ({{$addr.ContractInfo.Symbol}})</a></td>
-        </tr>
-        <tr>
-            <td style="width: 25%;">Token Total Supply</td>
-            <td>{{$addr.ContractInfo.TotalSupply}}</td>
-        </tr>    
-        {{end}}
-        {{end}}
-        {{if $addr.ContractInfo.CreatedInBlock}}
-        <tr>
-            <td style="width: 25%;">Created in Block</td>
-            <td><a href="/block/{{$addr.ContractInfo.CreatedInBlock}}">{{formatUint32 $addr.ContractInfo.CreatedInBlock}}</a></td>
-        </tr>
-        {{end}}
-        {{if $addr.ContractInfo.DestructedInBlock}}
-        <tr>
-            <td style="width: 25%;">Destructed in Block</td>
-            <td><a href="/block/{{$addr.ContractInfo.DestructedInBlock}}">{{formatUint32 $addr.ContractInfo.DestructedInBlock}}</a></td>
-        </tr>
-        {{end}}
-        {{end}}
+            <tr>
+                <td style="width: 25%;">Balance</td>
+                <td>{{amountSpan $addr.BalanceSat $data "copyable"}}</td>
+            </tr>
+            <tr>
+                <td>Transactions</td>
+                <td>{{formatInt $addr.Txs}}</td>
+            </tr>
+            <tr>
+                <td>Non-contract Transactions</td>
+                <td>{{formatInt $addr.NonTokenTxs}}</td>
+            </tr>
+            <tr>
+                <td>Internal Transactions</td>
+                <td>{{formatInt $addr.InternalTxs}}</td>
+            </tr>
+            <tr>
+                <td>Nonce</td>
+                <td>{{$addr.Nonce}}</td>
+            </tr>
+                    
+            {{if $addr.VerifiedData}}
+                {{if $addr.VerifiedData.URL}}
+                <tr>
+                    <td style="width: 25%;">URL</td>
+                    <td><a href="{{$addr.VerifiedData.URL}}" target="_blank" style="text-align: center;"><img src="{{$addr.VerifiedData.Icon}}" style="width: 16px; height: 16px; margin-right: .5em;">{{$addr.VerifiedData.URLTitle}}</a></td>
+                </tr>
+                {{end}}
+            {{end}}
+
+            {{if $addr.ContractInfo}}
+
+                {{if $addr.ContractInfo.Type}}
+                    <tr>
+                        <td style="width: 25%;">Contract type</td>
+                        <td>{{$addr.ContractInfo.Type}}</td>
+                    </tr>
+                    {{if $addr.ContractInfo.VerifierWebAddress}}
+                        <tr>
+                            <td style="width: 25%;">Token Tracker</td>
+                            <td><a href="{{$addr.ContractInfo.VerifierWebAddress}}" target="_blank" style="text-align: center;"><img src="/static/{{$addr.ContractInfo.Icon}}" style="width: 16px; height: 16px; margin-right: .5em;">{{$addr.ContractInfo.Name}} ({{$addr.ContractInfo.Symbol}})</a></td>
+                        </tr>
+                        <tr>
+                            <td style="width: 25%;">Token Total Supply</td>
+                            <td>{{$addr.ContractInfo.TotalSupply}}</td>
+                        </tr>    
+                    {{end}}
+                {{end}}
+
+                {{if $addr.ContractInfo.CreatedInBlock}}
+                    <tr>
+                        <td style="width: 25%;">Created in Block</td>
+                        <td><a href="/block/{{$addr.ContractInfo.CreatedInBlock}}">{{formatUint32 $addr.ContractInfo.CreatedInBlock}}</a></td>
+                    </tr>
+                {{end}}
+
+                {{if $addr.ContractInfo.DestructedInBlock}}
+                    <tr>
+                        <td style="width: 25%;">Destructed in Block</td>
+                        <td><a href="/block/{{$addr.ContractInfo.DestructedInBlock}}">{{formatUint32 $addr.ContractInfo.DestructedInBlock}}</a></td>
+                    </tr>
+                {{end}}
+            {{end}}
+    
         {{else}}
         <tr>
             <td style="width: 25%;">Total Received</td>

@@ -200,8 +200,13 @@ func (c *blockChainWithMetrics) observeRPCLatency(method string, start time.Time
 	}
 	c.m.RPCLatency.With(common.Labels{"method": method, "error": e}).Observe(float64(time.Since(start)) / 1e6) // in milliseconds
 }
-func (c *blockChainWithMetrics) AddVerifiedSCData(contract *bchain.ContractInfo) *bchain. ContractInfo {
+
+func (c *blockChainWithMetrics) AddVerifiedSCData(contract *bchain.ContractInfo) *bchain.ContractInfo {
 	return c.b.AddVerifiedSCData(contract)
+}
+
+func (c *blockChainWithMetrics) AddVerifiedAddressData(address bchain.AddressDescriptor) *bchain.VerifiedAddress {
+	return c.b.AddVerifiedAddressData(address)
 }
 
 func (c *blockChainWithMetrics) Initialize() error {

@@ -142,3 +142,7 @@ func (c *fakeBlockChainEthereumType) GetTokenURI(contractDesc bchain.AddressDesc
 func (c *fakeBlockChainEthereumType) AddVerifiedSCData(contract *bchain.ContractInfo) *bchain.ContractInfo {
 	return contract
 }
+
+func (c *fakeBlockChainEthereumType) AddVerifiedAddressData(address bchain.AddressDescriptor) *bchain.VerifiedAddress {
+	return &bchain.VerifiedAddress{}
+}

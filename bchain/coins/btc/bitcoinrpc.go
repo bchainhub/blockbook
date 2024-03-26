@@ -933,3 +933,7 @@ func (b *BitcoinRPC) Call(req interface{}, res interface{}) error {
 func (c *BitcoinRPC) AddVerifiedSCData(contract *bchain.ContractInfo) *bchain. ContractInfo {
 	return contract
 }
+
+func (c *BitcoinRPC) AddVerifiedAddressData(address bchain.AddressDescriptor) *bchain.VerifiedAddress {
+	return &bchain.VerifiedAddress{}
+}
