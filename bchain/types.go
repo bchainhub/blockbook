@@ -237,11 +237,12 @@ func AddressDescriptorFromString(s string) (AddressDescriptor, error) {
 }
 
 type VerifiedAddress struct {
-	Address  string `json:"address"`
-	Name     string `json:"name"`
-	Icon     string `json:"icon"`
-	URL      string `json:"url"`
-	URLTitle string `json:"urlTitle"`
+	Address  string   `json:"address"`
+	Name     string   `json:"name"`
+	Icon     string   `json:"icon"`
+	URL      string   `json:"url"`
+	URLTitle string   `json:"urlTitle"`
+	Aliases  []string `json:"aliases"`
 }
 
 // MempoolTxidEntry contains mempool txid with first seen time
@@ -342,6 +343,7 @@ type BlockChain interface {
 
 	AddVerifiedSCData(contract *ContractInfo) *ContractInfo
 	AddVerifiedAddressData(address AddressDescriptor) *VerifiedAddress
+	FindVerifiedByName(query string) *AddressDescriptor
 }
 
 // BlockChainParser defines common interface to parsing and conversions of block chain data

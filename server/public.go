@@ -1180,6 +1180,10 @@ func (s *PublicServer) explorerSearch(w http.ResponseWriter, r *http.Request) (t
 			http.Redirect(w, r, joinURL("/address/", address.AddrStr), http.StatusFound)
 			return noTpl, nil, nil
 		}
+		if addr := s.chain.FindVerifiedByName(q); addr != nil {
+			http.Redirect(w, r, joinURL("/address/", addr.String()), http.StatusFound)
+			return noTpl, nil, nil
+		}
 	}
 	return errorTpl, nil, api.NewAPIError(fmt.Sprintf("No matching records found for '%v'", q), true)
 }

@@ -249,6 +249,31 @@ func (b *CoreblockchainRPC) AddVerifiedSCData(contract *bchain.ContractInfo) *bc
 	return contract
 }
 
+func (b *CoreblockchainRPC) FindVerifiedByName(query string) *bchain.AddressDescriptor {
+	contains := func(s []string, e string) bool {
+		for _, a := range s {
+			if strings.ToLower(a) == strings.ToLower(e) {
+				return true
+			}
+		}
+		return false
+	}
+	for _, sc := range b.smartContractVerifier.GetAllSmartContracts() {
+		if contains(sc.Aliases, query) {
+			ad, _ := bchain.AddressDescriptorFromString("ad:" + sc.Address)
+			return &ad
+		}
+	}
+	for _, sc := range b.addressVerifier.GetAllAddresses() {
+		if contains(sc.Aliases, query) {
+			ad, _ := bchain.AddressDescriptorFromString("ad:" + sc.Address)
+			return &ad
+		}
+	}
+
+	return nil
+}
+
 func (b *CoreblockchainRPC) AddVerifiedAddressData(address bchain.AddressDescriptor) *bchain.VerifiedAddress {
 	return b.addressVerifier.GetVerified(common.Bytes2Hex(address))
 }
