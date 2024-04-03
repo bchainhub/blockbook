@@ -1154,7 +1154,7 @@ func (s *PublicServer) explorerIndex(w http.ResponseWriter, r *http.Request) (tp
 		if err != nil {
 			return errorTpl, nil, err
 		}
-		data.Info.Blockbook.CirculatingSupply = p.Sprintf("%.18f\n", s)
+		data.Info.Blockbook.CirculatingSupply = p.Sprintf("%f\n", s)
 	}
 	return indexTpl, data, nil
 }
