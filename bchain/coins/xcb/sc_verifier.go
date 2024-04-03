@@ -5,11 +5,12 @@ type smartContractVerifier struct {
 }
 
 type VerifiedSC struct {
-	Address     string `json:"address"`
-	Icon        string `json:"icon"`
-	Web         string `json:"web"`
-	TotalSupply int32  `json:"totalSupply"`
-	Ticker      string `json:"ticker"`
+	Address     string   `json:"address"`
+	Icon        string   `json:"icon"`
+	Web         string   `json:"web"`
+	TotalSupply int32    `json:"totalSupply"`
+	Ticker      string   `json:"ticker"`
+	Aliases     []string `json:"aliases"`
 }
 
 func newSmartContractVerifier(verified []*VerifiedSC) *smartContractVerifier {
@@ -35,4 +36,8 @@ func (s *smartContractVerifier) IsValidVerifiedSC(addr, ticker string) bool {
 		}
 	}
 	return true
+}
+
+func (s *smartContractVerifier) GetAllSmartContracts() []*VerifiedSC {
+	return s.verified
 }

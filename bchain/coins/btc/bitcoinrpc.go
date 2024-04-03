@@ -937,3 +937,7 @@ func (c *BitcoinRPC) AddVerifiedSCData(contract *bchain.ContractInfo) *bchain. C
 func (c *BitcoinRPC) AddVerifiedAddressData(address bchain.AddressDescriptor) *bchain.VerifiedAddress {
 	return &bchain.VerifiedAddress{}
 }
+
+func (c *BitcoinRPC) FindVerifiedByName(query string) *bchain.AddressDescriptor {
+	return &bchain.AddressDescriptor{}
+}

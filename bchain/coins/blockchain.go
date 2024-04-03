@@ -205,6 +205,10 @@ func (c *blockChainWithMetrics) AddVerifiedSCData(contract *bchain.ContractInfo)
 	return c.b.AddVerifiedSCData(contract)
 }
 
+func (c *blockChainWithMetrics) FindVerifiedByName(query string) *bchain.AddressDescriptor {
+	return c.b.FindVerifiedByName(query)
+}
+
 func (c *blockChainWithMetrics) AddVerifiedAddressData(address bchain.AddressDescriptor) *bchain.VerifiedAddress {
 	return c.b.AddVerifiedAddressData(address)
 }

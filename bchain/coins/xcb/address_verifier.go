@@ -6,7 +6,6 @@ type addressVerifier struct {
 	verified []*bchain.VerifiedAddress
 }
 
-
 func newAddressVerifier(verified []*bchain.VerifiedAddress) *addressVerifier {
 	verifier := &addressVerifier{
 		verified: verified,
@@ -21,4 +20,8 @@ func (v *addressVerifier) GetVerified(addr string) *bchain.VerifiedAddress {
 		}
 	}
 	return nil
+}
+
+func (v *addressVerifier) GetAllAddresses() []*bchain.VerifiedAddress {
+	return v.verified
 }

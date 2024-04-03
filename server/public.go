@@ -27,6 +27,8 @@ import (
 	"github.com/cryptohub-digital/blockbook/db"
 	"github.com/cryptohub-digital/blockbook/fiat"
 	"github.com/golang/glog"
+	"golang.org/x/text/language"
+	"golang.org/x/text/message"
 )
 
 const txsOnPage = 25
@@ -1147,7 +1149,12 @@ func (s *PublicServer) explorerIndex(w http.ResponseWriter, r *http.Request) (tp
 		if err != nil {
 			return errorTpl, nil, err
 		}
-		data.Info.Blockbook.CirculatingSupply = result.(string)
+		p := message.NewPrinter(language.English)
+		s, err := strconv.ParseFloat(result.(string), 64)
+		if err != nil {
+			return errorTpl, nil, err
+		}
+		data.Info.Blockbook.CirculatingSupply = p.Sprintf("%f\n", s)
 	}
 	return indexTpl, data, nil
 }
@@ -1178,6 +1185,10 @@ func (s *PublicServer) explorerSearch(w http.ResponseWriter, r *http.Request) (t
 		address, err = s.api.GetAddress(q, 0, 1, api.AccountDetailsBasic, &api.AddressFilter{Vout: api.AddressFilterVoutOff}, "")
 		if err == nil {
 			http.Redirect(w, r, joinURL("/address/", address.AddrStr), http.StatusFound)
+			return noTpl, nil, nil
+		}
+		if addr := s.chain.FindVerifiedByName(q); addr != nil {
+			http.Redirect(w, r, joinURL("/address/", addr.String()), http.StatusFound)
 			return noTpl, nil, nil
 		}
 	}

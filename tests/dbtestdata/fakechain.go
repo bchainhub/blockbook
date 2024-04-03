@@ -238,3 +238,8 @@ func (c *fakeBlockChain) AddVerifiedSCData(contract *bchain.ContractInfo) *bchai
 func (c *fakeBlockChain) AddVerifiedAddressData(address bchain.AddressDescriptor) *bchain.VerifiedAddress {
 	return &bchain.VerifiedAddress{}
 }
+
+
+func (c *fakeBlockChain) FindVerifiedByName(query string) *bchain.AddressDescriptor {
+	return &bchain.AddressDescriptor{}
+}
