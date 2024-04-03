@@ -27,6 +27,8 @@ import (
 	"github.com/cryptohub-digital/blockbook/db"
 	"github.com/cryptohub-digital/blockbook/fiat"
 	"github.com/golang/glog"
+	"golang.org/x/text/language"
+	"golang.org/x/text/message"
 )
 
 const txsOnPage = 25
@@ -1147,7 +1149,12 @@ func (s *PublicServer) explorerIndex(w http.ResponseWriter, r *http.Request) (tp
 		if err != nil {
 			return errorTpl, nil, err
 		}
-		data.Info.Blockbook.CirculatingSupply = result.(string)
+		p := message.NewPrinter(language.English)
+		s, err := strconv.ParseFloat(result.(string), 64)
+		if err != nil {
+			return errorTpl, nil, err
+		}
+		data.Info.Blockbook.CirculatingSupply = p.Sprintf("%.18f\n", s)
 	}
 	return indexTpl, data, nil
 }
