@@ -278,6 +278,13 @@ func (b *CoreblockchainRPC) AddVerifiedAddressData(address bchain.AddressDescrip
 	return b.addressVerifier.GetVerified(common.Bytes2Hex(address))
 }
 
+func (b *CoreblockchainRPC) GetSCUseCaseData(address *bchain.VerifiedAddress) interface{} {
+	if address.Type == bchain.DistributedNFC {
+		return b.distributedNFCUseCase.getAccesses(address)
+	}
+	return nil
+}
+
 // GetContractInfo returns information about smart contract
 func (b *CoreblockchainRPC) GetContractInfo(contractDesc bchain.AddressDescriptor) (*bchain.ContractInfo, error) {
 	cds, err := b.Parser.GetAddrDescFromAddress(common.Bytes2Hex(contractDesc[:]))

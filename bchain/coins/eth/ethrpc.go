@@ -981,10 +981,18 @@ func (b *EthereumRPC) GetChainParser() bchain.BlockChainParser {
 	return b.Parser
 }
 
-func (c *EthereumRPC) AddVerifiedSCData(contract *bchain.ContractInfo) *bchain. ContractInfo {
+func (c *EthereumRPC) AddVerifiedSCData(contract *bchain.ContractInfo) *bchain.ContractInfo {
 	return contract
 }
 
 func (c *EthereumRPC) AddVerifiedAddressData(address bchain.AddressDescriptor) *bchain.VerifiedAddress {
 	return &bchain.VerifiedAddress{}
+}
+
+func (c *EthereumRPC) FindVerifiedByName(query string) *bchain.AddressDescriptor {
+	return &bchain.AddressDescriptor{}
+}
+
+func (c *EthereumRPC) GetSCUseCaseData(address *bchain.VerifiedAddress) interface{} {
+	return nil
 }

@@ -46,30 +46,36 @@ type Configuration struct {
 	ConsensusNodeVersionURL         string                    `json:"consensusNodeVersion"`
 	VerifiedSmartContracts          []*VerifiedSC             `json:"verifiedSmartContracts"`
 	VerifiedAddresses               []*bchain.VerifiedAddress `json:"verifiedAddresses"`
+	DistributedNFCSenders           []DistributedNFCSender    `json:"distributedNFCSenders"`
 }
 
 // CoreblockchainRPC is an interface to JSON-RPC xcb service.
 type CoreblockchainRPC struct {
 	*bchain.BaseChain
-	Client                CVMClient
-	RPC                   CVMRPCClient
-	MainNetChainID        Network
-	Timeout               time.Duration
-	Parser                *CoreCoinParser
-	PushHandler           func(bchain.NotificationType)
-	OpenRPC               func(string) (CVMRPCClient, CVMClient, error)
-	Mempool               *bchain.MempoolCoreCoinType
-	mempoolInitialized    bool
-	bestHeaderLock        sync.Mutex
-	bestHeader            CVMHeader
-	bestHeaderTime        time.Time
-	NewBlock              CVMNewBlockSubscriber
-	newBlockSubscription  CVMClientSubscription
-	NewTx                 CVMNewTxSubscriber
-	newTxSubscription     CVMClientSubscription
-	ChainConfig           *Configuration
+	Client               CVMClient
+	RPC                  CVMRPCClient
+	MainNetChainID       Network
+	Timeout              time.Duration
+	Parser               *CoreCoinParser
+	PushHandler          func(bchain.NotificationType)
+	OpenRPC              func(string) (CVMRPCClient, CVMClient, error)
+	Mempool              *bchain.MempoolCoreCoinType
+	mempoolInitialized   bool
+	bestHeaderLock       sync.Mutex
+	bestHeader           CVMHeader
+	bestHeaderTime       time.Time
+	NewBlock             CVMNewBlockSubscriber
+	newBlockSubscription CVMClientSubscription
+	NewTx                CVMNewTxSubscriber
+	newTxSubscription    CVMClientSubscription
+	ChainConfig          *Configuration
+
+	// verified address functionality
 	smartContractVerifier *smartContractVerifier
 	addressVerifier       *addressVerifier
+
+	// SC usecases functioonality
+	distributedNFCUseCase *distributedNFCUseCase
 }
 
 // ProcessInternalTransactions specifies if internal transactions are processed
@@ -105,6 +111,7 @@ func NewCoreblockchainRPC(config json.RawMessage, pushHandler func(bchain.Notifi
 
 	s.smartContractVerifier = newSmartContractVerifier(c.VerifiedSmartContracts)
 	s.addressVerifier = newAddressVerifier(c.VerifiedAddresses)
+	s.distributedNFCUseCase = newdistributedNFCUseCase(c.DistributedNFCSenders)
 
 	return s, nil
 }
@@ -132,6 +139,8 @@ func (b *CoreblockchainRPC) Initialize() error {
 	b.MainNetChainID = MainNet
 	b.NewBlock = &CoreCoinNewBlock{channel: make(chan *types.Header)}
 	b.NewTx = &CoreCoinNewTx{channel: make(chan xcbcommon.Hash)}
+
+	b.distributedNFCUseCase.RPC = b.RPC
 
 	ctx, cancel := context.WithTimeout(context.Background(), b.Timeout)
 	defer cancel()

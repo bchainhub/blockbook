@@ -354,7 +354,12 @@ type Address struct {
 	TotalSecondaryValue   float64              `json:"totalSecondaryValue,omitempty"` // value including tokens in secondary currency
 	ContractInfo          *bchain.ContractInfo `json:"contractInfo,omitempty"`
 	AddressAliases        AddressAliasesMap    `json:"addressAliases,omitempty"`
-	VerifiedData          *bchain.VerifiedAddress  `json:"verifiedData,omitempty"`
+
+	// verified data
+	VerifiedData *bchain.VerifiedAddress `json:"verifiedData,omitempty"`
+
+	// different smart contract usecases
+	SCUseCases interface{} `json:"scUseCases,omitempty"`
 
 	// helpers for explorer
 	Filter        string              `json:"-"`

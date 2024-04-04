@@ -565,6 +565,9 @@ func (s *PublicServer) parseTemplates() []*template.Template {
 		"tokenCount":               tokenCount,
 		"hasPrefix":                strings.HasPrefix,
 		"jsStr":                    jsStr,
+		"inc": func(i int) int {
+			return i + 1
+		},
 	}
 	var createTemplate func(filenames ...string) *template.Template
 	if s.debug {
