@@ -262,6 +262,46 @@
 </div>
 {{end}}
 {{end}}
+
+{{if $addr.SCUseCases}}
+    <div class="row pt-3 pb-1">
+        <h3 class="col-sm-6 col-lg-3 m-0 align-self-center">NFC Records</h3>
+        <select  class="col-sm-6 col-lg-3 my-2 my-lg-0 align-self-center" onchange="openTab(event, options[selectedIndex].value)">
+         {{range $i, $uc := $addr.SCUseCases}}
+            {{ $length := len $addr.SCUseCases }}
+            {{ $incremented := inc $i }}
+            <option  {{ if eq $length $incremented }} selected="selected"{{end}} value="{{$uc.Sender.Name}}">{{$uc.Sender.Name}}</option>
+         {{end}}
+        </select>
+       
+        {{range $i, $uc := $addr.SCUseCases}}
+         {{ $length := len $addr.SCUseCases }}
+         {{ $incremented := inc $i }}
+            <table class="table data-table info-table tabcontent" id="{{$uc.Sender.Name}}" {{ if eq $length $incremented }} style="display: block;" {{end}}>
+                <tbody>
+                    <tr>
+                        <th style="white-space: nowrap;"><h5>Accesses</h5></th>
+                        <th>{{$uc.Sender.Address}}</th>
+                        <th>{{$uc.Sender.Name}}</th>
+                    </tr>
+                    <tr>
+                        <td style="width: 33%;">ID</td>
+                        <td style="width: 33%;">Success</td>
+                        <td style="width: 33%;">Date</td>
+                    </tr>
+                    {{range $record := $uc.Records}}
+                        <tr>
+                            <td style="width: 33%;">{{$record.Id}}</td>
+                            <td style="width: 33%;">{{if $record.Flag}}✅{{else}}❌{{end}}</td>
+                            <td style="width: 33%;">{{unixTimeSpan $record.Timestamp}}</td>
+                        </tr>
+                    {{end}}
+                </tbody>
+            </table>
+        {{end}}
+    </div>
+{{end}}
+
 {{if or $addr.Transactions $addr.Filter}}
 <div class="row pt-3 pb-1">
     <h3 class="col-sm-6 col-lg-3 m-0 align-self-center">Transactions</h3>
