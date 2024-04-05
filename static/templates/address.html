@@ -277,7 +277,7 @@
         {{range $i, $uc := $addr.SCUseCases}}
          {{ $length := len $addr.SCUseCases }}
          {{ $incremented := inc $i }}
-            <table class="table data-table info-table tabcontent" id="{{$uc.Sender.Name}}" {{ if eq $length $incremented }} style="display: block;" {{end}}>
+            <table class="table data-table info-table tabcontent" id="{{$uc.Sender.Name}}" {{ if eq $length $incremented }} style="display: block;" {{else}} style="display: none;" {{end}}>
                 <tbody>
                     <tr>
                         <th style="white-space: nowrap;"><h5>Accesses</h5></th>
