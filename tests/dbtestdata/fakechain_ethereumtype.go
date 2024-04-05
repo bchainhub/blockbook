@@ -151,3 +151,7 @@ func (c *fakeBlockChainEthereumType) AddVerifiedAddressData(address bchain.Addre
 func (c *fakeBlockChainEthereumType) FindVerifiedByName(query string) *bchain.AddressDescriptor {
 	return &bchain.AddressDescriptor{}
 }
+
+func (c *fakeBlockChainEthereumType) GetSCUseCaseData(address *bchain.VerifiedAddress) interface{} {
+	return nil
+}
