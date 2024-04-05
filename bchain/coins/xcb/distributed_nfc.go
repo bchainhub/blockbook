@@ -85,7 +85,7 @@ func (d *distributedNFCUseCase) getAccesses(address *bchain.VerifiedAddress) []D
 		for _, scRecord := range records {
 			uiRecords = append(uiRecords, DistributedNFCAccessRecord{
 				Flag:      scRecord.Flag,
-				Timestamp: int64(scRecord.Timestamp),
+				Timestamp: time.Unix(0, int64(scRecord.Timestamp)*int64(time.Millisecond)).Unix(),
 				Id:        scRecord.Id,
 			})
 		}
