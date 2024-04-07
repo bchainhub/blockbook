@@ -993,6 +993,6 @@ func (c *EthereumRPC) FindVerifiedByName(query string) *bchain.AddressDescriptor
 	return &bchain.AddressDescriptor{}
 }
 
-func (c *EthereumRPC) GetSCUseCaseData(address *bchain.VerifiedAddress) interface{} {
+func (c *EthereumRPC) GetSCUseCaseData(address *bchain.VerifiedAddress, senderName string, page uint32) interface{} {
 	return nil
 }

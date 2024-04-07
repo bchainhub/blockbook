@@ -266,40 +266,61 @@
 {{if $addr.SCUseCases}}
     <div class="row pt-3 pb-1">
         <h3 class="col-sm-6 col-lg-3 m-0 align-self-center">NFC Records</h3>
-        <select  class="col-sm-6 col-lg-3 my-2 my-lg-0 align-self-center" onchange="openTab(event, options[selectedIndex].value)">
-         {{range $i, $uc := $addr.SCUseCases}}
-            {{ $length := len $addr.SCUseCases }}
-            {{ $incremented := inc $i }}
-            <option  {{ if eq $length $incremented }} selected="selected"{{end}} value="{{$uc.Sender.Name}}">{{$uc.Sender.Name}}</option>
-         {{end}}
-        </select>
-       
-        {{range $i, $uc := $addr.SCUseCases}}
-         {{ $length := len $addr.SCUseCases }}
-         {{ $incremented := inc $i }}
-            <table class="table data-table info-table tabcontent" id="{{$uc.Sender.Name}}" {{ if eq $length $incremented }} style="display: block;" {{else}} style="display: none;" {{end}}>
-                <tbody>
-                    <tr>
-                        <th style="white-space: nowrap;"><h5>Accesses</h5></th>
-                        <th>{{$uc.Sender.Address}}</th>
-                        <th>{{$uc.Sender.Name}}</th>
-                    </tr>
-                    <tr>
-                        <td style="width: 33%;">ID</td>
-                        <td style="width: 33%;">Success</td>
-                        <td style="width: 33%;">Date</td>
-                    </tr>
-                    {{range $record := $uc.Records}}
-                        <tr>
-                            <td style="width: 33%;">{{$record.Id}}</td>
-                            <td style="width: 33%;">{{if $record.Flag}}✅{{else}}❌{{end}}</td>
-                            <td style="width: 33%;">{{unixTimeSpan $record.Timestamp}}</td>
-                        </tr>
+        <div class="col-sm-6 col-lg-3 my-2 my-lg-0 align-self-center">
+            <select  class="w-100" onchange="self.location='?nfcPage=1&nfcAddress='+options[selectedIndex].value">
+                {{range $i, $uc := $addr.SCUseCases}}
+                    {{ $length := len $uc.Records }}
+                    <option  {{ if ne $length 0 }} selected="selected"{{end}} value="{{$uc.Sender.Name}}">{{$uc.Sender.Name}}</option>
+                {{end}}
+            </select>
+        </div>
+        <div class="col-lg-6">
+            <nav class="paging justify-content-end">
+                <a class="btn btn-paging" href="?nfcPage={{$data.SCUseCasePrevPage}}{{$data.PageParams}}">Previous</a>
+                {{if $data.SCUseCasePagingRange}}
+                <div class="paging-group mx-2">
+                <div class="bb-group">
+                    {{range $p := $data.SCUseCasePagingRange}}
+                        {{if $p}}<a class="btn{{if eq $data.SCUseCasePage $p}} active{{end}}" href="?nfcPage={{$p}}{{$data.PageParams}}">{{$p}}</a>
+                        {{else}}<span>...</span>{{end}}
                     {{end}}
-                </tbody>
-            </table>
-        {{end}}
+                </div>
+                </div>
+                {{end}}
+                <a class="btn btn-paging" href="?nfcPage={{$data.SCUseCaseNextPage}}{{$data.PageParams}}">Next</a>
+            </nav>
+        </div>
     </div>
+
+        {{range $i, $uc := $addr.SCUseCases}}
+         {{ $length := len $uc.Records }}
+            {{if gt $length 0}} 
+                <table class="table data-table info-table">
+                    <tbody>
+                        <tr>
+                            <th style="white-space: nowrap; width: 15%; "><h5>Accesses</h5></th>
+                            <th style="width: 15%;"></th>
+                            <th style="width: 45%;">{{$uc.Sender.Address}}</th>
+                            <th style="width: 25%;">{{$uc.Sender.Name}}</th>
+                        </tr>
+                        <tr>
+                            <td style="width: 15%;">Attempt ID</td>
+                            <td style="width: 15%;">Success</td>
+                            <td style="width: 45%;">Core ID</td>
+                            <td style="width: 25%;">Date</td>
+                        </tr>
+                        {{range $record := $uc.Records}}
+                            <tr>
+                                <td style="width: 15%;">{{$record.Id}}</td>
+                                <td style="width: 15%;">{{if $record.Flag}}✅{{else}}❌{{end}}</td>
+                                <td style="width: 45%;">{{$record.CoreID}}</td>
+                                <td style="width: 25%;">{{unixTimeSpan $record.Timestamp}}</td>
+                            </tr>
+                        {{end}}
+                    </tbody>
+                </table>
+            {{end}}
+        {{end}}
 {{end}}
 
 {{if or $addr.Transactions $addr.Filter}}

@@ -243,6 +243,6 @@ func (c *fakeBlockChain) FindVerifiedByName(query string) *bchain.AddressDescrip
 	return &bchain.AddressDescriptor{}
 }
 
-func (c *fakeBlockChain) GetSCUseCaseData(address *bchain.VerifiedAddress) interface{} {
+func (c *fakeBlockChain) GetSCUseCaseData(address *bchain.VerifiedAddress, senderName string, page uint32) interface{} {
 	return nil
 }

@@ -327,6 +327,9 @@ type AddressFilter struct {
 	TokensToReturn TokensToReturn
 	// OnlyConfirmed set to true will ignore mempool transactions; mempool is also ignored if FromHeight/ToHeight filter is specified
 	OnlyConfirmed bool
+
+	NfcAddress string
+	NfcPage    uint32
 }
 
 // Address holds information about address and its transactions

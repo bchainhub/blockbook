@@ -1403,7 +1403,7 @@ func (w *Worker) getCoreCoinTypeAddressBalances(addrDesc bchain.AddressDescripto
 	}
 	d.verified = w.chain.AddVerifiedAddressData(addrDesc)
 	if d.verified != nil && d.verified.Type != bchain.DefaultAddress {
-		d.useCaseSCData = w.chain.GetSCUseCaseData(d.verified)
+		d.useCaseSCData = w.chain.GetSCUseCaseData(d.verified, filter.NfcAddress, filter.NfcPage)
 	}
 	return ba, &d, nil
 }
