@@ -943,6 +943,6 @@ func (c *BitcoinRPC) FindVerifiedByName(query string) *bchain.AddressDescriptor 
 }
 
 
-func (c *BitcoinRPC) GetSCUseCaseData(address *bchain.VerifiedAddress) interface{} {
+func (c *BitcoinRPC) GetSCUseCaseData(address *bchain.VerifiedAddress, senderName string, page uint32) interface{} {
 	return nil
 }

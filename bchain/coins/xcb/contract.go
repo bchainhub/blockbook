@@ -278,9 +278,9 @@ func (b *CoreblockchainRPC) AddVerifiedAddressData(address bchain.AddressDescrip
 	return b.addressVerifier.GetVerified(common.Bytes2Hex(address))
 }
 
-func (b *CoreblockchainRPC) GetSCUseCaseData(address *bchain.VerifiedAddress) interface{} {
+func (b *CoreblockchainRPC) GetSCUseCaseData(address *bchain.VerifiedAddress, senderName string, page uint32) interface{} {
 	if address.Type == bchain.DistributedNFC {
-		return b.distributedNFCUseCase.getAccesses(address)
+		return b.distributedNFCUseCase.getAccesses(address, senderName, page)
 	}
 	return nil
 }

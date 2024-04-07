@@ -355,7 +355,7 @@ type BlockChain interface {
 	FindVerifiedByName(query string) *AddressDescriptor
 
 	// smart contract usecases
-	GetSCUseCaseData(address *VerifiedAddress) interface{}
+	GetSCUseCaseData(address *VerifiedAddress, senderName string, page uint32) interface{}
 }
 
 // BlockChainParser defines common interface to parsing and conversions of block chain data
