@@ -17,9 +17,9 @@ import (
 const definition = `[{"inputs":[{"internalType":"uint64","name":"timestamp","type":"uint64"},{"internalType":"address","name":"coreid","type":"address"}],"name":"accessDenied","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint64","name":"timestamp","type":"uint64"},{"internalType":"address","name":"coreid","type":"address"}],"name":"accessGranted","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"clear","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"showAttempts","outputs":[{"components":[{"internalType":"bool","name":"flag","type":"bool"},{"internalType":"uint64","name":"timestamp","type":"uint64"},{"internalType":"uint128","name":"id","type":"uint128"},{"internalType":"address","name":"coreid","type":"address"}],"internalType":"struct AttemptsLog.Attempt[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"}]`
 
 type distributedNFCUseCase struct {
-	RPC     CVMRPCClient
-	Senders []DistributedNFCSender
-	abi     abi.ABI
+	RPC      CVMRPCClient
+	abi      abi.ABI
+	supabase *SupabaseClient
 }
 
 type DistributedNFCSender struct {
@@ -40,13 +40,13 @@ type DistributedNFCAccessRecord struct {
 	CoreID    common.Address `json:"coreid"`
 }
 
-func newdistributedNFCUseCase(senders []DistributedNFCSender) *distributedNFCUseCase {
+func newdistributedNFCUseCase(supabase *SupabaseClient) *distributedNFCUseCase {
 	abi, err := abi.JSON(strings.NewReader(definition))
 	if err != nil {
 		panic(err)
 	}
 
-	return &distributedNFCUseCase{Senders: senders, abi: abi}
+	return &distributedNFCUseCase{supabase: supabase, abi: abi}
 
 }
 
@@ -59,9 +59,15 @@ func (d *distributedNFCUseCase) getAccesses(address *bchain.VerifiedAddress, sen
 		CoreID    common.Address `json:"coreid"`
 	}
 
-	for _, sender := range d.Senders {
+	nfcSenders, err := d.supabase.GetDistributedNFCSenders()
+	if err != nil {
+		fmt.Println("ERROR: failed to get distributed NFC senders:", err)
+		return nil
+	}
+
+	for _, sender := range nfcSenders {
 		if senderName == "" {
-			senderName = d.Senders[0].Name
+			senderName = nfcSenders[0].Name
 		}
 		if page == 0 {
 			page = 1

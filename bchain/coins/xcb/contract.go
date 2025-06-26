@@ -244,6 +244,18 @@ func (b *CoreblockchainRPC) AddVerifiedSCData(contract *bchain.ContractInfo) *bc
 
 			p := message.NewPrinter(language.English)
 			contract.TotalSupply = p.Sprintf("%d\n", sc.TotalSupply)
+			contract.CirculatingSupply = p.Sprintf("%d\n", sc.CirculatingSupply)
+
+			// RWA
+			if sc.Metadata != nil {
+				contract.Metadata = sc.Metadata
+			}
+			if sc.Documents != nil {
+				contract.Documents = sc.Documents
+			}
+			if sc.LabResults != nil {
+				contract.LabResults = sc.LabResults
+			}
 		}
 	}
 	return contract
@@ -308,6 +320,7 @@ func (b *CoreblockchainRPC) GetContractInfo(contractDesc bchain.AddressDescripto
 
 			p := message.NewPrinter(language.English)
 			contractInfo.TotalSupply = p.Sprintf("%d", sc.TotalSupply)
+			contractInfo.CirculatingSupply = p.Sprintf("%d", sc.CirculatingSupply)
 		}
 		data, err := b.xcbCall(nameSignature, address.Hex())
 		if err != nil {

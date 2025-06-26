@@ -374,7 +374,7 @@ ConnectLoop:
 		default:
 			hash, err = w.chain.GetBlockHash(h)
 			if err != nil {
-				glog.Error("GetBlockHash error ", err)
+				glog.Error("GetBlockHash error ", err, ", height ", h)
 				w.metrics.IndexResyncErrors.With(common.Labels{"error": "failure"}).Inc()
 				time.Sleep(time.Millisecond * 500)
 				continue

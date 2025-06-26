@@ -87,7 +87,70 @@
                         <tr>
                             <td style="width: 25%;">Token Total Supply</td>
                             <td>{{$addr.ContractInfo.TotalSupply}}</td>
-                        </tr>    
+                        </tr>
+                        {{if $addr.ContractInfo.CirculatingSupply}}
+                            <tr>
+                                <td style="width: 25%;">Circulating Supply</td>
+                                <td>{{$addr.ContractInfo.CirculatingSupply}}</td>
+                            </tr>   
+                        {{end}} 
+                        {{if $addr.ContractInfo.Metadata}}
+                            <tr>
+                                <td style="width: 25%;">Metadata</td>
+                                <td>
+                                    <table class="table table-bordered">
+                                        <tbody>
+                                            {{range $key, $value := $addr.ContractInfo.Metadata}}
+                                            <tr>
+                                                <td style="width: 50%;"><strong>{{$key}}</strong></td>
+                                                <td>{{$value}}</td>
+                                            </tr>
+                                            {{end}}
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            {{end}}
+
+                            {{if $addr.ContractInfo.Documents}}
+                            <tr>
+                                <td style="width: 25%;">Documents</td>
+                                <td>
+                                    <table class="table table-bordered">
+                                        <tbody>
+                                            {{range $doc := $addr.ContractInfo.Documents}}
+                                            <tr>
+                                                <td style="width: 30%;"><strong>{{$doc.Name}}</strong></td>
+                                                <td style="width: 40%;">Fingerprint: {{$doc.Fingerprint}}</td>
+                                                <td style="width: 30%;"><a href="{{$doc.Url}}" target="_blank">View Document</a></td>
+                                            </tr>
+                                            {{end}}
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            {{end}}
+
+                            {{if $addr.ContractInfo.LabResults}}
+                            <tr>
+                                <td style="width: 25%;">Lab Results</td>
+                                <td>
+                                    <table class="table table-bordered">
+                                        <tbody>
+                                            {{range $key, $result := $addr.ContractInfo.LabResults}}
+                                            <tr>
+                                                <td style="width: 50%;"><strong>{{$key}}</strong></td>
+                                                <td>
+                                                    {{$result.Value}}
+                                                    {{if $result.Unit}} {{$result.Unit}}{{end}}
+                                                </td>
+                                            </tr>
+                                            {{end}}
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            {{end}}
                     {{end}}
                 {{end}}
 

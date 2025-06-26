@@ -33,20 +33,20 @@ const (
 
 // Configuration represents json config file
 type Configuration struct {
-	CoinName                        string                    `json:"coin_name"`
-	CoinShortcut                    string                    `json:"coin_shortcut"`
-	RPCURL                          string                    `json:"rpc_url"`
-	RPCTimeout                      int                       `json:"rpc_timeout"`
-	BlockAddressesToKeep            int                       `json:"block_addresses_to_keep"`
-	AddressAliases                  bool                      `json:"address_aliases,omitempty"`
-	MempoolTxTimeoutHours           int                       `json:"mempoolTxTimeoutHours"`
-	QueryBackendOnMempoolResync     bool                      `json:"queryBackendOnMempoolResync"`
-	ProcessInternalTransactions     bool                      `json:"processInternalTransactions"`
-	ProcessZeroInternalTransactions bool                      `json:"processZeroInternalTransactions"`
-	ConsensusNodeVersionURL         string                    `json:"consensusNodeVersion"`
-	VerifiedSmartContracts          []*VerifiedSC             `json:"verifiedSmartContracts"`
-	VerifiedAddresses               []*bchain.VerifiedAddress `json:"verifiedAddresses"`
-	DistributedNFCSenders           []DistributedNFCSender    `json:"distributedNFCSenders"`
+	CoinName                        string `json:"coin_name"`
+	CoinShortcut                    string `json:"coin_shortcut"`
+	RPCURL                          string `json:"rpc_url"`
+	RPCTimeout                      int    `json:"rpc_timeout"`
+	BlockAddressesToKeep            int    `json:"block_addresses_to_keep"`
+	AddressAliases                  bool   `json:"address_aliases,omitempty"`
+	MempoolTxTimeoutHours           int    `json:"mempoolTxTimeoutHours"`
+	QueryBackendOnMempoolResync     bool   `json:"queryBackendOnMempoolResync"`
+	ProcessInternalTransactions     bool   `json:"processInternalTransactions"`
+	ProcessZeroInternalTransactions bool   `json:"processZeroInternalTransactions"`
+	ConsensusNodeVersionURL         string `json:"consensusNodeVersion"`
+
+	SupabaseAPIURL string `json:"supabase_api_url"`
+	SupabaseAPIKey string `json:"supabase_api_key"`
 }
 
 // CoreblockchainRPC is an interface to JSON-RPC xcb service.
@@ -76,6 +76,8 @@ type CoreblockchainRPC struct {
 
 	// SC usecases functioonality
 	distributedNFCUseCase *distributedNFCUseCase
+
+	supabaseClient *SupabaseClient
 }
 
 // ProcessInternalTransactions specifies if internal transactions are processed
@@ -109,9 +111,15 @@ func NewCoreblockchainRPC(config json.RawMessage, pushHandler func(bchain.Notifi
 	s.Timeout = time.Duration(c.RPCTimeout) * time.Second
 	s.PushHandler = pushHandler
 
-	s.smartContractVerifier = newSmartContractVerifier(c.VerifiedSmartContracts)
-	s.addressVerifier = newAddressVerifier(c.VerifiedAddresses)
-	s.distributedNFCUseCase = newdistributedNFCUseCase(c.DistributedNFCSenders)
+	supabase, err := NewSupabaseClient(c.SupabaseAPIURL, c.SupabaseAPIKey)
+	if err != nil {
+		return nil, errors.Annotatef(err, "failed to create Supabase client")
+	}
+	s.supabaseClient = supabase
+
+	s.smartContractVerifier = newSmartContractVerifier(supabase)
+	s.addressVerifier = newAddressVerifier(supabase)
+	s.distributedNFCUseCase = newdistributedNFCUseCase(supabase)
 
 	return s, nil
 }
@@ -141,6 +149,7 @@ func (b *CoreblockchainRPC) Initialize() error {
 	b.NewTx = &CoreCoinNewTx{channel: make(chan xcbcommon.Hash)}
 
 	b.distributedNFCUseCase.RPC = b.RPC
+	b.smartContractVerifier.RPC = b.RPC
 
 	ctx, cancel := context.WithTimeout(context.Background(), b.Timeout)
 	defer cancel()

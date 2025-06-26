@@ -244,13 +244,13 @@ const (
 )
 
 type VerifiedAddress struct {
-	Type     AddressUseCaseType `json:"type"`
-	Address  string             `json:"address"`
-	Name     string             `json:"name"`
-	Icon     string             `json:"icon"`
-	URL      string             `json:"url"`
-	URLTitle string             `json:"urlTitle"`
-	Aliases  []string           `json:"aliases"`
+	Type     AddressUseCaseType `json:"type" db:"type"`
+	Address  string             `json:"address" db:"address"`
+	Name     string             `json:"name" db:"name"`
+	Icon     string             `json:"icon" db:"icon"`
+	URL      string             `json:"url" db:"url"`
+	URLTitle string             `json:"urlTitle" db:"url_title"`
+	Aliases  []string           `json:"aliases" db:"aliases"`
 }
 
 // MempoolTxidEntry contains mempool txid with first seen time

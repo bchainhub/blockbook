@@ -1,20 +1,24 @@
 package xcb
 
-import "github.com/cryptohub-digital/blockbook/bchain"
+import (
+	"fmt"
+
+	"github.com/cryptohub-digital/blockbook/bchain"
+)
 
 type addressVerifier struct {
-	verified []*bchain.VerifiedAddress
+	supabase *SupabaseClient
 }
 
-func newAddressVerifier(verified []*bchain.VerifiedAddress) *addressVerifier {
+func newAddressVerifier(supabase *SupabaseClient) *addressVerifier {
 	verifier := &addressVerifier{
-		verified: verified,
+		supabase: supabase,
 	}
 	return verifier
 }
 
 func (v *addressVerifier) GetVerified(addr string) *bchain.VerifiedAddress {
-	for _, address := range v.verified {
+	for _, address := range v.GetAllAddresses() {
 		if address.Address == addr {
 			return address
 		}
@@ -23,5 +27,10 @@ func (v *addressVerifier) GetVerified(addr string) *bchain.VerifiedAddress {
 }
 
 func (v *addressVerifier) GetAllAddresses() []*bchain.VerifiedAddress {
-	return v.verified
+	verifiedAddrs, err := v.supabase.GetVerifiedAddresses()
+	if err != nil {
+		fmt.Println("ERROR: failed to get verified addresses:", err)
+		return nil
+	}
+	return verifiedAddrs
 }

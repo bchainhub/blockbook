@@ -69,7 +69,20 @@ type ContractInfo struct {
 
 	VerifierWebAddress string `json:"web"`
 	TotalSupply        string `json:"totalSupply"`
+	CirculatingSupply  string `json:"circulatingSupply"`
 	Icon               string `json:"icon"`
+
+	// RWA
+	Metadata  map[string]string `json:"metadata,omitempty"`
+	Documents []struct {
+		Name        string `json:"name"`        // Document name
+		Fingerprint string `json:"fingerprint"` // Document fingerprint
+		Url         string `json:"url"`         // Document URL
+	}
+	LabResults map[string]struct {
+		Value interface{} `json:"value" db:"value"`
+		Unit  string      `json:"unit,omitempty" db:"unit"`
+	}
 }
 
 // Token type names

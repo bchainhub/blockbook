@@ -1,8 +1,8 @@
 module github.com/cryptohub-digital/blockbook
 
-go 1.21
+go 1.21.1
 
-toolchain go1.22.0
+toolchain go1.23.1
 
 require (
 	github.com/ava-labs/avalanchego v1.9.11
@@ -31,6 +31,7 @@ require (
 	github.com/pirk/ecashutil v0.0.0-20220124103933-d37f548d249e
 	github.com/prometheus/client_golang v1.14.0
 	github.com/schancel/cashaddr-converter v0.0.0-20181111022653-4769e7add95a
+	github.com/supabase-community/supabase-go v0.0.4
 	github.com/tkrajina/typescriptify-golang-structs v0.1.10
 	golang.org/x/crypto v0.1.0
 	google.golang.org/protobuf v1.28.1
@@ -40,6 +41,11 @@ require (
 	github.com/aristanetworks/goarista v0.0.0-20170210015632-ea17b1a17847 // indirect
 	github.com/core-coin/ed448 v1.0.2 // indirect
 	github.com/core-coin/go-goldilocks v1.0.17 // indirect
+	github.com/supabase-community/functions-go v0.0.0-20220927045802-22373e6cb51d // indirect
+	github.com/supabase-community/gotrue-go v1.2.0 // indirect
+	github.com/supabase-community/postgrest-go v0.0.11 // indirect
+	github.com/supabase-community/storage-go v0.7.0 // indirect
+	github.com/tomnomnom/linkheader v0.0.0-20180905144013-02ca5825eb80 // indirect
 )
 
 require (
@@ -69,7 +75,7 @@ require (
 	github.com/go-stack/stack v1.8.1 // indirect
 	github.com/golang/mock v1.6.0 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
-	github.com/google/uuid v1.3.0 // indirect
+	github.com/google/uuid v1.6.0 // indirect
 	github.com/gorilla/rpc v1.2.0 // indirect
 	github.com/holiman/big v0.0.0-20221017200358-a027dc42d04e // indirect
 	github.com/holiman/uint256 v1.2.0 // indirect
@@ -84,7 +90,7 @@ require (
 	github.com/prometheus/procfs v0.9.0 // indirect
 	github.com/rjeczalik/notify v0.9.3 // indirect
 	github.com/shirou/gopsutil v3.21.11+incompatible // indirect
-	github.com/stretchr/testify v1.8.1 // indirect
+	github.com/stretchr/testify v1.8.4 // indirect
 	github.com/tklauser/go-sysconf v0.3.5 // indirect
 	github.com/tklauser/numcpus v0.2.2 // indirect
 	github.com/tkrajina/go-reflector v0.5.5 // indirect
