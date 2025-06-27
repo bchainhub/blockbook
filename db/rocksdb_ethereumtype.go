@@ -7,6 +7,7 @@ import (
 	"os"
 	"sort"
 	"sync"
+	"time"
 
 	vlq "github.com/bsm/go-vlq"
 	"github.com/cryptohub-digital/blockbook/bchain"
@@ -843,6 +844,9 @@ func (d *RocksDB) storeInternalDataEthereumType(wb *grocksdb.WriteBatch, blockTx
 
 var cachedContracts = make(map[string]*bchain.ContractInfo)
 var cachedContractsMux sync.Mutex
+var cachedContractsTimestamps = make(map[string]time.Time)
+
+const contractCacheTTL = 3 * time.Minute
 
 func packContractInfo(contractInfo *bchain.ContractInfo) []byte {
 	buf := packString(contractInfo.Name)
@@ -893,9 +897,22 @@ func (d *RocksDB) GetContractInfoForAddress(address string) (*bchain.ContractInf
 // it is hard to guess the type of the contract using API, it is easier to set it the first time the contract is processed in a tx
 func (d *RocksDB) GetContractInfo(contract bchain.AddressDescriptor, typeFromContext bchain.TokenTypeName) (*bchain.ContractInfo, error) {
 	cacheKey := string(contract)
+	now := time.Now()
 	cachedContractsMux.Lock()
 	contractInfo, found := cachedContracts[cacheKey]
+	timestamp, tsFound := cachedContractsTimestamps[cacheKey]
 	cachedContractsMux.Unlock()
+
+	// Invalidate cache if more than 2 minutes have passed
+	if found && tsFound && now.Sub(timestamp) > contractCacheTTL {
+		cachedContractsMux.Lock()
+		delete(cachedContracts, cacheKey)
+		delete(cachedContractsTimestamps, cacheKey)
+		cachedContractsMux.Unlock()
+		found = false
+		contractInfo = nil
+	}
+
 	if !found {
 		val, err := d.db.GetCF(d.ro, d.cfh[cfContracts], contract)
 		if err != nil {
@@ -921,6 +938,7 @@ func (d *RocksDB) GetContractInfo(contract bchain.AddressDescriptor, typeFromCon
 		}
 		cachedContractsMux.Lock()
 		cachedContracts[cacheKey] = contractInfo
+		cachedContractsTimestamps[cacheKey] = now
 		cachedContractsMux.Unlock()
 	}
 	return contractInfo, nil
@@ -959,6 +977,7 @@ func (d *RocksDB) storeContractInfo(wb *grocksdb.WriteBatch, contractInfo *bchai
 		cacheKey := string(key)
 		cachedContractsMux.Lock()
 		delete(cachedContracts, cacheKey)
+		delete(cachedContractsTimestamps, cacheKey)
 		cachedContractsMux.Unlock()
 	}
 	return nil

@@ -7,6 +7,7 @@ import (
 	"math/big"
 	"strings"
 	"sync"
+	"time"
 	"unicode/utf8"
 
 	"golang.org/x/text/language"
@@ -36,6 +37,9 @@ const cbc721SafeTransferFromWithDataMethodSignature = "0xf3d63809" // safeTransf
 
 var cachedContracts = make(map[string]*bchain.ContractInfo)
 var cachedContractsMux sync.Mutex
+var cachedContractsTimestamps = make(map[string]time.Time)
+
+const contractCacheTTL = 3 * time.Minute
 
 func addressFromPaddedHex(s string) (string, error) {
 	var t big.Int
@@ -303,9 +307,22 @@ func (b *CoreblockchainRPC) GetContractInfo(contractDesc bchain.AddressDescripto
 	if err != nil {
 		return nil, err
 	}
+
+	now := time.Now()
 	cachedContractsMux.Lock()
 	contract, found := cachedContracts[common.Bytes2Hex(cds)]
+	timestamp, tsFound := cachedContractsTimestamps[common.Bytes2Hex(cds)]
 	cachedContractsMux.Unlock()
+
+	// Invalidate cache if more than 2 minutes have passed
+	if found && tsFound && now.Sub(timestamp) > contractCacheTTL {
+		cachedContractsMux.Lock()
+		delete(cachedContracts, common.Bytes2Hex(cds))
+		delete(cachedContractsTimestamps, common.Bytes2Hex(cds))
+		cachedContractsMux.Unlock()
+		found = false
+		contract = nil
+	}
 
 	if !found {
 		address, err := common.HexToAddress(common.Bytes2Hex(cds))
@@ -366,6 +383,7 @@ func (b *CoreblockchainRPC) GetContractInfo(contractDesc bchain.AddressDescripto
 		}
 		cachedContractsMux.Lock()
 		cachedContracts[common.Bytes2Hex(cds)] = contractInfo
+		cachedContractsTimestamps[common.Bytes2Hex(cds)] = now
 		cachedContractsMux.Unlock()
 		return contractInfo, nil
 	}
