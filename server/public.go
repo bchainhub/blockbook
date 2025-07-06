@@ -222,6 +222,8 @@ func (s *PublicServer) ConnectFullPublicInterface() {
 	serveMux.HandleFunc(path+"api/v2/circulating-supply-raw/", s.rawHandler(s.apiCirculatingSupplyRaw, apiV2))
 	serveMux.HandleFunc(path+"api/v2/total-supply-raw/", s.rawHandler(s.apiTotalSupplyRaw, apiV2))
 
+	serveMux.HandleFunc(path+"api/v2/contract-info/", s.jsonHandler(s.apiContractInfo, apiV2))
+
 	// socket.io interface
 	serveMux.Handle(path+"socket.io/", s.socketio.GetHandler())
 	// websocket interface
@@ -571,6 +573,9 @@ func (s *PublicServer) parseTemplates() []*template.Template {
 		"tokenCount":               tokenCount,
 		"hasPrefix":                strings.HasPrefix,
 		"jsStr":                    jsStr,
+		"formatUnixTime":           formatUnixTime,
+		"toTitleWithSpaces":        toTitleWithSpaces,
+		"match":                    regexp.MatchString,
 		"inc": func(i int) int {
 			return i + 1
 		},
@@ -1951,4 +1956,21 @@ func (s *PublicServer) apiEstimateFee(r *http.Request, apiVersion int) (interfac
 		}
 	}
 	return nil, api.NewAPIError("Missing parameter 'number of blocks'", true)
+}
+
+func (s *PublicServer) apiContractInfo(r *http.Request, apiVersion int) (interface{}, error) {
+	var contract string
+	i := strings.LastIndexByte(r.URL.Path, '/')
+	if i > 0 {
+		contract = r.URL.Path[i+1:]
+	}
+	if len(contract) == 0 {
+		return nil, api.NewAPIError("Missing contract address", true)
+	}
+	s.metrics.ExplorerViews.With(common.Labels{"action": "api-contract-info"}).Inc()
+	info, err := s.api.GetContractInfo(contract)
+	if err != nil {
+		return nil, err
+	}
+	return info, nil
 }

@@ -245,14 +245,31 @@ func (b *CoreblockchainRPC) AddVerifiedSCData(contract *bchain.ContractInfo) *bc
 		if sc := b.smartContractVerifier.GetVerified(contract.Contract); sc != nil {
 			contract.Icon = sc.Icon
 			contract.VerifierWebAddress = sc.Web
-
+			contract.Symbol = sc.Ticker
 			p := message.NewPrinter(language.English)
-			contract.TotalSupply = p.Sprintf("%d\n", sc.TotalSupply)
-			contract.CirculatingSupply = p.Sprintf("%d\n", sc.CirculatingSupply)
+			contract.TotalSupply = p.Sprintf("%d", sc.TotalSupply)
+			contract.CirculatingSupply = p.Sprintf("%d", sc.CirculatingSupply)
 
 			// RWA
 			if sc.Metadata != nil {
-				contract.Metadata = sc.Metadata
+				converted := make(bchain.ContractMetadata)
+				for k, v := range sc.Metadata {
+					converted[k] = bchain.Metadata{
+						Value:  v.Value,
+						Sealed: v.Sealed,
+					}
+				}
+				contract.Metadata = converted
+			}
+			if sc.KnownMetadata != nil {
+				converted := make(bchain.ContractMetadata)
+				for k, v := range sc.KnownMetadata {
+					converted[k] = bchain.Metadata{
+						Value:  v.Value,
+						Sealed: v.Sealed,
+					}
+				}
+				contract.KnownMetadata = converted
 			}
 			if sc.Documents != nil {
 				contract.Documents = sc.Documents
@@ -338,6 +355,7 @@ func (b *CoreblockchainRPC) GetContractInfo(contractDesc bchain.AddressDescripto
 			p := message.NewPrinter(language.English)
 			contractInfo.TotalSupply = p.Sprintf("%d", sc.TotalSupply)
 			contractInfo.CirculatingSupply = p.Sprintf("%d", sc.CirculatingSupply)
+			contractInfo.Symbol = sc.Ticker
 		}
 		data, err := b.xcbCall(nameSignature, address.Hex())
 		if err != nil {
@@ -365,7 +383,9 @@ func (b *CoreblockchainRPC) GetContractInfo(contractDesc bchain.AddressDescripto
 			}
 			contractInfo.Contract = address.Hex()
 			contractInfo.Name = name
-			contractInfo.Symbol = symbol
+			if symbol != "" {
+				contractInfo.Symbol = symbol
+			}
 			contractInfo.Type = CBC20TokenType
 
 			// if smart contract ticker is verified but address is wrong -> do not show SC symbol (ticker)

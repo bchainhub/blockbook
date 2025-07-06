@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"math/big"
 	"net/http"
+	"regexp"
 	"runtime/debug"
 	"strconv"
 	"strings"
@@ -339,4 +340,23 @@ func formatBigInt(i *big.Int) template.HTML {
 	var rv strings.Builder
 	appendSeparatedNumberSpans(&rv, s, "ns")
 	return template.HTML(rv.String())
+}
+
+func formatUnixTime(ts string) string {
+	i, err := strconv.ParseInt(ts, 10, 64)
+	if err != nil {
+		return ts
+	}
+	// If your timestamps are in seconds:
+	t := time.Unix(i, 0)
+	// If your timestamps are in milliseconds, use: t := time.UnixMilli(i)
+	return t.UTC().Format("2006-01-02 15:04:05 UTC")
+}
+
+func toTitleWithSpaces(s string) string {
+	// Insert a space before each capital letter (except the first)
+	re := regexp.MustCompile(`([a-z])([A-Z])`)
+	s = re.ReplaceAllString(s, `$1 $2`)
+	// Capitalize the first letter of each word
+	return strings.Title(s)
 }

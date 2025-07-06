@@ -73,16 +73,25 @@ type ContractInfo struct {
 	Icon               string `json:"icon"`
 
 	// RWA
-	Metadata  map[string]string `json:"metadata,omitempty"`
+	Metadata      ContractMetadata `json:"metadata,omitempty" db:"metadata"`
+	KnownMetadata ContractMetadata `json:"knownMetadata,omitempty" db:"known_metadata"`
+
 	Documents []struct {
 		Name        string `json:"name"`        // Document name
 		Fingerprint string `json:"fingerprint"` // Document fingerprint
-		Url         string `json:"url"`         // Document URL
+		Url         string `json:"location"`    // Document URL
 	}
 	LabResults map[string]struct {
 		Value interface{} `json:"value" db:"value"`
 		Unit  string      `json:"unit,omitempty" db:"unit"`
 	}
+}
+
+type ContractMetadata map[string]Metadata
+
+type Metadata struct {
+	Value  string `json:"value"`
+	Sealed bool   `json:"sealed"`
 }
 
 // Token type names

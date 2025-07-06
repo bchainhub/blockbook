@@ -94,24 +94,97 @@
                                 <td>{{$addr.ContractInfo.CirculatingSupply}}</td>
                             </tr>   
                         {{end}} 
-                        {{if $addr.ContractInfo.Metadata}}
-                            <tr>
-                                <td style="width: 25%;">Metadata</td>
-                                <td>
-                                    <table class="table table-bordered">
-                                        <tbody>
-                                            {{range $key, $value := $addr.ContractInfo.Metadata}}
-                                            <tr>
-                                                <td style="width: 50%;"><strong>{{$key}}</strong></td>
-                                                <td>{{$value}}</td>
-                                            </tr>
-                                            {{end}}
-                                        </tbody>
-                                    </table>
-                                </td>
-                            </tr>
+                            {{if $addr.ContractInfo.Metadata}}
+                                <tr>
+                                    <td style="width: 25%;">Metadata</td>
+                                    <td>
+                                        <table class="table table-bordered">
+                                            <tbody>
+                                                {{if $addr.ContractInfo.KnownMetadata}}
+                                                {{range $key, $meta := $addr.ContractInfo.KnownMetadata}}
+                                                <tr>
+                                                    <td style="width: 40%;">
+                                                        {{if eq $key "documents"}}
+                                                            📄 Documents JSON file
+                                                        {{else if eq $key "lab"}}
+                                                            🧪 Lab Results JSON file
+                                                        {{else if eq $key "tokenExpiration"}}
+                                                            <span class="badge bg-danger me-2 ">Token Expiration</span>
+                                                        {{else if eq $key "tradingStop"}}
+                                                            <span class="badge bg-warning text-dark me-2">Trading Stop</span>
+                                                        {{end}}
+                                                    {{if $meta.Sealed}}
+                                                        <span title="sealed" class="ms-2" style="font-size: 1.1em; vertical-align: middle;">🔒</span>
+                                                    {{end}}
+                                                    </td>
+                                                    <td>
+                                                        {{if eq $key "documents"}}
+                                                            <a href="{{$meta.Value}}" target="_blank" rel="noopener">Open</a>
+                                                        {{else if eq $key "lab"}}
+                                                            <a href="{{$meta.Value}}" target="_blank" rel="noopener">Open</a>
+                                                        {{else if eq $key "tokenExpiration"}}
+                                                            <span class="timestamp" data-ts="{{$meta.Value}}">
+                                                                {{formatUnixTime $meta.Value}}
+                                                            </span>
+                                                            <span class="countdown" data-ts="{{$meta.Value}}"></span>
+                                                        {{else if eq $key "tradingStop"}}
+                                                            <span class="timestamp" data-ts="{{$meta.Value}}">
+                                                                {{formatUnixTime $meta.Value}}
+                                                            </span>
+                                                            <span class="countdown" data-ts="{{$meta.Value}}"></span>
+                                                        {{end}}
+                                                    </td>
+                                                </tr>
+                                                {{end}}
+                                                {{end}}
+                                                {{range $key, $meta := $addr.ContractInfo.Metadata}}
+                                                <tr>
+                                                    <td style="width: 50%;">
+                                                        <span title="{{$key}}">
+                                                            {{if match "^[a-z]+([A-Z][a-z0-9]+)+$" $key}}
+                                                                {{toTitleWithSpaces $key}}
+                                                            {{else}}
+                                                                {{$key}}
+                                                            {{end}}
+                                                            {{if $meta.Sealed}}
+                                                            <span title="sealed" class="ms-2" style="font-size: 1.1em; vertical-align: middle;">🔒</span>
+                                                            {{end}}
+                                                        </span></td>
+                                                    <td>
+                                                        {{$meta.Value}}
+                                                    </td>
+                                                </tr>
+                                                {{end}}
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <script>
+                                document.addEventListener("DOMContentLoaded", function() {
+                                    document.querySelectorAll('.countdown').forEach(function(el) {
+                                        var ts = parseInt(el.getAttribute('data-ts'), 10) * 1000;
+                                        function updateCountdown() {
+                                            var now = Date.now();
+                                            var diff = ts - now;
+                                            if (diff > 0) {
+                                                var d = Math.floor(diff / (1000*60*60*24));
+                                                var h = Math.floor((diff / (1000*60*60)) % 24);
+                                                var m = Math.floor((diff / (1000*60)) % 60);
+                                                var s = Math.floor((diff / 1000) % 60);
+                                                el.textContent = " (in " + d + "d " + h + "h " + m + "m " + s + "s)";
+                                            } else {
+                                                el.textContent = " (expired)";
+                                            }
+                                        }
+                                        updateCountdown();
+                                        setInterval(updateCountdown, 1000);
+                                    });
+                                });
+                                </script>
                             {{end}}
-
+                            {{if $addr.ContractInfo.Documents}}
+                            {{end}}
+                           
                             {{if $addr.ContractInfo.Documents}}
                             <tr>
                                 <td style="width: 25%;">Documents</td>

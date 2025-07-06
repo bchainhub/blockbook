@@ -2773,3 +2773,20 @@ func (w *Worker) EstimateFee(blocks int, conservative bool) (big.Int, error) {
 	}
 	return w.cachedEstimateFee(blocks, conservative)
 }
+
+func (w *Worker) GetContractInfo(contract string) (*bchain.ContractInfo, error) {
+	start := time.Now()
+	addrDesc, err := w.chainParser.GetAddrDescFromAddress(contract)
+	if err != nil {
+		return nil, NewAPIError(fmt.Sprintf("Invalid address '%v', %v", contract, err), true)
+	}
+	contractInfo, err := w.chain.GetContractInfo(addrDesc)
+	if err != nil {
+		return nil, NewAPIError(fmt.Sprintf("Error getting contract metadata: %v", err), false)
+	}
+	contractInfo = w.chain.AddVerifiedSCData(contractInfo)
+
+	glog.Info("GetContractMetadata ", contract, ", ", time.Since(start))
+
+	return contractInfo, nil
+}
