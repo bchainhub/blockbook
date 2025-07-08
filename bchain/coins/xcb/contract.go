@@ -285,7 +285,7 @@ func (b *CoreblockchainRPC) AddVerifiedSCData(contract *bchain.ContractInfo) *bc
 func (b *CoreblockchainRPC) FindVerifiedByName(query string) *bchain.AddressDescriptor {
 	contains := func(s []string, e string) bool {
 		for _, a := range s {
-			if strings.ToLower(a) == strings.ToLower(e) {
+			if strings.EqualFold(a, e) {
 				return true
 			}
 		}

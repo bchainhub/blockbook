@@ -2,7 +2,6 @@ package xcb
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"math/big"
 	"strings"
@@ -18,7 +17,7 @@ type SupabaseClient struct {
 func NewSupabaseClient(url, key string) (*SupabaseClient, error) {
 	client, err := supabase.NewClient(url, key, &supabase.ClientOptions{})
 	if err != nil {
-		return nil, errors.New(fmt.Sprint("failed to create Supabase client: %v", err))
+		return nil, fmt.Errorf("failed to create Supabase client: %v", err)
 	}
 
 	return &SupabaseClient{

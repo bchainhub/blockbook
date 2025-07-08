@@ -81,7 +81,7 @@ func (s *smartContractVerifier) IsValidVerifiedSC(addr, ticker string) bool {
 func (s *smartContractVerifier) GetAllSmartContracts() []*VerifiedSC {
 	verifiedSC, err := s.supabase.GetVerifiedSmartContracts()
 	if err != nil {
-		fmt.Println("ERROR: failed to get verified smart contracts: %v", errors.ErrorStack(err))
+		fmt.Printf("ERROR: failed to get verified smart contracts: %v\n", errors.ErrorStack(err))
 		return nil
 	}
 
