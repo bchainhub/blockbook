@@ -209,6 +209,10 @@ func (c *blockChainWithMetrics) FindVerifiedByName(query string) *bchain.Address
 	return c.b.FindVerifiedByName(query)
 }
 
+func (c *blockChainWithMetrics) IsVerified(address bchain.AddressDescriptor) bool {
+	return c.b.IsVerified(address)
+}
+
 func (c *blockChainWithMetrics) GetSCUseCaseData(address *bchain.VerifiedAddress, senderName string, page uint32) interface{} {
 	return c.b.GetSCUseCaseData(address, senderName, page)
 }

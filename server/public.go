@@ -223,6 +223,7 @@ func (s *PublicServer) ConnectFullPublicInterface() {
 	serveMux.HandleFunc(path+"api/v2/total-supply-raw/", s.rawHandler(s.apiTotalSupplyRaw, apiV2))
 
 	serveMux.HandleFunc(path+"api/v2/contract-info/", s.jsonHandler(s.apiContractInfo, apiV2))
+	serveMux.HandleFunc(path+"api/v2/is-verified/", s.jsonHandler(s.apiIsVerified, apiV2))
 
 	// socket.io interface
 	serveMux.Handle(path+"socket.io/", s.socketio.GetHandler())
@@ -1973,4 +1974,18 @@ func (s *PublicServer) apiContractInfo(r *http.Request, apiVersion int) (interfa
 		return nil, err
 	}
 	return info, nil
+}
+
+func (s *PublicServer) apiIsVerified(r *http.Request, apiVersion int) (interface{}, error) {
+	var address string
+	i := strings.LastIndexByte(r.URL.Path, '/')
+	if i > 0 {
+		address = r.URL.Path[i+1:]
+	}
+	if len(address) == 0 {
+		return nil, api.NewAPIError("Missing address", true)
+	}
+	s.metrics.ExplorerViews.With(common.Labels{"action": "api-is-verified"}).Inc()
+	isVerified := s.chain.IsVerified(bchain.AddressDescriptor(xcbcommon.Hex2Bytes(address)))
+	return map[string]bool{"isVerified": isVerified}, nil
 }

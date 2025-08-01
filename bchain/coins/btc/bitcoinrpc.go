@@ -930,7 +930,7 @@ func (b *BitcoinRPC) Call(req interface{}, res interface{}) error {
 	return safeDecodeResponse(httpRes.Body, &res)
 }
 
-func (c *BitcoinRPC) AddVerifiedSCData(contract *bchain.ContractInfo) *bchain. ContractInfo {
+func (c *BitcoinRPC) AddVerifiedSCData(contract *bchain.ContractInfo) *bchain.ContractInfo {
 	return contract
 }
 
@@ -942,6 +942,10 @@ func (c *BitcoinRPC) FindVerifiedByName(query string) *bchain.AddressDescriptor 
 	return &bchain.AddressDescriptor{}
 }
 
+func (c *BitcoinRPC) IsVerified(address bchain.AddressDescriptor) bool {
+	// BitcoinRPC does not support verified addresses
+	return false
+}
 
 func (c *BitcoinRPC) GetSCUseCaseData(address *bchain.VerifiedAddress, senderName string, page uint32) interface{} {
 	return nil

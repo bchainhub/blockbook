@@ -353,6 +353,7 @@ type BlockChain interface {
 	AddVerifiedSCData(contract *ContractInfo) *ContractInfo
 	AddVerifiedAddressData(address AddressDescriptor) *VerifiedAddress
 	FindVerifiedByName(query string) *AddressDescriptor
+	IsVerified(address AddressDescriptor) bool
 
 	// smart contract usecases
 	GetSCUseCaseData(address *VerifiedAddress, senderName string, page uint32) interface{}

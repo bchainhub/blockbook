@@ -152,6 +152,10 @@ func (c *fakeBlockChainEthereumType) FindVerifiedByName(query string) *bchain.Ad
 	return &bchain.AddressDescriptor{}
 }
 
+func (c *fakeBlockChainEthereumType) IsVerified(address bchain.AddressDescriptor) bool {
+	return false
+}
+
 func (c *fakeBlockChainEthereumType) GetSCUseCaseData(address *bchain.VerifiedAddress, senderName string, page uint32) interface{} {
 	return nil
 }

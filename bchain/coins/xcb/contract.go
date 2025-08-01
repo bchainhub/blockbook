@@ -307,6 +307,18 @@ func (b *CoreblockchainRPC) FindVerifiedByName(query string) *bchain.AddressDesc
 	return nil
 }
 
+func (b *CoreblockchainRPC) IsVerified(address bchain.AddressDescriptor) bool {
+	// check if address is verified smart contract
+	if sc := b.smartContractVerifier.GetVerified(common.Bytes2Hex(address)); sc != nil {
+		return true
+	}
+	// check if address is verified address
+	if addr := b.addressVerifier.GetVerified(common.Bytes2Hex(address)); addr != nil {
+		return true
+	}
+	return false
+}
+
 func (b *CoreblockchainRPC) AddVerifiedAddressData(address bchain.AddressDescriptor) *bchain.VerifiedAddress {
 	return b.addressVerifier.GetVerified(common.Bytes2Hex(address))
 }
