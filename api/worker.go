@@ -705,6 +705,15 @@ func (w *Worker) getContractDescriptorInfo(cd bchain.AddressDescriptor, typeFrom
 			}
 		}
 	}
+	if contractInfo != nil && typeFromContext != bchain.UnknownTokenType && contractInfo.Type != typeFromContext {
+		contractInfo.Type = typeFromContext
+		if typeFromContext == xcb.CBC721TokenType || typeFromContext == bchain.ERC1155TokenType {
+			contractInfo.Decimals = 0
+		}
+		if err = w.db.StoreContractInfo(contractInfo); err != nil {
+			glog.Errorf("StoreContractInfo error %v, contract %v", err, cd)
+		}
+	}
 	return contractInfo, validContract, nil
 }
 
