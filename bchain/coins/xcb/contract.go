@@ -30,8 +30,8 @@ const nameSignature = "0x07ba2a17"
 const symbolSignature = "0x231782d8"
 const decimalsSignature = "0x5d1fb5f9"
 const balanceOfSignature = "0x1d7976f3"
-const supportsInterfaceSignature = "0x01ffc9a7"
-const erc721InterfaceID = "80ac58cd"
+const supportsInterfaceSignature = "0x80ada41b"
+const erc721InterfaceID = "0b911da1"
 
 const cbc721TransferFromMethodSignature = "0x31f2e679"             // transferFrom(address,address,uint256)
 const cbc721SafeTransferFromMethodSignature = "0x3453ba4a"         // safeTransferFrom(address,address,uint256)
@@ -170,7 +170,7 @@ func (b *CoreblockchainRPC) contractSupportsInterface(contractDesc bchain.Addres
 	if len(interfaceID) != 8 {
 		return false, errors.New("invalid interface id length")
 	}
-	callData := supportsInterfaceSignature + strings.Repeat("0", 64-len(interfaceID)) + interfaceID
+	callData := supportsInterfaceSignature + interfaceID + strings.Repeat("0", 64-len(interfaceID))
 	data, err := b.xcbCall(callData, address)
 	if err != nil {
 		if strings.Contains(err.Error(), "execution reverted") {
