@@ -35,6 +35,15 @@ type Worker struct {
 	is                *common.InternalState
 	fiatRates         *fiat.FiatRates
 	metrics           *common.Metrics
+
+	contractInfoCache         sync.Map
+	coreCoinTokenBalanceCache sync.Map
+	ethereumTokenBalanceCache sync.Map
+}
+
+type balanceCacheEntry struct {
+	value *big.Int
+	ok    bool
 }
 
 // NewWorker creates new api worker
@@ -656,12 +665,16 @@ func (w *Worker) getContractDescriptorInfo(cd bchain.AddressDescriptor, typeFrom
 		return nil, false, err
 	}
 	contractInfo = w.chain.AddVerifiedSCData(contractInfo)
+	if contractInfo != nil {
+		w.contractInfoCache.Store(descriptorKey(cd), contractInfo)
+	}
+	contractInfoChanged := false
 	if contractInfo == nil {
 		// log warning only if the contract should have been known from processing of the internal data
 		if eth.ProcessInternalTransactions {
 			glog.Warningf("Contract %v %v not found in DB", cd, typeFromContext)
 		}
-		contractInfo, err = w.chain.GetContractInfo(cd)
+		contractInfo, err = w.getCachedContractInfo(cd)
 		if err != nil {
 			glog.Errorf("GetContractInfo from chain error %v, contract %v", err, cd)
 		}
@@ -671,19 +684,16 @@ func (w *Worker) getContractDescriptorInfo(cd bchain.AddressDescriptor, typeFrom
 			if len(addresses) > 0 {
 				contractInfo.Contract = addresses[0]
 			}
-
 			validContract = false
 		} else {
 			if typeFromContext != bchain.UnknownTokenType && contractInfo.Type == bchain.UnknownTokenType {
 				contractInfo.Type = typeFromContext
 			}
-			if err = w.db.StoreContractInfo(contractInfo); err != nil {
-				glog.Errorf("StoreContractInfo error %v, contract %v", err, cd)
-			}
+			contractInfoChanged = true
 		}
 	} else if (len(contractInfo.Name) > 0 && contractInfo.Name[0] == 0) || (len(contractInfo.Symbol) > 0 && contractInfo.Symbol[0] == 0) {
 		// fix contract name/symbol that was parsed as a string consisting of zeroes
-		blockchainContractInfo, err := w.chain.GetContractInfo(cd)
+		blockchainContractInfo, err := w.getCachedContractInfo(cd)
 		if err != nil {
 			glog.Errorf("GetContractInfo from chain error %v, contract %v", err, cd)
 		} else {
@@ -700,19 +710,25 @@ func (w *Worker) getContractDescriptorInfo(cd bchain.AddressDescriptor, typeFrom
 			if blockchainContractInfo != nil {
 				contractInfo.Decimals = blockchainContractInfo.Decimals
 			}
-			if err = w.db.StoreContractInfo(contractInfo); err != nil {
-				glog.Errorf("StoreContractInfo error %v, contract %v", err, cd)
-			}
+			contractInfoChanged = true
 		}
 	}
 	if contractInfo != nil && typeFromContext != bchain.UnknownTokenType && contractInfo.Type != typeFromContext {
 		contractInfo.Type = typeFromContext
+		contractInfoChanged = true
 		if typeFromContext == xcb.CBC721TokenType || typeFromContext == bchain.ERC1155TokenType {
-			contractInfo.Decimals = 0
+			if contractInfo.Decimals != 0 {
+				contractInfo.Decimals = 0
+			}
 		}
+	}
+	if contractInfoChanged && contractInfo != nil && validContract {
 		if err = w.db.StoreContractInfo(contractInfo); err != nil {
 			glog.Errorf("StoreContractInfo error %v, contract %v", err, cd)
 		}
+	}
+	if contractInfo != nil {
+		w.contractInfoCache.Store(descriptorKey(cd), contractInfo)
 	}
 	return contractInfo, validContract, nil
 }
@@ -758,30 +774,56 @@ func (w *Worker) getEthereumTokensTransfers(transfers bchain.TokenTransfers, add
 
 func (w *Worker) getCoreCoinTokens(transfers bchain.TokenTransfers) []TokenTransfer {
 	tokens := make([]TokenTransfer, len(transfers))
+	contractCache := make(map[string]*bchain.ContractInfo, len(transfers))
 	for i := range transfers {
 		e := transfers[i]
-		cd, err := w.chainParser.GetAddrDescFromAddress(e.Contract)
-		if err != nil {
-			glog.Errorf("GetAddrDescFromAddress error %v, contract %v", err, e.Contract)
-			continue
-		}
 		typeName := bchain.TokenTypeMap[e.Type]
-		с, err := w.chain.GetContractInfo(cd)
-		if err != nil {
-			glog.Errorf("getCoreCoinTokens error %v, contract %v", err, e.Contract)
+		contractInfo, ok := contractCache[e.Contract]
+		if !ok {
+			cd, err := w.chainParser.GetAddrDescFromAddress(e.Contract)
+			if err != nil {
+				glog.Errorf("GetAddrDescFromAddress error %v, contract %v", err, e.Contract)
+			} else {
+				var valid bool
+				contractInfo, valid, err = w.getContractDescriptorInfo(cd, typeName)
+				if err != nil {
+					glog.Errorf("getCoreCoinTokens contract info error %v, contract %v", err, e.Contract)
+				}
+				// if contract metadata is missing or marked invalid, fall back to minimal info
+				if contractInfo == nil || !valid {
+					contractInfo = nil
+				}
+			}
+			if contractInfo == nil {
+				contractInfo = &bchain.ContractInfo{
+					Contract: e.Contract,
+					Name:     e.Contract,
+					Type:     typeName,
+				}
+			}
+			contractCache[e.Contract] = contractInfo
 		}
-		if с == nil {
-			с = &bchain.ContractInfo{Name: e.Contract}
+		var value *Amount
+		var values []MultiTokenValue
+		if e.Type == bchain.MultiToken {
+			values = make([]MultiTokenValue, len(e.MultiTokenValues))
+			for j := range values {
+				values[j].Id = (*Amount)(&e.MultiTokenValues[j].Id)
+				values[j].Value = (*Amount)(&e.MultiTokenValues[j].Value)
+			}
+		} else {
+			value = (*Amount)(&e.Value)
 		}
 		tokens[i] = TokenTransfer{
-			Type:     typeName,
-			Contract: e.Contract,
-			From:     e.From,
-			To:       e.To,
-			Decimals: с.Decimals,
-			Value:    (*Amount)(&e.Value),
-			Name:     с.Name,
-			Symbol:   с.Symbol,
+			Type:             typeName,
+			Contract:         e.Contract,
+			From:             e.From,
+			To:               e.To,
+			Value:            value,
+			MultiTokenValues: values,
+			Decimals:         contractInfo.Decimals,
+			Name:             contractInfo.Name,
+			Symbol:           contractInfo.Symbol,
 		}
 	}
 	return tokens
@@ -1034,7 +1076,7 @@ func (w *Worker) getEthereumContractBalance(addrDesc bchain.AddressDescriptor, i
 	if details >= AccountDetailsTokenBalances && validContract {
 		if c.Type == bchain.FungibleToken {
 			// get Erc20 Contract Balance from blockchain, balance obtained from adding and subtracting transfers is not correct
-			b, err := w.chain.EthereumTypeGetErc20ContractBalance(addrDesc, c.Contract)
+			b, err := w.getCachedEthereumContractBalance(addrDesc, c.Contract)
 			if err != nil {
 				// return nil, nil, nil, errors.Annotatef(err, "EthereumTypeGetErc20ContractBalance %v %v", addrDesc, c.Contract)
 				glog.Warningf("EthereumTypeGetErc20ContractBalance addr %v, contract %v, %v", addrDesc, c.Contract, err)
@@ -1096,14 +1138,8 @@ func (w *Worker) getCoreCoinContractBalance(addrDesc bchain.AddressDescriptor, i
 	// return contract balances/values only at or above AccountDetailsTokenBalances
 	if details >= AccountDetailsTokenBalances && validContract {
 		if c.Type == bchain.FungibleToken {
-			// get Cbc20 Contract Balance from blockchain, balance obtained from adding and subtracting transfers is not correct
-			b, err := w.chain.CoreCoinTypeGetCbc20ContractBalance(addrDesc, c.Contract)
-			if err != nil {
-				// return nil, nil, nil, errors.Annotatef(err, "CoreCoinTypeGetCbc20ContractBalance %v %v", addrDesc, c.Contract)
-				glog.Warningf("CoreCoinTypeGetCbc20ContractBalance addr %v, contract %v, %v", addrDesc, c.Contract, err)
-			} else {
-				t.BalanceSat = (*Amount)(b)
-			}
+			balance := new(big.Int).Set(&c.Value)
+			t.BalanceSat = (*Amount)(balance)
 		} else {
 			if len(c.Ids) > 0 {
 				ids := make([]Amount, len(c.Ids))
@@ -1127,7 +1163,7 @@ func (w *Worker) getCoreCoinContractBalanceFromBlockchain(addrDesc, contract bch
 	}
 	// do not read contract balances etc in case of Basic option
 	if details >= AccountDetailsTokenBalances && validContract {
-		b, err = w.chain.CoreCoinTypeGetCbc20ContractBalance(addrDesc, contract)
+		b, err = w.getCachedCoreCoinContractBalance(addrDesc, contract)
 		if err != nil {
 			// return nil, nil, nil, errors.Annotatef(err, "CoreCoinTypeGetCbc20ContractBalance %v %v", addrDesc, c.Contract)
 			glog.Warningf("CoreCoinTypeGetCbc20ContractBalance addr %v, contract %v, %v", addrDesc, contract, err)
@@ -1156,7 +1192,7 @@ func (w *Worker) getEthereumContractBalanceFromBlockchain(addrDesc, contract bch
 	}
 	// do not read contract balances etc in case of Basic option
 	if details >= AccountDetailsTokenBalances && validContract {
-		b, err = w.chain.EthereumTypeGetErc20ContractBalance(addrDesc, contract)
+		b, err = w.getCachedEthereumContractBalance(addrDesc, contract)
 		if err != nil {
 			// return nil, nil, nil, errors.Annotatef(err, "EthereumTypeGetErc20ContractBalance %v %v", addrDesc, c.Contract)
 			glog.Warningf("EthereumTypeGetErc20ContractBalance addr %v, contract %v, %v", addrDesc, contract, err)
@@ -1420,7 +1456,7 @@ func (w *Worker) getCoreCoinTypeAddressBalances(addrDesc bchain.AddressDescripto
 func (w *Worker) getCoreCoinToken(index int, addrDesc, contract bchain.AddressDescriptor, details AccountDetails, txs int) (*Token, error) {
 	var b *big.Int
 	validContract := true
-	ci, err := w.chain.GetContractInfo(contract)
+	ci, err := w.getCachedContractInfo(contract)
 	if err != nil {
 		return nil, errors.Annotatef(err, "GetContractInfo %v", contract)
 	}
@@ -1435,7 +1471,7 @@ func (w *Worker) getCoreCoinToken(index int, addrDesc, contract bchain.AddressDe
 	}
 	// do not read contract balances etc in case of Basic option
 	if details >= AccountDetailsTokenBalances && validContract {
-		b, err = w.chain.CoreCoinTypeGetCbc20ContractBalance(addrDesc, contract)
+		b, err = w.getCachedCoreCoinContractBalance(addrDesc, contract)
 		if err != nil {
 			// return nil, nil, nil, errors.Annotatef(err, "CoreCoinTypeGetCbc20ContractBalance %v %v", addrDesc, c.Contract)
 			glog.Warningf("CoreCoinTypeGetCbc20ContractBalance addr %v, contract %v, %v", addrDesc, contract, err)
@@ -1711,6 +1747,78 @@ func (w *Worker) GetAddress(address string, page int, txsOnPage int, option Acco
 	}
 	glog.Info("GetAddress ", address, ", ", time.Since(start))
 	return r, nil
+}
+
+func descriptorKey(desc bchain.AddressDescriptor) string {
+	if desc == nil {
+		return ""
+	}
+	return desc.String()
+}
+
+func contractBalanceKey(addrDesc, contract bchain.AddressDescriptor) string {
+	return descriptorKey(addrDesc) + ":" + descriptorKey(contract)
+}
+
+func (w *Worker) getCachedContractInfo(cd bchain.AddressDescriptor) (*bchain.ContractInfo, error) {
+	key := descriptorKey(cd)
+	if v, ok := w.contractInfoCache.Load(key); ok {
+		if ci, ok := v.(*bchain.ContractInfo); ok {
+			return ci, nil
+		}
+	}
+	ci, err := w.chain.GetContractInfo(cd)
+	if err != nil {
+		return nil, err
+	}
+	if ci != nil {
+		w.contractInfoCache.Store(key, ci)
+	}
+	return ci, nil
+}
+
+func (w *Worker) getCachedCoreCoinContractBalance(addrDesc, contract bchain.AddressDescriptor) (*big.Int, error) {
+	key := contractBalanceKey(addrDesc, contract)
+	if v, ok := w.coreCoinTokenBalanceCache.Load(key); ok {
+		if entry, ok := v.(balanceCacheEntry); ok && entry.ok {
+			if entry.value == nil {
+				return nil, nil
+			}
+			return new(big.Int).Set(entry.value), nil
+		}
+	}
+	balance, err := w.chain.CoreCoinTypeGetCbc20ContractBalance(addrDesc, contract)
+	if err != nil {
+		return nil, err
+	}
+	entry := balanceCacheEntry{ok: true}
+	if balance != nil {
+		entry.value = new(big.Int).Set(balance)
+	}
+	w.coreCoinTokenBalanceCache.Store(key, entry)
+	return balance, nil
+}
+
+func (w *Worker) getCachedEthereumContractBalance(addrDesc, contract bchain.AddressDescriptor) (*big.Int, error) {
+	key := contractBalanceKey(addrDesc, contract)
+	if v, ok := w.ethereumTokenBalanceCache.Load(key); ok {
+		if entry, ok := v.(balanceCacheEntry); ok && entry.ok {
+			if entry.value == nil {
+				return nil, nil
+			}
+			return new(big.Int).Set(entry.value), nil
+		}
+	}
+	balance, err := w.chain.EthereumTypeGetErc20ContractBalance(addrDesc, contract)
+	if err != nil {
+		return nil, err
+	}
+	entry := balanceCacheEntry{ok: true}
+	if balance != nil {
+		entry.value = new(big.Int).Set(balance)
+	}
+	w.ethereumTokenBalanceCache.Store(key, entry)
+	return balance, nil
 }
 
 func (w *Worker) balanceHistoryHeightsFromTo(fromTimestamp, toTimestamp int64) (uint32, uint32, uint32, uint32) {
@@ -2789,11 +2897,14 @@ func (w *Worker) GetContractInfo(contract string) (*bchain.ContractInfo, error) 
 	if err != nil {
 		return nil, NewAPIError(fmt.Sprintf("Invalid address '%v', %v", contract, err), true)
 	}
-	contractInfo, err := w.chain.GetContractInfo(addrDesc)
+	contractInfo, err := w.getCachedContractInfo(addrDesc)
 	if err != nil {
 		return nil, NewAPIError(fmt.Sprintf("Error getting contract metadata: %v", err), false)
 	}
 	contractInfo = w.chain.AddVerifiedSCData(contractInfo)
+	if contractInfo != nil {
+		w.contractInfoCache.Store(descriptorKey(addrDesc), contractInfo)
+	}
 
 	glog.Info("GetContractMetadata ", contract, ", ", time.Since(start))
 
