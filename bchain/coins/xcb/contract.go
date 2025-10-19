@@ -30,6 +30,8 @@ const nameSignature = "0x07ba2a17"
 const symbolSignature = "0x231782d8"
 const decimalsSignature = "0x5d1fb5f9"
 const balanceOfSignature = "0x1d7976f3"
+const supportsInterfaceSignature = "0x80ada41b"
+const erc721InterfaceID = "0b911da1"
 
 const cbc721TransferFromMethodSignature = "0x31f2e679"             // transferFrom(address,address,uint256)
 const cbc721SafeTransferFromMethodSignature = "0x3453ba4a"         // safeTransferFrom(address,address,uint256)
@@ -162,6 +164,25 @@ func getTokenTransfersFromTx(tx *RpcTransaction) (bchain.TokenTransfers, error) 
 		})
 	}
 	return r, nil
+}
+
+func (b *CoreblockchainRPC) contractSupportsInterface(contractDesc bchain.AddressDescriptor, address string, interfaceID string) (bool, error) {
+	if len(interfaceID) != 8 {
+		return false, errors.New("invalid interface id length")
+	}
+	callData := supportsInterfaceSignature + interfaceID + strings.Repeat("0", 64-len(interfaceID))
+	data, err := b.xcbCall(callData, address)
+	if err != nil {
+		if strings.Contains(err.Error(), "execution reverted") {
+			return false, nil
+		}
+		return false, err
+	}
+	result := parseCBC20NumericProperty(contractDesc, data)
+	if result == nil {
+		return false, nil
+	}
+	return result.Sign() != 0, nil
 }
 
 func (b *CoreblockchainRPC) xcbCall(data, to string) (string, error) {
@@ -359,7 +380,9 @@ func (b *CoreblockchainRPC) GetContractInfo(contractDesc bchain.AddressDescripto
 			return nil, err
 		}
 
-		contractInfo := &bchain.ContractInfo{}
+		contractInfo := &bchain.ContractInfo{
+			Contract: address.Hex(),
+		}
 		if sc := b.smartContractVerifier.GetVerified(common.Bytes2Hex(contractDesc[:])); sc != nil {
 			contractInfo.Icon = sc.Icon
 			contractInfo.VerifierWebAddress = sc.Web
@@ -369,12 +392,44 @@ func (b *CoreblockchainRPC) GetContractInfo(contractDesc bchain.AddressDescripto
 			contractInfo.CirculatingSupply = p.Sprintf("%d", sc.CirculatingSupply)
 			contractInfo.Symbol = sc.Ticker
 		}
+
+		isCBC721, err := b.contractSupportsInterface(contractDesc, address.Hex(), erc721InterfaceID)
+		if err != nil {
+			glog.Warning(errors.Annotatef(err, "cbcSupportsInterface %v", address))
+		}
+		if isCBC721 {
+			if data, err := b.xcbCall(nameSignature, address.Hex()); err == nil {
+				if name := parseCBC20StringProperty(contractDesc, data); name != "" {
+					contractInfo.Name = name
+				}
+			} else if !strings.Contains(err.Error(), "execution reverted") {
+				glog.Warning(errors.Annotatef(err, "cbc721NameSignature %v", address))
+			}
+			if data, err := b.xcbCall(symbolSignature, address.Hex()); err == nil {
+				if symbol := parseCBC20StringProperty(contractDesc, data); symbol != "" {
+					contractInfo.Symbol = symbol
+				}
+			} else if err != nil && !strings.Contains(err.Error(), "execution reverted") {
+				glog.Warning(errors.Annotatef(err, "cbc721SymbolSignature %v", address))
+			}
+			if !b.smartContractVerifier.IsValidVerifiedSC(contractInfo.Contract, contractInfo.Symbol) {
+				contractInfo.Symbol = ""
+			}
+			contractInfo.Type = CBC721TokenType
+			contractInfo.Decimals = 0
+			cachedContractsMux.Lock()
+			cachedContracts[common.Bytes2Hex(cds)] = contractInfo
+			cachedContractsTimestamps[common.Bytes2Hex(cds)] = now
+			cachedContractsMux.Unlock()
+			return contractInfo, nil
+		}
+
 		data, err := b.xcbCall(nameSignature, address.Hex())
 		if err != nil {
 			if strings.Contains(err.Error(), "execution reverted") {
 				// if execution reverted -> it is not cbc20 smart contract
-				contractInfo.Contract = address.Hex()
 				contractInfo.Type = CBC721TokenType
+				contractInfo.Decimals = 0
 				return contractInfo, nil
 			}
 			return nil, nil
@@ -393,7 +448,6 @@ func (b *CoreblockchainRPC) GetContractInfo(contractDesc bchain.AddressDescripto
 				glog.Warning(errors.Annotatef(err, "cbc20DecimalsSignature %v", address))
 				// return nil, errors.Annotatef(err, "cbc20DecimalsSignature %v", address)
 			}
-			contractInfo.Contract = address.Hex()
 			contractInfo.Name = name
 			if symbol != "" {
 				contractInfo.Symbol = symbol

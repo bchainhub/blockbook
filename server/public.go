@@ -1038,10 +1038,12 @@ func (s *PublicServer) explorerAddress(w http.ResponseWriter, r *http.Request) (
 		return errorTpl, nil, api.NewAPIError("Missing address", true)
 	}
 	s.metrics.ExplorerViews.With(common.Labels{"action": "address"}).Inc()
-	page, _, _, filter, filterParam, _ := s.getAddressQueryParams(r, api.AccountDetailsTxHistoryLight, txsOnPage)
-	// do not allow details to be changed by query params
+	page, _, detailsOption, filter, filterParam, _ := s.getAddressQueryParams(r, api.AccountDetailsTxHistoryLight, txsOnPage)
+	if detailsOption < api.AccountDetailsTokenBalances {
+		detailsOption = api.AccountDetailsTxHistoryLight
+	}
 	data := s.newTemplateData(r)
-	address, err := s.api.GetAddress(addressParam, page, txsOnPage, api.AccountDetailsTxHistoryLight, filter, strings.ToLower(data.SecondaryCoin))
+	address, err := s.api.GetAddress(addressParam, page, txsOnPage, detailsOption, filter, strings.ToLower(data.SecondaryCoin))
 	if err != nil {
 		return errorTpl, nil, err
 	}
