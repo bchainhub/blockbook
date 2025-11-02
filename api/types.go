@@ -327,9 +327,6 @@ type AddressFilter struct {
 	TokensToReturn TokensToReturn
 	// OnlyConfirmed set to true will ignore mempool transactions; mempool is also ignored if FromHeight/ToHeight filter is specified
 	OnlyConfirmed bool
-
-	NfcAddress string
-	NfcPage    uint32
 }
 
 // Address holds information about address and its transactions
@@ -357,12 +354,6 @@ type Address struct {
 	TotalSecondaryValue   float64              `json:"totalSecondaryValue,omitempty"` // value including tokens in secondary currency
 	ContractInfo          *bchain.ContractInfo `json:"contractInfo,omitempty"`
 	AddressAliases        AddressAliasesMap    `json:"addressAliases,omitempty"`
-
-	// verified data
-	VerifiedData *bchain.VerifiedAddress `json:"verifiedData,omitempty"`
-
-	// different smart contract usecases
-	SCUseCases interface{} `json:"scUseCases,omitempty"`
 
 	// helpers for explorer
 	Filter        string              `json:"-"`

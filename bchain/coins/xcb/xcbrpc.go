@@ -45,8 +45,7 @@ type Configuration struct {
 	ProcessZeroInternalTransactions bool   `json:"processZeroInternalTransactions"`
 	ConsensusNodeVersionURL         string `json:"consensusNodeVersion"`
 
-	SupabaseAPIURL string `json:"supabase_api_url"`
-	SupabaseAPIKey string `json:"supabase_api_key"`
+	TokensRegistryURL string `json:"tokens_registry_url"`
 }
 
 // CoreblockchainRPC is an interface to JSON-RPC xcb service.
@@ -72,12 +71,8 @@ type CoreblockchainRPC struct {
 
 	// verified address functionality
 	smartContractVerifier *smartContractVerifier
-	addressVerifier       *addressVerifier
 
-	// SC usecases functioonality
-	distributedNFCUseCase *distributedNFCUseCase
-
-	supabaseClient *SupabaseClient
+	registryClient *TokenRegistry
 }
 
 // ProcessInternalTransactions specifies if internal transactions are processed
@@ -111,15 +106,13 @@ func NewCoreblockchainRPC(config json.RawMessage, pushHandler func(bchain.Notifi
 	s.Timeout = time.Duration(c.RPCTimeout) * time.Second
 	s.PushHandler = pushHandler
 
-	supabase, err := NewSupabaseClient(c.SupabaseAPIURL, c.SupabaseAPIKey)
+	registry, err := NewTokenRegistry(c.TokensRegistryURL)
 	if err != nil {
-		return nil, errors.Annotatef(err, "failed to create Supabase client")
+		return nil, errors.Annotatef(err, "failed to create token registry client")
 	}
-	s.supabaseClient = supabase
+	s.registryClient = registry
 
-	s.smartContractVerifier = newSmartContractVerifier(supabase)
-	s.addressVerifier = newAddressVerifier(supabase)
-	s.distributedNFCUseCase = newdistributedNFCUseCase(supabase)
+	s.smartContractVerifier = newSmartContractVerifier(registry)
 
 	return s, nil
 }
@@ -148,7 +141,6 @@ func (b *CoreblockchainRPC) Initialize() error {
 	b.NewBlock = &CoreCoinNewBlock{channel: make(chan *types.Header)}
 	b.NewTx = &CoreCoinNewTx{channel: make(chan xcbcommon.Hash)}
 
-	b.distributedNFCUseCase.RPC = b.RPC
 	b.smartContractVerifier.RPC = b.RPC
 
 	ctx, cancel := context.WithTimeout(context.Background(), b.Timeout)
@@ -164,9 +156,11 @@ func (b *CoreblockchainRPC) Initialize() error {
 	case MainNet:
 		b.Testnet = false
 		b.Network = "mainnet"
+		b.registryClient.SetAddressPrefix("cb")
 	case TestNet:
 		b.Testnet = true
 		b.Network = "devin"
+		b.registryClient.SetAddressPrefix("ab")
 	default:
 		return errors.Errorf("Unknown network id %v", id)
 	}

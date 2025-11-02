@@ -297,13 +297,6 @@ func (b *CoreblockchainRPC) FindVerifiedByName(query string) *bchain.AddressDesc
 			return &ad
 		}
 	}
-	for _, sc := range b.addressVerifier.GetAllAddresses() {
-		if contains(sc.Aliases, query) {
-			ad, _ := bchain.AddressDescriptorFromString("ad:" + sc.Address)
-			return &ad
-		}
-	}
-
 	return nil
 }
 
@@ -312,22 +305,7 @@ func (b *CoreblockchainRPC) IsVerified(address bchain.AddressDescriptor) bool {
 	if sc := b.smartContractVerifier.GetVerified(common.Bytes2Hex(address)); sc != nil {
 		return true
 	}
-	// check if address is verified address
-	if addr := b.addressVerifier.GetVerified(common.Bytes2Hex(address)); addr != nil {
-		return true
-	}
 	return false
-}
-
-func (b *CoreblockchainRPC) AddVerifiedAddressData(address bchain.AddressDescriptor) *bchain.VerifiedAddress {
-	return b.addressVerifier.GetVerified(common.Bytes2Hex(address))
-}
-
-func (b *CoreblockchainRPC) GetSCUseCaseData(address *bchain.VerifiedAddress, senderName string, page uint32) interface{} {
-	if address.Type == bchain.DistributedNFC {
-		return b.distributedNFCUseCase.getAccesses(address, senderName, page)
-	}
-	return nil
 }
 
 // GetContractInfo returns information about smart contract

@@ -23,7 +23,6 @@ import (
 	xcbcommon "github.com/core-coin/go-core/v2/common"
 	"github.com/cryptohub-digital/blockbook/api"
 	"github.com/cryptohub-digital/blockbook/bchain"
-	"github.com/cryptohub-digital/blockbook/bchain/coins/xcb"
 	"github.com/cryptohub-digital/blockbook/common"
 	"github.com/cryptohub-digital/blockbook/db"
 	"github.com/cryptohub-digital/blockbook/fiat"
@@ -541,11 +540,6 @@ type TemplateData struct {
 	TxDate                   string
 	TxSecondaryCoinRate      float64
 	TxTicker                 *common.CurrencyRatesTicker
-
-	SCUseCasePagingRange []int
-	SCUseCasePage        int
-	SCUseCasePrevPage    int
-	SCUseCaseNextPage    int
 }
 
 func (s *PublicServer) parseTemplates() []*template.Template {
@@ -1012,19 +1006,12 @@ func (s *PublicServer) getAddressQueryParams(r *http.Request, accountDetails api
 	}
 	contract := r.URL.Query().Get("contract")
 
-	nfcPage, ec := strconv.Atoi(r.URL.Query().Get("nfcPage"))
-	if ec != nil {
-		gap = 0
-	}
-	nfcAddress := r.URL.Query().Get("nfcAddress")
 	return page, pageSize, accountDetails, &api.AddressFilter{
 		Vout:           voutFilter,
 		TokensToReturn: tokensToReturn,
 		FromHeight:     uint32(from),
 		ToHeight:       uint32(to),
 		Contract:       contract,
-		NfcAddress:     nfcAddress,
-		NfcPage:        uint32(nfcPage),
 	}, filterParam, gap
 }
 
@@ -1048,11 +1035,7 @@ func (s *PublicServer) explorerAddress(w http.ResponseWriter, r *http.Request) (
 	data.AddrStr = address.AddrStr
 	data.Address = address
 	data.Page = address.Page
-	data.SCUseCasePage = int(filter.NfcPage)
 	data.PagingRange, data.PrevPage, data.NextPage = getPagingRange(address.Page, address.TotalPages)
-
-	var sender string
-	data.SCUseCasePagingRange, data.SCUseCasePrevPage, data.SCUseCaseNextPage, sender = getSCUseCasePagingRange(int(filter.NfcPage), address.SCUseCases)
 
 	if filterParam == "" && filter.Vout > -1 {
 		filterParam = strconv.Itoa(filter.Vout)
@@ -1061,7 +1044,6 @@ func (s *PublicServer) explorerAddress(w http.ResponseWriter, r *http.Request) (
 		data.PageParams = template.URL("&filter=" + filterParam)
 		data.Address.Filter = filterParam
 	}
-	data.PageParams = data.PageParams + "&nfcAddress=" + template.URL(sender)
 
 	return addressTpl, data, nil
 }
@@ -1264,81 +1246,6 @@ func (s *PublicServer) explorerMempool(w http.ResponseWriter, r *http.Request) (
 	data.Page = mempoolTxids.Page
 	data.PagingRange, data.PrevPage, data.NextPage = getPagingRange(mempoolTxids.Page, mempoolTxids.TotalPages)
 	return mempoolTpl, data, nil
-}
-
-func getSCUseCasePagingRange(page int, scUseCaseData interface{}) ([]int, int, int, string) {
-	var sender string
-	total := 0
-	if sc, ok := scUseCaseData.([]xcb.DistributedNFCData); ok {
-		for _, s := range sc {
-			if len(s.Records) > 0 {
-				if s.AllRecordsLength%10 == 0 {
-					total = s.AllRecordsLength / 10
-				} else {
-					total = s.AllRecordsLength/10 + 1
-				}
-				sender = s.Sender.Name
-			}
-		}
-	}
-	if page == 0 {
-		page = 1
-	}
-	// total==-1 means total is unknown, show only prev/next buttons
-	if total >= 0 && total < 2 {
-		return nil, 0, 0, sender
-	}
-	var r []int
-	pp, np := page-1, page+1
-	if pp < 1 {
-		pp = 1
-	}
-	if total > 0 {
-		if np > total {
-			np = total
-		}
-		r = make([]int, 0, 8)
-		if total < 6 {
-			for i := 1; i <= total; i++ {
-				r = append(r, i)
-			}
-		} else {
-			r = append(r, 1)
-			if page > 3 {
-				r = append(r, 0)
-			}
-			if pp == 1 {
-				if page == 1 {
-					r = append(r, np)
-					r = append(r, np+1)
-					r = append(r, np+2)
-				} else {
-					r = append(r, page)
-					r = append(r, np)
-					r = append(r, np+1)
-				}
-			} else if np == total {
-				if page == total {
-					r = append(r, pp-2)
-					r = append(r, pp-1)
-					r = append(r, pp)
-				} else {
-					r = append(r, pp-1)
-					r = append(r, pp)
-					r = append(r, page)
-				}
-			} else {
-				r = append(r, pp)
-				r = append(r, page)
-				r = append(r, np)
-			}
-			if page <= total-3 {
-				r = append(r, 0)
-			}
-			r = append(r, total)
-		}
-	}
-	return r, pp, np, sender
 }
 
 func getPagingRange(page int, total int) ([]int, int, int) {
