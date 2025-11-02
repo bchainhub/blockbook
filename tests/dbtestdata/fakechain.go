@@ -235,18 +235,10 @@ func (c *fakeBlockChain) AddVerifiedSCData(contract *bchain.ContractInfo) *bchai
 	return contract
 }
 
-func (c *fakeBlockChain) AddVerifiedAddressData(address bchain.AddressDescriptor) *bchain.VerifiedAddress {
-	return &bchain.VerifiedAddress{}
-}
-
 func (c *fakeBlockChain) FindVerifiedByName(query string) *bchain.AddressDescriptor {
 	return &bchain.AddressDescriptor{}
 }
 
 func (c *fakeBlockChain) IsVerified(address bchain.AddressDescriptor) bool {
 	return false
-}
-
-func (c *fakeBlockChain) GetSCUseCaseData(address *bchain.VerifiedAddress, senderName string, page uint32) interface{} {
-	return nil
 }

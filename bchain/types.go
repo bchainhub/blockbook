@@ -236,23 +236,6 @@ func AddressDescriptorFromString(s string) (AddressDescriptor, error) {
 	return nil, errors.New("invalid address descriptor")
 }
 
-type AddressUseCaseType int
-
-const (
-	DefaultAddress AddressUseCaseType = iota
-	DistributedNFC
-)
-
-type VerifiedAddress struct {
-	Type     AddressUseCaseType `json:"type" db:"type"`
-	Address  string             `json:"address" db:"address"`
-	Name     string             `json:"name" db:"name"`
-	Icon     string             `json:"icon" db:"icon"`
-	URL      string             `json:"url" db:"url"`
-	URLTitle string             `json:"urlTitle" db:"url_title"`
-	Aliases  []string           `json:"aliases" db:"aliases"`
-}
-
 // MempoolTxidEntry contains mempool txid with first seen time
 type MempoolTxidEntry struct {
 	Txid string
@@ -351,12 +334,10 @@ type BlockChain interface {
 
 	// verified functionality
 	AddVerifiedSCData(contract *ContractInfo) *ContractInfo
-	AddVerifiedAddressData(address AddressDescriptor) *VerifiedAddress
 	FindVerifiedByName(query string) *AddressDescriptor
 	IsVerified(address AddressDescriptor) bool
 
 	// smart contract usecases
-	GetSCUseCaseData(address *VerifiedAddress, senderName string, page uint32) interface{}
 }
 
 // BlockChainParser defines common interface to parsing and conversions of block chain data

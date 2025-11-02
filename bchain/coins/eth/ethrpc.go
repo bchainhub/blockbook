@@ -985,10 +985,6 @@ func (c *EthereumRPC) AddVerifiedSCData(contract *bchain.ContractInfo) *bchain.C
 	return contract
 }
 
-func (c *EthereumRPC) AddVerifiedAddressData(address bchain.AddressDescriptor) *bchain.VerifiedAddress {
-	return &bchain.VerifiedAddress{}
-}
-
 func (c *EthereumRPC) FindVerifiedByName(query string) *bchain.AddressDescriptor {
 	return &bchain.AddressDescriptor{}
 }
@@ -996,8 +992,4 @@ func (c *EthereumRPC) FindVerifiedByName(query string) *bchain.AddressDescriptor
 func (c *EthereumRPC) IsVerified(address bchain.AddressDescriptor) bool {
 	// Ethereum RPC does not verify addresses, so always return false
 	return false
-}
-
-func (c *EthereumRPC) GetSCUseCaseData(address *bchain.VerifiedAddress, senderName string, page uint32) interface{} {
-	return nil
 }

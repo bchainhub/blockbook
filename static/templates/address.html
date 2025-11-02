@@ -7,11 +7,7 @@
                 {{if $addr.ContractInfo.Symbol}} ({{$addr.ContractInfo.Symbol}}){{end}} 
                 {{if $addr.ContractInfo.Icon}}<img src="/static/verified.svg" style="width: 32px; height: 32px; margin-left: .3em;">{{end}} 
             {{else}}
-                {{if $addr.VerifiedData}}
-                    {{$addr.VerifiedData.Name}} <img src="/static/verified.svg" style="width: 32px; height: 32px; margin-left: .3em;">
-                {{else}}
-                    Address {{addressAlias $addr.AddrStr $data}}
-                {{end}}
+                Address {{addressAlias $addr.AddrStr $data}}
             {{end}}
         </h1>
         <h5 class="col-12 d-flex h-data pb-2"><span class="ellipsis copyable">{{$addr.AddrStr}}</span></h5>
@@ -62,16 +58,6 @@
                 <td>Nonce</td>
                 <td>{{$addr.Nonce}}</td>
             </tr>
-                    
-            {{if $addr.VerifiedData}}
-                {{if $addr.VerifiedData.URL}}
-                <tr>
-                    <td style="width: 25%;">URL</td>
-                    <td><a href="{{$addr.VerifiedData.URL}}" target="_blank" style="text-align: center;"><img src="{{$addr.VerifiedData.Icon}}" style="width: 16px; height: 16px; margin-right: .5em;">{{$addr.VerifiedData.URLTitle}}</a></td>
-                </tr>
-                {{end}}
-            {{end}}
-
             {{if $addr.ContractInfo}}
 
                 {{if $addr.ContractInfo.Type}}
@@ -79,15 +65,26 @@
                         <td style="width: 25%;">Contract type</td>
                         <td>{{$addr.ContractInfo.Type}}</td>
                     </tr>
-                    {{if $addr.ContractInfo.VerifierWebAddress}}
-                        <tr>
-                            <td style="width: 25%;">Token Tracker</td>
-                            <td><a href="{{$addr.ContractInfo.VerifierWebAddress}}" target="_blank" style="text-align: center;"><img src="/static/{{$addr.ContractInfo.Icon}}" style="width: 16px; height: 16px; margin-right: .5em;">{{$addr.ContractInfo.Name}} ({{$addr.ContractInfo.Symbol}})</a></td>
-                        </tr>
-                        <tr>
-                            <td style="width: 25%;">Token Total Supply</td>
-                            <td>{{$addr.ContractInfo.TotalSupply}}</td>
-                        </tr>
+                {{if $addr.ContractInfo.VerifierWebAddress}}
+                    <tr>
+                        <td style="width: 25%;">Token Tracker</td>
+                        <td>
+                            <a href="{{$addr.ContractInfo.VerifierWebAddress}}" target="_blank" style="text-align: center;">
+                                {{if $addr.ContractInfo.Icon}}
+                                    {{if hasPrefix $addr.ContractInfo.Icon "http"}}
+                                        <img src="{{$addr.ContractInfo.Icon}}" style="width: 16px; height: 16px; margin-right: .5em;">
+                                    {{else}}
+                                        <img src="/static/{{$addr.ContractInfo.Icon}}" style="width: 16px; height: 16px; margin-right: .5em;">
+                                    {{end}}
+                                {{end}}
+                                {{$addr.ContractInfo.Name}} ({{$addr.ContractInfo.Symbol}})
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 25%;">Token Total Supply</td>
+                        <td>{{$addr.ContractInfo.TotalSupply}}</td>
+                    </tr>
                         {{if $addr.ContractInfo.CirculatingSupply}}
                             <tr>
                                 <td style="width: 25%;">Circulating Supply</td>
@@ -399,65 +396,6 @@
 {{end}}
 {{end}}
 
-{{if $addr.SCUseCases}}
-    <div class="row pt-3 pb-1">
-        <h3 class="col-sm-6 col-lg-3 m-0 align-self-center">NFC Records</h3>
-        <div class="col-sm-6 col-lg-3 my-2 my-lg-0 align-self-center">
-            <select  class="w-100" onchange="self.location='?nfcPage=1&nfcAddress='+options[selectedIndex].value">
-                {{range $i, $uc := $addr.SCUseCases}}
-                    {{ $length := len $uc.Records }}
-                    <option  {{ if ne $length 0 }} selected="selected"{{end}} value="{{$uc.Sender.Name}}">{{$uc.Sender.Name}}</option>
-                {{end}}
-            </select>
-        </div>
-        <div class="col-lg-6">
-            <nav class="paging justify-content-end">
-                <a class="btn btn-paging" href="?nfcPage={{$data.SCUseCasePrevPage}}{{$data.PageParams}}">Previous</a>
-                {{if $data.SCUseCasePagingRange}}
-                <div class="paging-group mx-2">
-                <div class="bb-group">
-                    {{range $p := $data.SCUseCasePagingRange}}
-                        {{if $p}}<a class="btn{{if eq $data.SCUseCasePage $p}} active{{end}}" href="?nfcPage={{$p}}{{$data.PageParams}}">{{$p}}</a>
-                        {{else}}<span>...</span>{{end}}
-                    {{end}}
-                </div>
-                </div>
-                {{end}}
-                <a class="btn btn-paging" href="?nfcPage={{$data.SCUseCaseNextPage}}{{$data.PageParams}}">Next</a>
-            </nav>
-        </div>
-    </div>
-
-        {{range $i, $uc := $addr.SCUseCases}}
-         {{ $length := len $uc.Records }}
-            {{if gt $length 0}} 
-                <table class="table data-table info-table">
-                    <tbody>
-                        <tr>
-                            <th style="white-space: nowrap; width: 15%; "><h5>Accesses</h5></th>
-                            <th style="width: 15%;"></th>
-                            <th style="width: 45%;">{{$uc.Sender.Address}}</th>
-                            <th style="width: 25%;">{{$uc.Sender.Name}}</th>
-                        </tr>
-                        <tr>
-                            <td style="width: 15%;">Attempt ID</td>
-                            <td style="width: 15%;">Success</td>
-                            <td style="width: 45%;">Core ID</td>
-                            <td style="width: 25%;">Date</td>
-                        </tr>
-                        {{range $record := $uc.Records}}
-                            <tr>
-                                <td style="width: 15%;">{{$record.Id}}</td>
-                                <td style="width: 15%;">{{if $record.Flag}}✅{{else}}❌{{end}}</td>
-                                <td style="width: 45%;">{{$record.CoreID}}</td>
-                                <td style="width: 25%;">{{unixTimeSpan $record.Timestamp}}</td>
-                            </tr>
-                        {{end}}
-                    </tbody>
-                </table>
-            {{end}}
-        {{end}}
-{{end}}
 
 {{if or $addr.Transactions $addr.Filter}}
 <div class="row pt-3 pb-1">

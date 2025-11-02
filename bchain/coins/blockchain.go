@@ -213,14 +213,6 @@ func (c *blockChainWithMetrics) IsVerified(address bchain.AddressDescriptor) boo
 	return c.b.IsVerified(address)
 }
 
-func (c *blockChainWithMetrics) GetSCUseCaseData(address *bchain.VerifiedAddress, senderName string, page uint32) interface{} {
-	return c.b.GetSCUseCaseData(address, senderName, page)
-}
-
-func (c *blockChainWithMetrics) AddVerifiedAddressData(address bchain.AddressDescriptor) *bchain.VerifiedAddress {
-	return c.b.AddVerifiedAddressData(address)
-}
-
 func (c *blockChainWithMetrics) Initialize() error {
 	return c.b.Initialize()
 }
