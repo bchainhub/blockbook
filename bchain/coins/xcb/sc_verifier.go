@@ -111,7 +111,7 @@ func (s *smartContractVerifier) refreshCache() {
 
 func (s *smartContractVerifier) GetVerified(addr string) *VerifiedSC {
 	for _, sc := range s.GetAllSmartContracts() {
-		if sc.Address == addr {
+		if strings.EqualFold(sc.Address, addr) {
 			return sc
 		}
 	}
@@ -121,7 +121,7 @@ func (s *smartContractVerifier) GetVerified(addr string) *VerifiedSC {
 func (s *smartContractVerifier) IsValidVerifiedSC(addr, ticker string) bool {
 	for _, sc := range s.GetAllSmartContracts() {
 		if sc.Ticker == ticker {
-			return sc.Address == addr
+			return strings.EqualFold(sc.Address, addr)
 		}
 	}
 	return true
