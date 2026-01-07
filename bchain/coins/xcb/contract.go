@@ -369,6 +369,34 @@ func (b *CoreblockchainRPC) GetContractInfo(contractDesc bchain.AddressDescripto
 			contractInfo.TotalSupply = p.Sprintf("%d", sc.TotalSupply)
 			contractInfo.CirculatingSupply = p.Sprintf("%d", sc.CirculatingSupply)
 			contractInfo.Symbol = sc.Ticker
+
+			// RWA fields
+			if sc.Metadata != nil {
+				converted := make(bchain.ContractMetadata)
+				for k, v := range sc.Metadata {
+					converted[k] = bchain.Metadata{
+						Value:  v.Value,
+						Sealed: v.Sealed,
+					}
+				}
+				contractInfo.Metadata = converted
+			}
+			if sc.KnownMetadata != nil {
+				converted := make(bchain.ContractMetadata)
+				for k, v := range sc.KnownMetadata {
+					converted[k] = bchain.Metadata{
+						Value:  v.Value,
+						Sealed: v.Sealed,
+					}
+				}
+				contractInfo.KnownMetadata = converted
+			}
+			if sc.Documents != nil {
+				contractInfo.Documents = sc.Documents
+			}
+			if sc.LabResults != nil {
+				contractInfo.LabResults = sc.LabResults
+			}
 		}
 
 		isCBC721, err := b.contractSupportsInterface(contractDesc, address.Hex(), erc721InterfaceID)

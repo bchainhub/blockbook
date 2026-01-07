@@ -24,10 +24,12 @@ type smartContractVerifier struct {
 	registry *TokenRegistry
 
 	// Cache for processed smart contracts
-	cacheMu          sync.RWMutex
-	cachedContracts  []*VerifiedSC
-	cacheExpiry      time.Time
-	cacheTTL         time.Duration
+	cacheMu           sync.RWMutex
+	cachedContracts   []*VerifiedSC
+	addressIndex      map[string]*VerifiedSC // index by lowercase address
+	tickerIndex       map[string]*VerifiedSC // index by ticker
+	cacheExpiry       time.Time
+	cacheTTL          time.Duration
 
 	// Background refresh control
 	stopRefresh chan struct{}
@@ -42,6 +44,7 @@ type VerifiedSC struct {
 	CirculatingSupply *big.Int `json:"circulating_supply" db:"circulating_supply"`
 	Ticker            string   `json:"ticker" db:"ticker"`
 	Aliases           []string `json:"aliases" db:"aliases"`
+	IsRWA             bool     `json:"is_rwa" db:"is_rwa"`
 
 	// RWA Metadata
 	Metadata ContractMetadata `json:"metadata,omitempty" db:"metadata"`
@@ -110,21 +113,25 @@ func (s *smartContractVerifier) refreshCache() {
 }
 
 func (s *smartContractVerifier) GetVerified(addr string) *VerifiedSC {
-	for _, sc := range s.GetAllSmartContracts() {
-		if strings.EqualFold(sc.Address, addr) {
-			return sc
-		}
+	s.cacheMu.RLock()
+	defer s.cacheMu.RUnlock()
+	if s.addressIndex == nil {
+		return nil
 	}
-	return nil
+	return s.addressIndex[strings.ToLower(addr)]
 }
 
 func (s *smartContractVerifier) IsValidVerifiedSC(addr, ticker string) bool {
-	for _, sc := range s.GetAllSmartContracts() {
-		if sc.Ticker == ticker {
-			return strings.EqualFold(sc.Address, addr)
-		}
+	s.cacheMu.RLock()
+	defer s.cacheMu.RUnlock()
+	if s.tickerIndex == nil {
+		return true
 	}
-	return true
+	sc, exists := s.tickerIndex[ticker]
+	if !exists {
+		return true
+	}
+	return strings.EqualFold(sc.Address, addr)
 }
 
 func (s *smartContractVerifier) GetAllSmartContracts() []*VerifiedSC {
@@ -165,7 +172,7 @@ func (s *smartContractVerifier) GetAllSmartContracts() []*VerifiedSC {
 
 	rwaCount := 0
 	for i, sc := range verifiedSC {
-		if sc.CirculatingSupply.Cmp(big.NewInt(0)) < 0 { // RWA Smart Contract
+		if sc.IsRWA { // RWA Smart Contract (detected via categories field)
 			rwaCount++
 			fmt.Printf("SmartContractVerifier: Processing RWA contract %d/%d: %s\n", rwaCount, len(verifiedSC), sc.Address)
 			rpcStart := time.Now()
@@ -244,8 +251,20 @@ func (s *smartContractVerifier) GetAllSmartContracts() []*VerifiedSC {
 		}
 	}
 
+	// Build indexes for fast lookups
+	addrIdx := make(map[string]*VerifiedSC, len(verifiedSC))
+	tickerIdx := make(map[string]*VerifiedSC, len(verifiedSC))
+	for _, sc := range verifiedSC {
+		addrIdx[strings.ToLower(sc.Address)] = sc
+		if sc.Ticker != "" {
+			tickerIdx[sc.Ticker] = sc
+		}
+	}
+
 	// Update cache
 	s.cachedContracts = verifiedSC
+	s.addressIndex = addrIdx
+	s.tickerIndex = tickerIdx
 	s.cacheExpiry = now.Add(s.cacheTTL)
 
 	fmt.Printf("SmartContractVerifier: GetAllSmartContracts() completed in %v, cached %d contracts (including %d RWA)\n", time.Since(start), len(verifiedSC), rwaCount)

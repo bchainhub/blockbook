@@ -49,13 +49,62 @@ type tokenPayload struct {
 	Ticker            string          `json:"ticker"`
 	Aliases           stringList      `json:"aliases"`
 	LegacyIcon        string          `json:"icon"`
-	Logos             []logoPayload   `json:"logos"`
+	Logos             logoList        `json:"logos"`
+	Categories        []string        `json:"categories"`
 }
 
 type logoPayload struct {
 	Size int    `json:"size"`
 	Type string `json:"type"`
 	URL  string `json:"url"`
+}
+
+type logoList []logoPayload
+
+func (l *logoList) UnmarshalJSON(data []byte) error {
+	if len(data) == 0 {
+		*l = nil
+		return nil
+	}
+	trimmed := strings.TrimSpace(string(data))
+	if trimmed == "" || strings.EqualFold(trimmed, "null") {
+		*l = nil
+		return nil
+	}
+
+	switch data[0] {
+	case '[':
+		// Original array format: [{"size": 32, "type": "png", "url": "..."}, ...]
+		var arr []logoPayload
+		if err := json.Unmarshal(data, &arr); err != nil {
+			return errors.Annotate(err, "failed to parse logos array")
+		}
+		*l = arr
+		return nil
+	case '{':
+		// New object format: {"png": {"16": "url", "32": "url"}, "svg": {"16": "url", ...}}
+		var obj map[string]map[string]string
+		if err := json.Unmarshal(data, &obj); err != nil {
+			return errors.Annotate(err, "failed to parse logos object")
+		}
+		var result []logoPayload
+		for imgType, sizes := range obj {
+			for sizeStr, url := range sizes {
+				size, _ := strconv.Atoi(sizeStr)
+				if url != "" {
+					result = append(result, logoPayload{
+						Size: size,
+						Type: imgType,
+						URL:  url,
+					})
+				}
+			}
+		}
+		*l = result
+		return nil
+	default:
+		return errors.Errorf("unsupported logos format: %s", trimmed)
+	}
 }
 
 type stringList []string
@@ -424,6 +473,15 @@ func convertTokenPayload(payload tokenPayload, include func(string) bool) (*Veri
 		webURL = strings.TrimSpace(payload.LegacyWeb)
 	}
 
+	// Check if token is RWA by looking for "rwa" in categories
+	isRWA := false
+	for _, cat := range payload.Categories {
+		if strings.EqualFold(strings.TrimSpace(cat), "rwa") {
+			isRWA = true
+			break
+		}
+	}
+
 	sc := &VerifiedSC{
 		Address:           address,
 		Icon:              iconURL,
@@ -432,6 +490,7 @@ func convertTokenPayload(payload tokenPayload, include func(string) bool) (*Veri
 		CirculatingSupply: circulatingSupply,
 		Ticker:            strings.TrimSpace(payload.Ticker),
 		Aliases:           aliases,
+		IsRWA:             isRWA,
 	}
 
 	return sc, false, nil
@@ -498,7 +557,7 @@ func parseBigIntString(value string) (*big.Int, error) {
 	return nil, errors.Errorf("invalid integer value %q", value)
 }
 
-func selectLogoURL(logos []logoPayload) string {
+func selectLogoURL(logos logoList) string {
 	if len(logos) == 0 {
 		return ""
 	}

@@ -81,16 +81,19 @@
                             </a>
                         </td>
                     </tr>
+                {{end}}
+                {{if $addr.ContractInfo.TotalSupply}}
                     <tr>
                         <td style="width: 25%;">Token Total Supply</td>
                         <td>{{$addr.ContractInfo.TotalSupply}}</td>
                     </tr>
-                        {{if $addr.ContractInfo.CirculatingSupply}}
-                            <tr>
-                                <td style="width: 25%;">Circulating Supply</td>
-                                <td>{{$addr.ContractInfo.CirculatingSupply}}</td>
-                            </tr>   
-                        {{end}} 
+                {{end}}
+                {{if $addr.ContractInfo.CirculatingSupply}}
+                    <tr>
+                        <td style="width: 25%;">Circulating Supply</td>
+                        <td>{{$addr.ContractInfo.CirculatingSupply}}</td>
+                    </tr>
+                {{end}} 
                             {{if $addr.ContractInfo.Metadata}}
                                 <tr>
                                     <td style="width: 25%;">Metadata</td>
@@ -221,7 +224,6 @@
                                 </td>
                             </tr>
                             {{end}}
-                    {{end}}
                 {{end}}
 
                 {{if $addr.ContractInfo.CreatedInBlock}}
