@@ -387,21 +387,12 @@ func (r *TokenRegistry) endpointWithPrefix(filename string, prefix string) strin
 
 	// Insert network-specific path prefix for token endpoints
 	// For testnet (address prefix "ab"), use path: tokens/xab/...
-	// For mainnet (address prefix "cb"), use path: tokens/...
+	// For mainnet (address prefix "cb"), use path: tokens/xcb/...
+	networkDir := "x" + prefix // e.g. "xcb" for mainnet, "xab" for testnet
 	if filename == "tokens.json" {
-		// tokens.json endpoint
-		if prefix == "ab" {
-			segments = append(segments, "tokens", "xab", "tokens.json")
-		} else {
-			segments = append(segments, "tokens", "tokens.json")
-		}
+		segments = append(segments, "tokens", networkDir, "tokens.json")
 	} else if strings.HasSuffix(filename, ".json") {
-		// individual token: {address}.json
-		if prefix == "ab" {
-			segments = append(segments, "tokens", "xab", filename)
-		} else {
-			segments = append(segments, "tokens", filename)
-		}
+		segments = append(segments, "tokens", networkDir, filename)
 	} else {
 		// fallback: just add filename
 		segments = append(segments, filename)
