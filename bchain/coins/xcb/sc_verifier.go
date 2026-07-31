@@ -37,9 +37,12 @@ type smartContractVerifier struct {
 }
 
 type VerifiedSC struct {
-	Address           string   `json:"address" db:"address"`
-	Icon              string   `json:"icon" db:"icon"`
-	Web               string   `json:"web" db:"web"`
+	Address string `json:"address" db:"address"`
+	Icon    string `json:"icon" db:"icon"`
+	Web     string `json:"web" db:"web"`
+	// Supplies are in base units, as published by the registry. They override the
+	// value reported by the contract itself; nil means the registry does not state
+	// them and the chain is the source of truth.
 	TotalSupply       *big.Int `json:"total_supply" db:"total_supply"`
 	CirculatingSupply *big.Int `json:"circulating_supply" db:"circulating_supply"`
 	Ticker            string   `json:"ticker" db:"ticker"`
@@ -175,37 +178,9 @@ func (s *smartContractVerifier) GetAllSmartContracts() []*VerifiedSC {
 		if sc.IsRWA { // RWA Smart Contract (detected via categories field)
 			rwaCount++
 			fmt.Printf("SmartContractVerifier: Processing RWA contract %d/%d: %s\n", rwaCount, len(verifiedSC), sc.Address)
-			rpcStart := time.Now()
 
-			ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
-			var response string
-			err := s.RPC.CallContext(ctx, &response, "xcb_call", map[string]interface{}{
-				"data": "0x1f1881f8",
-				"from": sc.Address,
-				"to":   sc.Address,
-			}, "latest")
-			cancel()
-			if err != nil {
-				fmt.Printf("ERROR: failed to get total supply for smart contract %s after %v: %v\n", sc.Address, time.Since(rpcStart), err)
-				continue // Skip this contract instead of returning nil
-			}
-			fmt.Printf("SmartContractVerifier: RPC call for %s completed in %v\n", sc.Address, time.Since(rpcStart))
-
-			responseBytes, err := common.Hex2BytesWithError(response)
-			if err != nil {
-				fmt.Println("ERROR: failed to convert response to bytes for smart contract", sc.Address, ":", err)
-				continue
-			}
-			var result *big.Int = big.NewInt(0)
-			err = s.abi.UnpackIntoInterface(&result, "totalSupply", responseBytes)
-			if err != nil {
-				fmt.Println("ERROR: failed to unpack response for smart contract", sc.Address, ":", err)
-				continue
-			}
-
-			// divide by 10^18 to get the correct value
-			sc.CirculatingSupply = new(big.Int).Div(result, big.NewInt(1e18))
-			sc.TotalSupply = new(big.Int).Div(result, big.NewInt(1e18))
+			// Supply is not read here - it is read from the contract for every token,
+			// see (*CoreblockchainRPC).addSupplyData.
 
 			// Add RWA Metadata
 			fmt.Printf("SmartContractVerifier: Fetching metadata for %s\n", sc.Address)
