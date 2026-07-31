@@ -487,13 +487,16 @@ func convertTokenPayload(payload tokenPayload, include func(string) bool) (*Veri
 	return sc, false, nil
 }
 
+// rawMessageToBigInt parses an optional big integer from the registry.
+// A missing, null or empty value returns nil, which means "the registry does not
+// state this number" - as opposed to a value of 0, which is an explicit zero.
 func rawMessageToBigInt(raw json.RawMessage) (*big.Int, error) {
 	if len(raw) == 0 {
-		return big.NewInt(0), nil
+		return nil, nil
 	}
 	trimmed := strings.TrimSpace(string(raw))
 	if trimmed == "" || strings.EqualFold(trimmed, "null") {
-		return big.NewInt(0), nil
+		return nil, nil
 	}
 	if raw[0] == '"' {
 		var str string
@@ -512,7 +515,7 @@ func rawMessageToBigInt(raw json.RawMessage) (*big.Int, error) {
 func parseBigIntString(value string) (*big.Int, error) {
 	value = strings.TrimSpace(value)
 	if value == "" {
-		return big.NewInt(0), nil
+		return nil, nil
 	}
 	sign := 1
 	if strings.HasPrefix(value, "+") {

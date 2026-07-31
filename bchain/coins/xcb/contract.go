@@ -10,9 +10,6 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"golang.org/x/text/language"
-	"golang.org/x/text/message"
-
 	"github.com/core-coin/go-core/v2/common"
 	"github.com/core-coin/go-core/v2/common/hexutil"
 	"github.com/golang/glog"
@@ -29,6 +26,7 @@ const cbc20TransferMethodSignature = "0x4b40e901"
 const nameSignature = "0x07ba2a17"
 const symbolSignature = "0x231782d8"
 const decimalsSignature = "0x5d1fb5f9"
+const totalSupplySignature = "0x1f1881f8"
 const balanceOfSignature = "0x1d7976f3"
 const supportsInterfaceSignature = "0x80ada41b"
 const erc721InterfaceID = "0b911da1"
@@ -42,6 +40,16 @@ var cachedContractsMux sync.Mutex
 var cachedContractsTimestamps = make(map[string]time.Time)
 
 const contractCacheTTL = 3 * time.Minute
+
+type cachedSupply struct {
+	supply    *big.Int
+	timestamp time.Time
+}
+
+var cachedSupplies = make(map[string]cachedSupply)
+var cachedSuppliesMux sync.Mutex
+
+const supplyCacheTTL = 2 * time.Minute
 
 func addressFromPaddedHex(s string) (string, error) {
 	var t big.Int
@@ -255,6 +263,126 @@ func parseCBC20StringProperty(contractDesc bchain.AddressDescriptor, data string
 	return ""
 }
 
+// getTokenSupply calls totalSupply() on a contract and returns the result in base units.
+// It returns nil if the contract does not implement totalSupply() or the call failed.
+// Values are cached for supplyCacheTTL so that page views do not hit the backend every time.
+func (b *CoreblockchainRPC) getTokenSupply(contractDesc bchain.AddressDescriptor, address string) *big.Int {
+	key := common.Bytes2Hex(contractDesc)
+	now := time.Now()
+
+	cachedSuppliesMux.Lock()
+	cached, found := cachedSupplies[key]
+	cachedSuppliesMux.Unlock()
+	if found && now.Sub(cached.timestamp) <= supplyCacheTTL {
+		return cached.supply
+	}
+
+	var supply *big.Int
+	data, err := b.xcbCall(totalSupplySignature, address)
+	if err != nil {
+		// a contract without totalSupply() reverts, that is not an error worth logging
+		if !strings.Contains(err.Error(), "execution reverted") {
+			glog.Warning(errors.Annotatef(err, "cbc20TotalSupplySignature %v", address))
+		}
+	} else {
+		supply = parseCBC20NumericProperty(contractDesc, data)
+	}
+
+	cachedSuppliesMux.Lock()
+	cachedSupplies[key] = cachedSupply{supply: supply, timestamp: now}
+	cachedSuppliesMux.Unlock()
+	return supply
+}
+
+// groupDigits inserts thousands separators into a decimal integer, e.g. "1027551" ->
+// "1,027,551". message.Printer cannot do this, it does not format big.Int values.
+func groupDigits(value string) string {
+	sign := ""
+	if strings.HasPrefix(value, "-") {
+		sign, value = "-", value[1:]
+	}
+	if len(value) <= 3 {
+		return sign + value
+	}
+	var grouped strings.Builder
+	grouped.WriteString(sign)
+	first := len(value) % 3
+	if first == 0 {
+		first = 3
+	}
+	grouped.WriteString(value[:first])
+	for i := first; i < len(value); i += 3 {
+		grouped.WriteByte(',')
+		grouped.WriteString(value[i : i+3])
+	}
+	return grouped.String()
+}
+
+// formatTokenSupply renders a supply given in base units as a human readable amount,
+// e.g. 1027551000 with 6 decimals becomes "1,027.551". A nil supply renders as an empty
+// string so that the caller can tell "unknown" apart from a genuine zero supply.
+func formatTokenSupply(supply *big.Int, decimals int) string {
+	if supply == nil {
+		return ""
+	}
+	if decimals <= 0 {
+		return groupDigits(supply.String())
+	}
+	scale := new(big.Int).Exp(big.NewInt(10), big.NewInt(int64(decimals)), nil)
+	whole, fraction := new(big.Int).QuoRem(supply, scale, new(big.Int))
+	formatted := groupDigits(whole.String())
+	if fraction.Sign() == 0 {
+		return formatted
+	}
+	if whole.Sign() == 0 && fraction.Sign() < 0 {
+		// QuoRem keeps the sign on the remainder, the integer part lost it by truncating to zero
+		formatted = "-" + formatted
+	}
+	// left pad the fraction to the full number of decimals, then drop trailing zeroes
+	digits := new(big.Int).Abs(fraction).String()
+	if len(digits) < decimals {
+		digits = strings.Repeat("0", decimals-len(digits)) + digits
+	}
+	return formatted + "." + strings.TrimRight(digits, "0")
+}
+
+// resolveSupply decides which supply to report for a token. The registry and the contract
+// both state supply in base units; a supply published by the registry is authoritative and
+// overrides the contract, which is only consulted (via fromChain) when the registry is
+// silent. Circulating supply equals total supply unless the registry states it separately.
+// A nil result means the supply is unknown, which is not the same as a supply of zero.
+func resolveSupply(sc *VerifiedSC, fromChain func() *big.Int) (total *big.Int, circulating *big.Int) {
+	if sc != nil {
+		total = sc.TotalSupply
+		circulating = sc.CirculatingSupply
+	}
+	if total == nil {
+		total = fromChain()
+	}
+	if circulating == nil {
+		circulating = total
+	}
+	return total, circulating
+}
+
+// addSupplyData fills in the supply of a fungible token, formatted for display using the
+// token's own decimals.
+func (b *CoreblockchainRPC) addSupplyData(contract *bchain.ContractInfo, sc *VerifiedSC) {
+	if contract.Type != CBC20TokenType {
+		return
+	}
+	total, circulating := resolveSupply(sc, func() *big.Int {
+		contractDesc, err := b.Parser.GetAddrDescFromAddress(contract.Contract)
+		if err != nil {
+			glog.Warning(errors.Annotatef(err, "addSupplyData %v", contract.Contract))
+			return nil
+		}
+		return b.getTokenSupply(contractDesc, contract.Contract)
+	})
+	contract.TotalSupply = formatTokenSupply(total, contract.Decimals)
+	contract.CirculatingSupply = formatTokenSupply(circulating, contract.Decimals)
+}
+
 func (b *CoreblockchainRPC) AddVerifiedSCData(contract *bchain.ContractInfo) *bchain.ContractInfo {
 	if contract != nil {
 		// if smart contract ticker is verified but address is wrong -> do not show SC symbol (ticker)
@@ -262,14 +390,13 @@ func (b *CoreblockchainRPC) AddVerifiedSCData(contract *bchain.ContractInfo) *bc
 			contract.Symbol = ""
 			return contract
 		}
+		sc := b.smartContractVerifier.GetVerified(contract.Contract)
+		b.addSupplyData(contract, sc)
 		// if smart contract address is verified -> add verifying data
-		if sc := b.smartContractVerifier.GetVerified(contract.Contract); sc != nil {
+		if sc != nil {
 			contract.Icon = sc.Icon
 			contract.VerifierWebAddress = sc.Web
 			contract.Symbol = sc.Ticker
-			p := message.NewPrinter(language.English)
-			contract.TotalSupply = p.Sprintf("%d", sc.TotalSupply)
-			contract.CirculatingSupply = p.Sprintf("%d", sc.CirculatingSupply)
 
 			// RWA
 			if sc.Metadata != nil {
@@ -364,11 +491,8 @@ func (b *CoreblockchainRPC) GetContractInfo(contractDesc bchain.AddressDescripto
 		if sc := b.smartContractVerifier.GetVerified(common.Bytes2Hex(contractDesc[:])); sc != nil {
 			contractInfo.Icon = sc.Icon
 			contractInfo.VerifierWebAddress = sc.Web
-
-			p := message.NewPrinter(language.English)
-			contractInfo.TotalSupply = p.Sprintf("%d", sc.TotalSupply)
-			contractInfo.CirculatingSupply = p.Sprintf("%d", sc.CirculatingSupply)
 			contractInfo.Symbol = sc.Ticker
+			// supply is filled in by AddVerifiedSCData, once the decimals are known
 
 			// RWA fields
 			if sc.Metadata != nil {
