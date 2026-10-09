@@ -333,6 +333,8 @@ func (b *CoreblockchainRPC) reconnectRPC() error {
 	}
 	b.RPC = rc
 	b.Client = ec
+	// closeRPC closed the connection the verifier was using too
+	b.smartContractVerifier.RPC = rc
 	return b.subscribeEvents()
 }
 
